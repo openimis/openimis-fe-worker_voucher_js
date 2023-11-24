@@ -1,2 +1,5 @@
 {
+  "workerVoucher.menu.voucherList": "Voucher List",
+  "workerVoucher.menu.voucherAcquirement": "Voucher Acquirement",
+  "workerVoucher.menu.voucherAssignment": "Voucher Assignment"
 }
