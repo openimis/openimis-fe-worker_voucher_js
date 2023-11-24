@@ -1,23 +1,20 @@
 {
-  "parser": "babel-eslint",
-  "extends": [
-    "standard",
-    "standard-react"
-  ],
   "env": {
-    "es6": true
+    "browser": true,
+    "es2021": true
   },
-  "plugins": [
-    "react"
-  ],
+  "extends": ["plugin:react/recommended", "airbnb"],
+  "overrides": [],
   "parserOptions": {
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "plugins": ["react"],
   "rules": {
-    // don't force es6 functions to include space before paren
-    "space-before-function-paren": 0,
-
-    // allow specifying true explicitly for boolean props
-    "react/jsx-boolean-value": 0
+    "react/prop-types": "off",
+    "no-shadow": "off", // disabled due to use of bindActionCreators
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }], // disabled due to naming consistency with other modules
+    "import/no-unresolved": "off", // disable due to module architecture. For modules most references are marked as unresolved
+    "max-len": ["error", { "code": 120 }]
   }
 }
