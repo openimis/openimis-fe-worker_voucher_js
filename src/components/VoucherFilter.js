@@ -62,11 +62,11 @@ function VoucherFilter({ filters, onChangeFilters, formatMessage }) {
           nullLabel={formatMessage('workerVoucher.placeholder.any')}
           withLabel
           withNull
-          onChange={(value) => onChangeFilters([
+          onChange={(status) => onChangeFilters([
             {
               id: 'status',
-              value,
-              filter: `status: ${value}`,
+              status,
+              filter: `status: ${status}`,
             },
           ])}
         />
@@ -77,11 +77,11 @@ function VoucherFilter({ filters, onChangeFilters, formatMessage }) {
           module="workerVoucher"
           label="workerVoucher.assignedDate"
           value={filterValue('assignedDate')}
-          onChange={(v) => onChangeFilters([
+          onChange={(assignedDate) => onChangeFilters([
             {
               id: 'assignedDate',
-              value: v,
-              filter: `assignedDate: "${v}"`,
+              value: assignedDate,
+              filter: `assignedDate: "${assignedDate}"`,
             },
           ])}
         />
@@ -92,11 +92,11 @@ function VoucherFilter({ filters, onChangeFilters, formatMessage }) {
           module="workerVoucher"
           label="workerVoucher.expiryDate"
           value={filterValue('expiryDate')}
-          onChange={(v) => onChangeFilters([
+          onChange={(expiryDate) => onChangeFilters([
             {
               id: 'expiryDate',
-              value: v,
-              filter: `expiryDate: "${v}"`,
+              value: expiryDate,
+              filter: `expiryDate: "${expiryDate}"`,
             },
           ])}
         />
