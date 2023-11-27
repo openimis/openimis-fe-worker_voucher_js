@@ -12,7 +12,11 @@ In development mode, you can use `npm link` and `npm start` to continuously scan
 
 ## Main Menu Contributions
 
+**Workers and Vouchers** ('worker.MainMenu') - it is displayed if __"isWorker"__ variable is set to __true__.
+
 ## Other Contributions
+
+* `core.Router`: registering `voucher/vouchers`, `voucher/vouchers/voucher`, `voucher/acquirement`, `voucher/assignment`, routes in openIMIS client-side router
 
 ## Available Contribution Points
 
