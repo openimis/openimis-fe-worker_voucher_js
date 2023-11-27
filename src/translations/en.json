@@ -9,7 +9,7 @@
   "workerVoucher.employer.tradename": "Employer Trade Name",
   "workerVoucher.employer.code": "Employer Code",
   "workerVoucher.worker": "Worker",
-  "workerVoucher.worker.code": "Worker Code",
+  "workerVoucher.worker.code": "Worker National ID",
   "workerVoucher.worker.lastName": "Worker Last Name",
   "workerVoucher.status": "Status",
   "workerVoucher.assignedDate": "Assigned Date",
