@@ -4,9 +4,9 @@
 
 import React from 'react';
 
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import LocalAtmIcon from '@material-ui/icons/LocalAtm';
-import GroupAddIcon from '@material-ui/icons/GroupAdd';
 
 import { FormattedMessage } from '@openimis/fe-core';
 import { VOUCHER_RIGHT_SEARCH } from './constants';
@@ -14,6 +14,8 @@ import VoucherAcquirementPage from './pages/VoucherAcquirementPage';
 import VoucherAssignmentPage from './pages/VoucherAssignmentPage';
 import VoucherDetailsPage from './pages/VoucherDetailsPage';
 import VouchersPage from './pages/VouchersPage';
+import WorkerVoucherStatusPicker from './pickers/WorkerVoucherStatusPicker';
+import reducer from './reducer';
 import messages_en from './translations/en.json';
 
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
@@ -23,6 +25,12 @@ const ROUTE_WORKER_VOUCHER_ASSIGNMENT = 'voucher/assignment';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
+  reducers: [{ key: 'workerVoucher', reducer }],
+  refs: [
+    { key: 'workerVoucher.route.workerVouchers', ref: ROUTE_WORKER_VOUCHERS_LIST },
+    { key: 'workerVoucher.route.workerVoucher', ref: ROUTE_WORKER_VOUCHER },
+    { key: 'workerVoucher.WorkerVoucherStatusPicker', ref: WorkerVoucherStatusPicker },
+  ],
   'worker.MainMenu': [
     {
       text: <FormattedMessage module="workerVoucher" id="menu.voucherList" />,

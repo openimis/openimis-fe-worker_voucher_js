@@ -1,5 +1,25 @@
 {
   "workerVoucher.menu.voucherList": "Voucher List",
   "workerVoucher.menu.voucherAcquirement": "Voucher Acquirement",
-  "workerVoucher.menu.voucherAssignment": "Voucher Assignment"
+  "workerVoucher.menu.voucherAssignment": "Voucher Assignment",
+  "workerVoucher.vouchers": "Vouchers",
+  "workerVoucher.searcherResultsTitle": "{workerVouchersTotalCount} Vouchers Found",
+  "workerVoucher.code": "Code",
+  "workerVoucher.employer": "Employer",
+  "workerVoucher.employer.tradename": "Employer Trade Name",
+  "workerVoucher.employer.code": "Employer Code",
+  "workerVoucher.worker": "Worker",
+  "workerVoucher.worker.code": "Worker Code",
+  "workerVoucher.worker.lastName": "Worker Last Name",
+  "workerVoucher.status": "Status",
+  "workerVoucher.assignedDate": "Assigned Date",
+  "workerVoucher.expiryDate": "Expiry Date",
+  "workerVoucher.tooltip.details": "View details",
+  "workerVoucher.placeholder.any": "Any",
+  "workerVoucher.status.AWAITING_PAYMENT": "AWAITING PAYMENT",
+  "workerVoucher.status.UNASSIGNED": "UNASSIGNED",
+  "workerVoucher.status.ASSIGNED": "ASSIGNED",
+  "workerVoucher.status.EXPIRED": "EXPIRED",
+  "workerVoucher.status.CANCELED": "CANCELED",
+  "workerVoucher.status.CLOSED": "CLOSED"
 }
