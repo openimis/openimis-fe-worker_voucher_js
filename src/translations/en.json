@@ -11,9 +11,12 @@
   "workerVoucher.worker": "Worker",
   "workerVoucher.worker.code": "Worker National ID",
   "workerVoucher.worker.lastName": "Worker Last Name",
+  "workerVoucher.worker.otherNames": "Worker Other Names",
+  "workerVoucher.worker.dob": "Worker Date of Birth",
   "workerVoucher.status": "Status",
   "workerVoucher.assignedDate": "Assigned Date",
   "workerVoucher.expiryDate": "Expiry Date",
+  "workerVoucher.createdDate": "Created Date",
   "workerVoucher.tooltip.details": "View details",
   "workerVoucher.placeholder.any": "Any",
   "workerVoucher.status.AWAITING_PAYMENT": "AWAITING PAYMENT",
@@ -21,5 +24,8 @@
   "workerVoucher.status.ASSIGNED": "ASSIGNED",
   "workerVoucher.status.EXPIRED": "EXPIRED",
   "workerVoucher.status.CANCELED": "CANCELED",
-  "workerVoucher.status.CLOSED": "CLOSED"
+  "workerVoucher.status.CLOSED": "CLOSED",
+  "workerVoucher.VoucherDetailsPage.title": "Worker Voucher - {code}",
+  "workerVoucher.VoucherDetailsPanel.subtitle": "Voucher's General Information"
+  
 }
