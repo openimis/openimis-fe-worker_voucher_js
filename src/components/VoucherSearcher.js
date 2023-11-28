@@ -58,7 +58,7 @@ function VoucherSearcher() {
   const rowIdentifier = (workerVoucher) => workerVoucher.uuid;
 
   const openWorkerVoucher = (workerVoucher) => rights.includes(VOUCHER_RIGHT_SEARCH) && history.push(
-    `/${modulesManager.getRef(REF_ROUTE_WORKER_VOUCHER)}/${workerVoucher?.uuid}}`,
+    `/${modulesManager.getRef(REF_ROUTE_WORKER_VOUCHER)}/${workerVoucher?.uuid}`,
   );
 
   const onDoubleClick = (workerVoucher) => openWorkerVoucher(workerVoucher);
