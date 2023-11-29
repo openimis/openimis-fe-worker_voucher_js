@@ -20,7 +20,7 @@ function VouchersPage() {
   return (
     rights.includes(VOUCHER_RIGHT_SEARCH) && (
       <div className={classes.page}>
-        <Helmet title={formatMessage('workerVoucher.vouchers')} />
+        <Helmet title={formatMessage('workerVoucher.menu.voucherList')} />
         <VoucherSearcher />
       </div>
     )
