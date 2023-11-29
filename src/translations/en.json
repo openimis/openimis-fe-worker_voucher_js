@@ -2,7 +2,6 @@
   "workerVoucher.menu.voucherList": "Voucher List",
   "workerVoucher.menu.voucherAcquirement": "Voucher Acquirement",
   "workerVoucher.menu.voucherAssignment": "Voucher Assignment",
-  "workerVoucher.vouchers": "Vouchers",
   "workerVoucher.searcherResultsTitle": "{workerVouchersTotalCount} Vouchers Found",
   "workerVoucher.code": "Code",
   "workerVoucher.employer": "Employer",
@@ -26,6 +25,10 @@
   "workerVoucher.status.CANCELED": "CANCELED",
   "workerVoucher.status.CLOSED": "CLOSED",
   "workerVoucher.VoucherDetailsPage.title": "Worker Voucher - {code}",
-  "workerVoucher.VoucherDetailsPanel.subtitle": "Voucher's General Information"
-  
+  "workerVoucher.VoucherDetailsPanel.subtitle": "Voucher's General Information",
+  "workerVoucher.VoucherAcquirementForm.subtitle": "Select voucher acquirement method",
+  "workerVoucher.acquirement.method": "Acquirement Method",
+  "workerVoucher.acquirement.method.NONE": "None",
+  "workerVoucher.acquirement.method.GENERIC_VOUCHER": "Generic Voucher",
+  "workerVoucher.acquirement.method.SPECIFIC_WORKER": "Specific Voucher"
 }
