@@ -8,6 +8,8 @@ export const DEFAULT_PAGE_SIZE = 10;
 export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 export const EMPTY_STRING = '';
 export const CONTAINS_LOOKUP = 'Icontains';
+export const WORKER_THRESHOLD = 3;
+export const USER_ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 
 const WORKER_VOUCHER_STATUS = {
   AWAITING_PAYMENT: 'AWAITING_PAYMENT',
@@ -18,7 +20,7 @@ const WORKER_VOUCHER_STATUS = {
   CLOSED: 'CLOSED',
 };
 
-const ACQUIREMENT_METHOD = {
+export const ACQUIREMENT_METHOD = {
   GENERIC_VOUCHER: 'GENERIC_VOUCHER',
   SPECIFIC_WORKER: 'SPECIFIC_WORKER',
 };
