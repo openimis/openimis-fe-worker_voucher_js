@@ -8,6 +8,7 @@
   "workerVoucher.employer.tradename": "Employer Trade Name",
   "workerVoucher.employer.code": "Employer Code",
   "workerVoucher.worker": "Worker",
+  "workerVoucher.workers": "Workers",
   "workerVoucher.worker.code": "Worker National ID",
   "workerVoucher.worker.lastName": "Worker Last Name",
   "workerVoucher.worker.otherNames": "Worker Other Names",
@@ -30,5 +31,17 @@
   "workerVoucher.acquirement.method": "Acquirement Method",
   "workerVoucher.acquirement.method.NONE": "None",
   "workerVoucher.acquirement.method.GENERIC_VOUCHER": "Generic Voucher",
-  "workerVoucher.acquirement.method.SPECIFIC_WORKER": "Specific Voucher"
+  "workerVoucher.acquirement.method.SPECIFIC_WORKER": "Specific Workers",
+  "workerVoucher.acquire.voucher": "ACQUIRE VOUCHER",
+  "workerVoucher.acquire.voucher.specificWorkers": "Acquire Vouchers",
+  "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
+  "workerVoucher.WorkerMultiplePicker.noOptions": "Enter at least 3 characters of National ID",
+  "workerVoucher.WorkerMultiplePicker.checkbox.label": "Show only workers I've previously worked with",
+  "workerVoucher.WorkerDateRangePicker.startDate": "Start Date",
+  "workerVoucher.WorkerDateRangePicker.endDate": "End Date",
+  "workerVoucher.WorkerDateRangePicker.addButton": "Add Date Range",
+  "workerVoucher.WorkerDateRangePicker.deleteRange": "Delete Date Range",
+  "workerVoucher.WorkerDateRangePicker.dateRanges": "Date Ranges:",
+  "workerVoucher.WorkerDateRangePicker.noRanges": "No date ranges registered",
+  "workerVoucher.WorkerDateRangePicker.notAvailable": "NOT AVAILABLE"
 }

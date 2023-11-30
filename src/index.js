@@ -17,6 +17,9 @@ import VouchersPage from './pages/VouchersPage';
 import WorkerVoucherStatusPicker from './pickers/WorkerVoucherStatusPicker';
 import reducer from './reducer';
 import messages_en from './translations/en.json';
+import VoucherAcquirementMethodPicker from './pickers/VoucherAcquirementMethodPicker';
+import WorkerMultiplePicker from './pickers/WorkerMultiplePicker';
+import WorkerDateRangePicker from './pickers/WorkerDateRangePicker';
 
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
 const ROUTE_WORKER_VOUCHER = 'voucher/vouchers/voucher';
@@ -30,6 +33,9 @@ const DEFAULT_CONFIG = {
     { key: 'workerVoucher.route.workerVouchers', ref: ROUTE_WORKER_VOUCHERS_LIST },
     { key: 'workerVoucher.route.workerVoucher', ref: ROUTE_WORKER_VOUCHER },
     { key: 'workerVoucher.WorkerVoucherStatusPicker', ref: WorkerVoucherStatusPicker },
+    { key: 'workerVoucher.VoucherAcquirementMethodPicker', ref: VoucherAcquirementMethodPicker },
+    { key: 'workerVoucher.WorkerMultiplePicker', ref: WorkerMultiplePicker },
+    { key: 'workerVoucher.WorkerDateRangePicker', ref: WorkerDateRangePicker },
   ],
   'worker.MainMenu': [
     {
