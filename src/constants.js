@@ -9,6 +9,7 @@ export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 export const EMPTY_STRING = '';
 export const CONTAINS_LOOKUP = 'Icontains';
 export const WORKER_THRESHOLD = 3;
+export const VOUCHER_QUANTITY_THRESHOLD = 1000;
 export const USER_ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 
 const WORKER_VOUCHER_STATUS = {

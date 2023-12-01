@@ -21,7 +21,7 @@ import { PublishedComponent, useTranslations, useModulesManager } from '@openimi
 import { MODULE_NAME } from '../constants';
 
 function WorkerDateRangePicker({
-  classes, readOnly, value, onChange, required,
+  classes, readOnly, value, onChange,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -60,7 +60,6 @@ function WorkerDateRangePicker({
               value={startDate}
               onChange={handleStartDateChange}
               readOnly={readOnly}
-              required={required}
               // NOTE: maxDate cannot be passed if endDate does not exist.
               // Passing any other falsy value will block months manipulation.
               // eslint-disable-next-line react/jsx-props-no-spreading
@@ -75,7 +74,6 @@ function WorkerDateRangePicker({
               value={endDate}
               onChange={handleEndDateChange}
               readOnly={readOnly}
-              required={required}
               // NOTE: minDate cannot be passed if startDate does not exist.
               // Passing any other falsy value will block months manipulation.
               // eslint-disable-next-line react/jsx-props-no-spreading
@@ -84,13 +82,27 @@ function WorkerDateRangePicker({
           </Grid>
         </Grid>
         <Grid className={classes.item}>
-          <Button variant="contained" color="primary" onClick={addDateRange} disabled={!startDate || !endDate}>
-            {formatMessage('workerVoucher.WorkerDateRangePicker.addButton')}
-          </Button>
+          {
+            !startDate || !endDate ? (
+              <Tooltip title={formatMessage('workerVoucher.WorkerDateRangePicker.noDates')}>
+                <span>
+                  <Button variant="contained" color="primary" onClick={addDateRange} disabled={!startDate || !endDate}>
+                    {formatMessage('workerVoucher.WorkerDateRangePicker.addButton')}
+                  </Button>
+                </span>
+              </Tooltip>
+            ) : (
+              <span>
+                <Button variant="contained" color="primary" onClick={addDateRange} disabled={!startDate || !endDate}>
+                  {formatMessage('workerVoucher.WorkerDateRangePicker.addButton')}
+                </Button>
+              </span>
+            )
+          }
         </Grid>
       </Grid>
       <Grid container xs={8} style={{ padding: '0 10px 0 0' }}>
-        <Grid xs={12}>
+        <Grid xs={12} style={{ margin: '0 0 0 12px' }}>
           <Typography variant="subtitle1" style={{ padding: '10px 0 0 0' }}>
             {formatMessage('workerVoucher.WorkerDateRangePicker.dateRanges')}
           </Typography>
@@ -105,7 +117,10 @@ function WorkerDateRangePicker({
                       <DateRangeIcon />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary="Date Range" secondary={`${range.start} | ${range.end}`} />
+                  <ListItemText
+                    primary={formatMessage('workerVoucher.WorkerDateRangePicker.dateRange')}
+                    secondary={`${range.start} | ${range.end}`}
+                  />
                   <ListItemSecondaryAction>
                     <Tooltip title={formatMessage('workerVoucher.WorkerDateRangePicker.deleteRange')}>
                       <IconButton

@@ -15,9 +15,6 @@ export const useStyles = makeStyles((theme) => ({
   paperHeaderTitle: theme.paper.title,
   tableTitle: theme.table.title,
   item: theme.paper.item,
-  fullHeight: {
-    height: '100%',
-  },
 }));
 
 function VoucherAcquirementForm() {
