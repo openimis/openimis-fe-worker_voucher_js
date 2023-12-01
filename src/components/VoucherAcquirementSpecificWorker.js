@@ -19,9 +19,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   tableTitle: theme.table.title,
   item: theme.paper.item,
-  fullHeight: {
-    height: '100%',
-  },
 }));
 
 function VoucherAcquirementSpecificWorker() {
@@ -29,6 +26,9 @@ function VoucherAcquirementSpecificWorker() {
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
+
+  const canAcquire = (voucherAcquirement) => !voucherAcquirement?.workers?.length
+  || !voucherAcquirement?.dateRanges?.length;
 
   const onVoucherAcquire = () => {
     // TODO: Open Payment modal
@@ -50,10 +50,20 @@ function VoucherAcquirementSpecificWorker() {
       <Grid xs={12}>
         <Grid container className={classes.paperHeaderTitle}>
           <Typography variant="h5">{formatMessage('workerVoucher.acquirement.method.SPECIFIC_WORKER')}</Typography>
-          <Tooltip title={formatMessage('workerVoucher.acquire.voucher.specificWorkers')}>
-            <Button variant="outlined" style={{ border: 0 }} onClick={onVoucherAcquire}>
-              {formatMessage('workerVoucher.acquire.voucher')}
-            </Button>
+          <Tooltip title={canAcquire(voucherAcquirement)
+            ? formatMessage('workerVoucher.acquire.vouchers.required')
+            : formatMessage('workerVoucher.acquire.vouchers')}
+          >
+            <span>
+              <Button
+                variant="outlined"
+                style={{ border: 0 }}
+                onClick={onVoucherAcquire}
+                disabled={canAcquire(voucherAcquirement)}
+              >
+                <Typography variant="subtitle1">{formatMessage('workerVoucher.acquire.voucher')}</Typography>
+              </Button>
+            </span>
           </Tooltip>
         </Grid>
       </Grid>

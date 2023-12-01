@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Divider, Grid, Typography, Button, Tooltip,
@@ -6,7 +6,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import { useModulesManager, useTranslations } from '@openimis/fe-core';
-import { MODULE_NAME } from '../constants';
+import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY, VOUCHER_QUANTITY_THRESHOLD } from '../constants';
 import AcquirementGenericVoucherForm from './AcquirementGenericVoucherForm';
 
 export const useStyles = makeStyles((theme) => ({
@@ -19,9 +19,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   tableTitle: theme.table.title,
   item: theme.paper.item,
-  fullHeight: {
-    height: '100%',
-  },
 }));
 
 function VoucherAcquirementGenericVoucher() {
@@ -30,20 +27,43 @@ function VoucherAcquirementGenericVoucher() {
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
 
+  const canAcquire = (voucherAcquirement) => !voucherAcquirement?.quantity
+  || voucherAcquirement?.quantity > VOUCHER_QUANTITY_THRESHOLD;
+
   const onVoucherAcquire = () => {
     // TODO: Open Payment modal
     console.log(voucherAcquirement);
   };
+
+  useEffect(() => {
+    const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
+
+    if (storedUserEconomicUnit) {
+      const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
+
+      setVoucherAcquirement((prevState) => ({ ...prevState, employer: userEconomicUnit }));
+    }
+  }, [setVoucherAcquirement]);
 
   return (
     <>
       <Grid xs={12}>
         <Grid container className={classes.paperHeaderTitle}>
           <Typography variant="h5">{formatMessage('workerVoucher.acquirement.method.GENERIC_VOUCHER')}</Typography>
-          <Tooltip title={formatMessage('workerVoucher.acquire.voucher.specificWorkers')}>
-            <Button variant="outlined" style={{ border: 0 }} onClick={onVoucherAcquire}>
-              {formatMessage('workerVoucher.acquire.voucher')}
-            </Button>
+          <Tooltip title={canAcquire(voucherAcquirement)
+            ? formatMessage('workerVoucher.acquire.vouchers.required')
+            : formatMessage('workerVoucher.acquire.vouchers')}
+          >
+            <span>
+              <Button
+                variant="outlined"
+                style={{ border: 0 }}
+                onClick={onVoucherAcquire}
+                disabled={canAcquire(voucherAcquirement)}
+              >
+                <Typography variant="subtitle1">{formatMessage('workerVoucher.acquire.voucher')}</Typography>
+              </Button>
+            </span>
           </Tooltip>
         </Grid>
       </Grid>

@@ -67,7 +67,9 @@ function WorkerMultiplePicker({
         label={formatMessage('workerVoucher.workers')}
         readOnly={readOnly}
         placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
-        noOptionsText={formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')}
+        noOptionsText={searchString.length < WORKER_THRESHOLD
+          ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
+          : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')}
         filterOptions={filtersOptions}
         getOptionLabel={({ chfId, lastName, otherNames }) => `${chfId} ${lastName} ${otherNames}`}
         filterSelectedOptions={filterSelectedOptions}
@@ -85,6 +87,8 @@ function WorkerMultiplePicker({
                   setSearchString('');
                 }
               }}
+              // TODO: Enable when BE will be ready
+              disabled
             />
         )}
           label={formatMessage('workerVoucher.WorkerMultiplePicker.checkbox.label')}
