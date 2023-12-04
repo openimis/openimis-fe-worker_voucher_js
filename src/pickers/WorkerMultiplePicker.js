@@ -80,6 +80,7 @@ function WorkerMultiplePicker({
         <FormControlLabel
           control={(
             <Checkbox
+              color="primary"
               checked={previousWorkersChecked}
               onChange={(e) => {
                 setPreviousWorkersChecked(e.target.checked);

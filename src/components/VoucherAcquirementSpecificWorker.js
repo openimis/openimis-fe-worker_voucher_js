@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/styles';
 import { useModulesManager, useTranslations } from '@openimis/fe-core';
 import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AcquirementSpecificWorkerForm from './AcquirementSpecificWorkerForm';
+import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -26,13 +27,20 @@ function VoucherAcquirementSpecificWorker() {
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const canAcquire = (voucherAcquirement) => !voucherAcquirement?.workers?.length
   || !voucherAcquirement?.dateRanges?.length;
 
   const onVoucherAcquire = () => {
-    // TODO: Open Payment modal
-    console.log(voucherAcquirement);
+    setIsPaymentModalOpen((prevState) => !prevState);
+    // TODO: Fetch info about payment (acquirementSummary)
+  };
+
+  const onPaymentConfirmation = () => {
+    // TODO: After summary fetch, redirect to the MPay.
+    setIsPaymentModalOpen((prevState) => !prevState);
+    console.log('Redirect to the MPay...');
   };
 
   useEffect(() => {
@@ -73,6 +81,19 @@ function VoucherAcquirementSpecificWorker() {
         onEditedChange={setVoucherAcquirement}
         formatMessage={formatMessage}
         classes={classes}
+      />
+      <VoucherAcquirementPaymentModal
+        openState={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen((prevState) => !prevState)}
+        onConfirm={onPaymentConfirmation}
+        // TODO: Change after BE implementation
+        isLoading={false}
+        error={false}
+        acquirementSummary={{
+          pricePerVoucher: 50,
+          qtyOfVouchers: 50,
+          amountToBePaid: 2500,
+        }}
       />
     </>
   );

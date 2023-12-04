@@ -34,7 +34,10 @@
   "workerVoucher.acquirement.method.SPECIFIC_WORKER": "Specific Workers",
   "workerVoucher.acquire.voucher": "ACQUIRE VOUCHER",
   "workerVoucher.acquire.vouchersQuantity": "Quantity of Vouchers",
+  "workerVoucher.acquire.pricePerVoucher": "Voucher Price",
+  "workerVoucher.acquire.toBePaid": "Acquirement Price",
   "workerVoucher.acquire.vouchers": "Acquire Vouchers",
+  "workerVoucher.acquire.confirmation": "I confirm the voucher acquirement, acknowledging that I have read and agree to the terms and policies.",
   "workerVoucher.acquire.vouchers.required": "You need to fill out all required fields to continue",
   "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
   "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters of National ID",
@@ -48,5 +51,9 @@
   "workerVoucher.WorkerDateRangePicker.dateRange": "Date Range",
   "workerVoucher.WorkerDateRangePicker.dateRanges": "Date Ranges: *",
   "workerVoucher.WorkerDateRangePicker.noRanges": "No date ranges registered",
-  "workerVoucher.WorkerDateRangePicker.notAvailable": "NOT AVAILABLE"
+  "workerVoucher.WorkerDateRangePicker.notAvailable": "NOT AVAILABLE",
+  "workerVoucher.VoucherAcquirementPaymentModal.title": "Voucher Acquirement Summary",
+  "workerVoucher.VoucherAcquirementPaymentModal.confirm": "Acquire",
+  "workerVoucher.VoucherAcquirementPaymentModal.confirm.tooltip": "Please ensure that there are no errors and that you have checked the acquirement confirmation",
+  "workerVoucher.VoucherAcquirementPaymentModal.close": "Cancel"
 }
