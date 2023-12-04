@@ -33,12 +33,15 @@
   "workerVoucher.acquirement.method.GENERIC_VOUCHER": "Generic Voucher",
   "workerVoucher.acquirement.method.SPECIFIC_WORKER": "Specific Workers",
   "workerVoucher.acquire.voucher": "ACQUIRE VOUCHER",
+  "workerVoucher.assign.voucher": "ASSIGN VOUCHER",
   "workerVoucher.acquire.vouchersQuantity": "Quantity of Vouchers",
   "workerVoucher.acquire.pricePerVoucher": "Voucher Price",
   "workerVoucher.acquire.toBePaid": "Acquirement Price",
   "workerVoucher.acquire.vouchers": "Acquire Vouchers",
+  "workerVoucher.assign.vouchers": "Assign Vouchers",
   "workerVoucher.acquire.confirmation": "I confirm the voucher acquirement, acknowledging that I have read and agree to the terms and policies.",
-  "workerVoucher.acquire.vouchers.required": "You need to fill out all required fields to continue",
+  "workerVoucher.assign.confirmation": "I confirm the voucher assignment, acknowledging that I have read and agree to the terms and policies.",
+  "workerVoucher.vouchers.required": "You need to fill out all required fields to continue",
   "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
   "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters of National ID",
   "workerVoucher.WorkerMultiplePicker.noOptions": "Worker not found",
@@ -53,7 +56,10 @@
   "workerVoucher.WorkerDateRangePicker.noRanges": "No date ranges registered",
   "workerVoucher.WorkerDateRangePicker.notAvailable": "NOT AVAILABLE",
   "workerVoucher.VoucherAcquirementPaymentModal.title": "Voucher Acquirement Summary",
+  "workerVoucher.VoucherAssignmentConfirmModal.title": "Voucher Assignment Summary",
   "workerVoucher.VoucherAcquirementPaymentModal.confirm": "Acquire",
+  "workerVoucher.VoucherAssignmentConfirmModal.confirm": "Assign",
   "workerVoucher.VoucherAcquirementPaymentModal.confirm.tooltip": "Please ensure that there are no errors and that you have checked the acquirement confirmation",
-  "workerVoucher.VoucherAcquirementPaymentModal.close": "Cancel"
+  "workerVoucher.VoucherAssignmentConfirmModal.confirm.tooltip": "Please ensure that there are no errors and that you have checked the assignment confirmation",
+  "workerVoucher.close": "Cancel"
 }

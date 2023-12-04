@@ -29,7 +29,7 @@ function VoucherAcquirementGenericVoucher() {
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  const canAcquire = (voucherAcquirement) => !voucherAcquirement?.quantity
+  const acquirementBlocked = (voucherAcquirement) => !voucherAcquirement?.quantity
   || voucherAcquirement?.quantity > VOUCHER_QUANTITY_THRESHOLD;
 
   const onVoucherAcquire = () => {
@@ -58,8 +58,8 @@ function VoucherAcquirementGenericVoucher() {
       <Grid xs={12}>
         <Grid container className={classes.paperHeaderTitle}>
           <Typography variant="h5">{formatMessage('workerVoucher.acquirement.method.GENERIC_VOUCHER')}</Typography>
-          <Tooltip title={canAcquire(voucherAcquirement)
-            ? formatMessage('workerVoucher.acquire.vouchers.required')
+          <Tooltip title={acquirementBlocked(voucherAcquirement)
+            ? formatMessage('workerVoucher.vouchers.required')
             : formatMessage('workerVoucher.acquire.vouchers')}
           >
             <span>
@@ -67,7 +67,7 @@ function VoucherAcquirementGenericVoucher() {
                 variant="outlined"
                 style={{ border: 0 }}
                 onClick={onVoucherAcquire}
-                disabled={canAcquire(voucherAcquirement)}
+                disabled={acquirementBlocked(voucherAcquirement)}
               >
                 <Typography variant="subtitle1">{formatMessage('workerVoucher.acquire.voucher')}</Typography>
               </Button>

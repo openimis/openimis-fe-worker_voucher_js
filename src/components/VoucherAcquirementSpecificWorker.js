@@ -29,7 +29,7 @@ function VoucherAcquirementSpecificWorker() {
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  const canAcquire = (voucherAcquirement) => !voucherAcquirement?.workers?.length
+  const acquirementBlocked = (voucherAcquirement) => !voucherAcquirement?.workers?.length
   || !voucherAcquirement?.dateRanges?.length;
 
   const onVoucherAcquire = () => {
@@ -58,8 +58,8 @@ function VoucherAcquirementSpecificWorker() {
       <Grid xs={12}>
         <Grid container className={classes.paperHeaderTitle}>
           <Typography variant="h5">{formatMessage('workerVoucher.acquirement.method.SPECIFIC_WORKER')}</Typography>
-          <Tooltip title={canAcquire(voucherAcquirement)
-            ? formatMessage('workerVoucher.acquire.vouchers.required')
+          <Tooltip title={acquirementBlocked(voucherAcquirement)
+            ? formatMessage('workerVoucher.vouchers.required')
             : formatMessage('workerVoucher.acquire.vouchers')}
           >
             <span>
@@ -67,7 +67,7 @@ function VoucherAcquirementSpecificWorker() {
                 variant="outlined"
                 style={{ border: 0 }}
                 onClick={onVoucherAcquire}
-                disabled={canAcquire(voucherAcquirement)}
+                disabled={acquirementBlocked(voucherAcquirement)}
               >
                 <Typography variant="subtitle1">{formatMessage('workerVoucher.acquire.voucher')}</Typography>
               </Button>
