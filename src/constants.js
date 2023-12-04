@@ -1,4 +1,5 @@
 export const VOUCHER_RIGHT_SEARCH = 204001;
+export const EMPLOYER_RIGHT_SEARCH = 204001;
 export const MODULE_NAME = 'workerVoucher';
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';

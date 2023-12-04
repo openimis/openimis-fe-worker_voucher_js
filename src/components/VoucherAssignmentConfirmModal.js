@@ -25,20 +25,20 @@ export const useStyles = makeStyles((theme) => ({
   item: theme.paper.item,
 }));
 
-function VoucherAcquirementPaymentModal({
+function VoucherAssignmentConfirmModal({
   openState,
   onClose,
   onConfirm,
   isLoading,
   error,
-  acquirementSummary,
+  assignmentSummary,
   readOnly = true,
 }) {
   const classes = useStyles();
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
-  const [acceptAcquirement, setAcceptAcquirement] = useState(false);
-  const acquireButtonDisabled = !acceptAcquirement || isLoading || error;
+  const [acceptAssignment, setAcceptAssignment] = useState(false);
+  const acquireButtonDisabled = !acceptAssignment || isLoading || error;
 
   const renderContent = () => {
     if (error) {
@@ -54,24 +54,8 @@ function VoucherAcquirementPaymentModal({
         <Grid xs={4} className={classes.item}>
           <NumberInput
             module="workerVoucher"
-            label="workerVoucher.acquire.pricePerVoucher"
-            value={acquirementSummary?.pricePerVoucher}
-            readOnly={readOnly}
-          />
-        </Grid>
-        <Grid xs={4} className={classes.item}>
-          <NumberInput
-            module="workerVoucher"
             label="workerVoucher.acquire.vouchersQuantity"
-            value={acquirementSummary?.qtyOfVouchers}
-            readOnly={readOnly}
-          />
-        </Grid>
-        <Grid xs={4} className={classes.item}>
-          <NumberInput
-            module="workerVoucher"
-            label="workerVoucher.acquire.toBePaid"
-            value={acquirementSummary?.amountToBePaid}
+            value={assignmentSummary?.vouchers}
             readOnly={readOnly}
           />
         </Grid>
@@ -80,11 +64,11 @@ function VoucherAcquirementPaymentModal({
           control={(
             <Checkbox
               color="primary"
-              checked={acceptAcquirement}
-              onChange={(e) => setAcceptAcquirement(e.target.checked)}
+              checked={acceptAssignment}
+              onChange={(e) => setAcceptAssignment(e.target.checked)}
             />
           )}
-          label={formatMessage('workerVoucher.acquire.confirmation')}
+          label={formatMessage('workerVoucher.assign.confirmation')}
         />
       </Grid>
     );
@@ -92,7 +76,7 @@ function VoucherAcquirementPaymentModal({
 
   return (
     <Dialog open={openState} onClose={onClose}>
-      <DialogTitle>{formatMessage('workerVoucher.VoucherAcquirementPaymentModal.title')}</DialogTitle>
+      <DialogTitle>{formatMessage('workerVoucher.VoucherAssignmentConfirmModal.title')}</DialogTitle>
       <Divider />
       <DialogContent>{renderContent()}</DialogContent>
       <Divider style={{ margin: '12px 0' }} />
@@ -101,26 +85,16 @@ function VoucherAcquirementPaymentModal({
           {formatMessage('workerVoucher.close')}
         </Button>
         {acquireButtonDisabled ? (
-          <Tooltip title={formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm.tooltip')}>
+          <Tooltip title={formatMessage('workerVoucher.VoucherAssignmentConfirmModal.confirm.tooltip')}>
             <span>
-              <Button
-                onClick={onConfirm}
-                autoFocus
-                className={classes.primaryButton}
-                disabled={acquireButtonDisabled}
-              >
-                {formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm')}
+              <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
+                {formatMessage('workerVoucher.VoucherAssignmentConfirmModal.confirm')}
               </Button>
             </span>
           </Tooltip>
         ) : (
-          <Button
-            onClick={onConfirm}
-            autoFocus
-            className={classes.primaryButton}
-            disabled={acquireButtonDisabled}
-          >
-            {formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm')}
+          <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
+            {formatMessage('workerVoucher.VoucherAssignmentConfirmModal.confirm')}
           </Button>
         )}
       </DialogActions>
@@ -128,4 +102,4 @@ function VoucherAcquirementPaymentModal({
   );
 }
 
-export default VoucherAcquirementPaymentModal;
+export default VoucherAssignmentConfirmModal;
