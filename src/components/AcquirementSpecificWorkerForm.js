@@ -19,7 +19,7 @@ function AcquirementSpecificWorkerForm({
             classes={classes}
             value={edited?.workers ?? []}
             onChange={(workers) => onEditedChange({ ...edited, workers })}
-            previousWorkers
+            previousWorkersCheckbox
           />
         </Grid>
       </Grid>
