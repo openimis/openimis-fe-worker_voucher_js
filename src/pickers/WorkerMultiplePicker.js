@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { Checkbox, FormControlLabel } from '@material-ui/core';
 
 import {
   useGraphqlQuery, useTranslations, Autocomplete, useModulesManager, parseData,
 } from '@openimis/fe-core';
-import { MODULE_NAME, WORKER_THRESHOLD } from '../constants';
+import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY, WORKER_THRESHOLD } from '../constants';
 
 function WorkerMultiplePicker({
   readOnly,
@@ -14,39 +14,48 @@ function WorkerMultiplePicker({
   required,
   multiple = true,
   filterSelectedOptions,
-  previousWorkers,
+  previousWorkersCheckbox,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [previousWorkersChecked, setPreviousWorkersChecked] = useState(false);
   const [searchString, setSearchString] = useState('');
+  const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
+  const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
 
-  // TODO: Add possibility to fetch only workers employer was working with - after BE implementation
-  const { isLoading, data: allWorkers, error } = useGraphqlQuery(
+  const {
+    isLoading,
+    data,
+    error,
+  } = useGraphqlQuery(
     `
-    {
-        insurees {
-          edges {
-            node {
-              id
-              uuid
-              chfId
-              lastName
-              otherNames
-              dob
-            }
-          }
+    query WorkerMultiplePicker($economicUnitCode: String!, $fetchPreviousWorkers: Boolean!) {
+      allInsurees: insurees @skip(if: $fetchPreviousWorkers) {
+        edges {
+          node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
         }
-    }      
+      }
+      previousInsurees: previousWorkers(economicUnitCode: $economicUnitCode) @include(if: $fetchPreviousWorkers) {
+        edges {
+          node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
+        }
+      }
+    }    
     `,
-    { },
-    { skip: previousWorkersChecked },
+    {
+      economicUnitCode: userEconomicUnit?.code || '',
+      fetchPreviousWorkers: previousWorkersChecked,
+    },
   );
 
-  const workers = parseData(allWorkers?.insurees);
+  const workers = useMemo(() => {
+    const currentWorkersData = previousWorkersChecked ? data?.previousInsurees : data?.allInsurees;
 
-  const filtersOptions = (options) => {
-    if (!searchString || searchString.length < WORKER_THRESHOLD) {
+    return parseData(currentWorkersData);
+  }, [previousWorkersChecked, data]);
+
+  const filterOptions = (options) => {
+    if (!searchString || (!previousWorkersChecked && searchString.length < WORKER_THRESHOLD)) {
       return [];
     }
 
@@ -67,16 +76,18 @@ function WorkerMultiplePicker({
         label={formatMessage('workerVoucher.workers')}
         readOnly={readOnly}
         placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
-        noOptionsText={searchString.length < WORKER_THRESHOLD
-          ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
-          : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')}
-        filterOptions={filtersOptions}
+        noOptionsText={
+          (!previousWorkersChecked && searchString.length < WORKER_THRESHOLD)
+            ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
+            : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')
+        }
+        filterOptions={filterOptions}
         getOptionLabel={({ chfId, lastName, otherNames }) => `${chfId} ${lastName} ${otherNames}`}
         filterSelectedOptions={filterSelectedOptions}
         onInputChange={() => {}}
         setCurrentString={setSearchString}
       />
-      {previousWorkers && (
+      {previousWorkersCheckbox && (
         <FormControlLabel
           control={(
             <Checkbox
@@ -88,10 +99,8 @@ function WorkerMultiplePicker({
                   setSearchString('');
                 }
               }}
-              // TODO: Enable when BE will be ready
-              disabled
             />
-        )}
+          )}
           label={formatMessage('workerVoucher.WorkerMultiplePicker.checkbox.label')}
         />
       )}

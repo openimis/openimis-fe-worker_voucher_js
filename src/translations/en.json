@@ -44,7 +44,7 @@
   "workerVoucher.vouchers.required": "You need to fill out all required fields to continue",
   "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
   "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters of National ID",
-  "workerVoucher.WorkerMultiplePicker.noOptions": "Worker not found",
+  "workerVoucher.WorkerMultiplePicker.noOptions": "No results",
   "workerVoucher.WorkerMultiplePicker.checkbox.label": "Show only workers I've previously worked with",
   "workerVoucher.WorkerDateRangePicker.startDate": "Start Date",
   "workerVoucher.WorkerDateRangePicker.endDate": "End Date",
