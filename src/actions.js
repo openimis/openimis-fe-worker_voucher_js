@@ -22,8 +22,8 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
 ];
 
 function formatGraphQLDateRanges(dateRanges) {
-  return `[${dateRanges.map((range) => `{ startDate: "${range.startDate}", endDate: "${range.endDate}" }`)
-    .join(', ')}]`;
+  const rangeStrings = dateRanges.map((range) => `{ startDate: "${range.startDate}", endDate: "${range.endDate}" }`);
+  return `[${rangeStrings.join(', ')}]`;
 }
 
 function formatGraphQLStringArray(inputArray) {
