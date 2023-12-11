@@ -28,6 +28,7 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 function VoucherAcquirementPaymentModal({
+  type,
   openState,
   onClose,
   onConfirm,
@@ -60,7 +61,7 @@ function VoucherAcquirementPaymentModal({
           <AmountInput
             module="workerVoucher"
             label="workerVoucher.acquire.pricePerVoucher"
-            value={acquirementSummary?.data?.acquireUnassignedValidation?.pricePerVoucher}
+            value={acquirementSummary?.data?.[type]?.pricePerVoucher}
             readOnly={readOnly}
           />
         </Grid>
@@ -68,7 +69,7 @@ function VoucherAcquirementPaymentModal({
           <NumberInput
             module="workerVoucher"
             label="workerVoucher.acquire.vouchersQuantity"
-            value={acquirementSummary?.data?.acquireUnassignedValidation?.count}
+            value={acquirementSummary?.data?.[type]?.count}
             readOnly={readOnly}
           />
         </Grid>
@@ -76,7 +77,7 @@ function VoucherAcquirementPaymentModal({
           <AmountInput
             module="workerVoucher"
             label="workerVoucher.acquire.toBePaid"
-            value={acquirementSummary?.data?.acquireUnassignedValidation?.price}
+            value={acquirementSummary?.data?.[type]?.price}
             readOnly={readOnly}
           />
         </Grid>

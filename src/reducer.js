@@ -18,6 +18,7 @@ import {
 export const ACTION_TYPE = {
   MUTATION: 'WORKER_VOUCHER_MUTATION',
   ACQUIRE_GENERIC_VOUCHER: 'WORKER_VOUCHER_ACQUIRE_GENERIC_VOUCHER',
+  ACQUIRE_SPECIFIC_VOUCHER: 'WORKER_VOUCHER_ACQUIRE_SPECIFIC_VOUCHER',
   SEARCH_WORKER_VOUCHERS: 'WORKER_VOUCHER_WORKER_VOUCHERS',
   GET_WORKER_VOUCHER: 'WORKER_VOUCHER_GET_WORKER_VOUCHER',
 };
@@ -110,6 +111,8 @@ function reducer(
       return dispatchMutationErr(state, action);
     case SUCCESS(ACTION_TYPE.ACQUIRE_GENERIC_VOUCHER):
       return dispatchMutationResp(state, 'acquireUnassignedVouchers', action);
+    case SUCCESS(ACTION_TYPE.ACQUIRE_SPECIFIC_VOUCHER):
+      return dispatchMutationResp(state, 'acquireAssignedVouchers', action);
     default:
       return state;
   }

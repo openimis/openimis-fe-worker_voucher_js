@@ -21,6 +21,16 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
+function formatGraphQLDateRanges(dateRanges) {
+  return `[${dateRanges.map((range) => `{ startDate: "${range.startDate}", endDate: "${range.endDate}" }`)
+    .join(', ')}]`;
+}
+
+function formatGraphQLStringArray(inputArray) {
+  const formattedArray = inputArray.map((item) => `"${item}"`).join(', ');
+  return `[${formattedArray}]`;
+}
+
 export function fetchWorkerVouchers(modulesManager, params) {
   const queryParams = [...params, 'isDeleted: false'];
   const payload = formatPageQueryWithCount('workerVoucher', queryParams, WORKER_VOUCHER_PROJECTION(modulesManager));
@@ -69,6 +79,51 @@ export function acquireGenericVoucher(phCode, quantity, clientMutationLabel) {
     [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.ACQUIRE_GENERIC_VOUCHER), ERROR(ACTION_TYPE.MUTATION)],
     {
       actionType: ACTION_TYPE.ACQUIRE_GENERIC_VOUCHER,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function specificVoucherValidation(phCode, workers, dateRanges) {
+  const workersNationalIDs = workers?.map((worker) => worker?.chfId) ?? [];
+
+  return graphqlWithVariables(
+    `
+    query specificVoucherValidation($phCode: ID!, $workers: [ID], $dateRanges: [DateRangeInclusiveInputType]) {
+      acquireAssignedValidation(
+        economicUnitCode: $phCode
+        workers: $workers
+        dateRanges: $dateRanges
+      ) {
+        count
+        price
+        pricePerVoucher
+      }
+    }
+    `,
+    { phCode, workers: workersNationalIDs, dateRanges },
+  );
+}
+
+export function acquireSpecificVoucher(phCode, workers, dateRanges, clientMutationLabel) {
+  const formattedDateRanges = formatGraphQLDateRanges(dateRanges ?? []);
+  const formattedWorkers = formatGraphQLStringArray(workers?.map((worker) => worker?.chfId) ?? []);
+
+  const mutationInput = `
+  ${phCode ? `economicUnitCode: "${phCode}"` : ''}
+  ${workers ? `workers: ${formattedWorkers}` : ''}
+  ${dateRanges ? `dateRanges: ${formattedDateRanges}` : ''}
+  `;
+  const mutation = formatMutation('acquireAssignedVouchers', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.ACQUIRE_SPECIFIC_VOUCHER), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.ACQUIRE_SPECIFIC_VOUCHER,
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,
       requestedDateTime,

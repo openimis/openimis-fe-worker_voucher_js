@@ -114,6 +114,7 @@ function VoucherAcquirementGenericVoucher() {
         onConfirm={onPaymentConfirmation}
         isLoading={acquirementSummaryLoading}
         acquirementSummary={acquirementSummary}
+        type="acquireUnassignedValidation"
       />
     </>
   );
