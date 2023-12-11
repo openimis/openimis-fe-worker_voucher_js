@@ -36,7 +36,7 @@
   "workerVoucher.assign.voucher": "ASSIGN VOUCHER",
   "workerVoucher.acquire.vouchersQuantity": "Quantity of Vouchers",
   "workerVoucher.acquire.pricePerVoucher": "Voucher Price",
-  "workerVoucher.acquire.toBePaid": "Acquirement Price",
+  "workerVoucher.acquire.toBePaid": "Total Price",
   "workerVoucher.acquire.vouchers": "Acquire Vouchers",
   "workerVoucher.assign.vouchers": "Assign Vouchers",
   "workerVoucher.acquire.confirmation": "I confirm the voucher acquirement, acknowledging that I have read and agree to the terms and policies.",
