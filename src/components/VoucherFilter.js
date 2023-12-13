@@ -66,7 +66,7 @@ function VoucherFilter({ filters, onChangeFilters, formatMessage }) {
             {
               id: 'status',
               status,
-              filter: `status: ${status}`,
+              filter: status ? `status: ${status}` : '',
             },
           ])}
         />
