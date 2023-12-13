@@ -26,8 +26,6 @@ function VoucherFilter({ filters, onChangeFilters, formatMessage }) {
   const filterValue = (filterName) => filters?.[filterName]?.value;
   const filterTextFieldValue = (filterName) => filters?.[filterName]?.value ?? EMPTY_STRING;
 
-  console.log(filters);
-
   const onChangeStringFilter = (filterName, lookup = null) => (value) => {
     if (lookup) {
       debouncedOnChangeFilters([
