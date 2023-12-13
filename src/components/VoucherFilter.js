@@ -65,8 +65,8 @@ function VoucherFilter({ filters, onChangeFilters, formatMessage }) {
           onChange={(status) => onChangeFilters([
             {
               id: 'status',
-              status,
-              filter: `status: ${status}`,
+              value: status,
+              filter: status ? `status: ${status}` : '',
             },
           ])}
         />
