@@ -55,6 +55,7 @@
   "workerVoucher.WorkerDateRangePicker.dateRanges": "Date Ranges: *",
   "workerVoucher.WorkerDateRangePicker.noRanges": "No date ranges registered",
   "workerVoucher.WorkerDateRangePicker.notAvailable": "NOT AVAILABLE",
+  "workerVoucher.unassigned": "UNASSIGNED",
   "workerVoucher.VoucherAcquirementPaymentModal.title": "Voucher Acquirement Summary",
   "workerVoucher.VoucherAssignmentConfirmModal.title": "Voucher Assignment Summary",
   "workerVoucher.VoucherAcquirementPaymentModal.confirm": "Acquire",

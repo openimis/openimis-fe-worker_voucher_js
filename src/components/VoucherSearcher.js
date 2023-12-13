@@ -66,7 +66,9 @@ function VoucherSearcher() {
   const itemFormatters = () => [
     (workerVoucher) => workerVoucher.code,
     (workerVoucher) => `${workerVoucher.policyholder.code} ${workerVoucher.policyholder.tradeName}`,
-    (workerVoucher) => `${workerVoucher.insuree.chfId} ${workerVoucher.insuree.lastName}`,
+    (workerVoucher) => (workerVoucher.insuree
+      ? `${workerVoucher.insuree?.chfId} ${workerVoucher.insuree?.lastName}`
+      : formatMessage('workerVoucher.unassigned')),
     (workerVoucher) => workerVoucher.status,
     (workerVoucher) => workerVoucher.assignedDate,
     (workerVoucher) => workerVoucher.expiryDate,
