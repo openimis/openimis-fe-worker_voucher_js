@@ -16,7 +16,9 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useTranslations, useModulesManager, NumberInput } from '@openimis/fe-core';
+import {
+  useTranslations, useModulesManager, NumberInput, AmountInput,
+} from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
 export const useStyles = makeStyles((theme) => ({
@@ -30,7 +32,6 @@ function VoucherAssignmentConfirmModal({
   onClose,
   onConfirm,
   isLoading,
-  error,
   assignmentSummary,
   readOnly = true,
 }) {
@@ -38,15 +39,19 @@ function VoucherAssignmentConfirmModal({
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [acceptAssignment, setAcceptAssignment] = useState(false);
-  const acquireButtonDisabled = !acceptAssignment || isLoading || error;
+  const acquireButtonDisabled = !acceptAssignment || isLoading || assignmentSummary?.errors;
 
   const renderContent = () => {
-    if (error) {
-      return <Typography color="error">{error}</Typography>;
-    }
-
     if (isLoading) {
       return <CircularProgress />;
+    }
+
+    if (assignmentSummary?.errors) {
+      return (
+        <Typography color="error">
+          {assignmentSummary?.errors?.map(({ message }, index) => `${index + 1}. ${message}.`)}
+        </Typography>
+      );
     }
 
     return (
@@ -54,9 +59,27 @@ function VoucherAssignmentConfirmModal({
         <Grid xs={4} className={classes.item}>
           <NumberInput
             module="workerVoucher"
-            label="workerVoucher.acquire.vouchersQuantity"
-            value={assignmentSummary?.vouchers}
+            label="workerVoucher.vouchersQuantity"
+            value={assignmentSummary?.data?.assignVouchersValidation?.count}
             readOnly={readOnly}
+          />
+        </Grid>
+        <Grid xs={4} className={classes.item}>
+          <AmountInput
+            module="workerVoucher"
+            label="workerVoucher.pricePerVoucher"
+            value={assignmentSummary?.data?.assignVouchersValidation?.pricePerVoucher}
+            readOnly={readOnly}
+            displayZero
+          />
+        </Grid>
+        <Grid xs={4} className={classes.item}>
+          <AmountInput
+            module="workerVoucher"
+            label="workerVoucher.toBePaid"
+            value={assignmentSummary?.data?.assignVouchersValidation?.price}
+            readOnly={readOnly}
+            displayZero
           />
         </Grid>
         <FormControlLabel

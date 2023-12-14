@@ -130,3 +130,48 @@ export function acquireSpecificVoucher(phCode, workers, dateRanges, clientMutati
     },
   );
 }
+
+export function voucherAssignmentValidation(phCode, workers, dateRanges) {
+  const workersNationalIDs = workers?.map((worker) => worker?.chfId) ?? [];
+
+  return graphqlWithVariables(
+    `
+    query voucherAssignmentValidation($phCode: ID!, $workers: [ID], $dateRanges: [DateRangeInclusiveInputType]) {
+      assignVouchersValidation(
+        economicUnitCode: $phCode
+        workers: $workers
+        dateRanges: $dateRanges
+      ) {
+        count
+        price
+        pricePerVoucher
+      }
+    }
+    `,
+    { phCode, workers: workersNationalIDs, dateRanges },
+  );
+}
+
+export function assignVouchers(phCode, workers, dateRanges, clientMutationLabel) {
+  const formattedDateRanges = formatGraphQLDateRanges(dateRanges ?? []);
+  const formattedWorkers = formatGraphQLStringArray(workers?.map((worker) => worker?.chfId) ?? []);
+
+  const mutationInput = `
+  ${phCode ? `economicUnitCode: "${phCode}"` : ''}
+  ${workers ? `workers: ${formattedWorkers}` : ''}
+  ${dateRanges ? `dateRanges: ${formattedDateRanges}` : ''}
+  `;
+  const mutation = formatMutation('assignVouchers', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.ASSIGN_VOUCHERS), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.ASSIGN_VOUCHERS,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}

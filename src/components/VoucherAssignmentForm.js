@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Divider, Grid, Paper, Typography, Button, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useModulesManager, useTranslations } from '@openimis/fe-core';
+import { useModulesManager, useTranslations, journalize } from '@openimis/fe-core';
+import { assignVouchers, voucherAssignmentValidation } from '../actions';
 import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AssignmentVoucherForm from './AssignmentVoucherForm';
 import VoucherAssignmentConfirmModal from './VoucherAssignmentConfirmModal';
@@ -23,25 +25,61 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 function VoucherAssignmentForm() {
+  const prevSubmittingMutationRef = useRef();
   const modulesManager = useModulesManager();
+  const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAssignment, setVoucherAssignment] = useState({});
+  const [assignmentSummary, setAssignmentSummary] = useState({});
+  const [assignmentSummaryLoading, setAssignmentSummaryLoading] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
 
   const assignmentBlocked = (voucherAssignment) => !voucherAssignment?.workers?.length
   || !voucherAssignment?.dateRanges?.length;
 
-  const onVoucherAssign = () => {
+  const onVoucherAssign = async () => {
     setIsConfirmationModalOpen((prevState) => !prevState);
-    // TODO: Fetch info about assignment (assignmentSummary)
+    setAssignmentSummaryLoading(true);
+    try {
+      const { payload } = await dispatch(voucherAssignmentValidation(
+        voucherAssignment?.employer?.code,
+        voucherAssignment?.workers,
+        voucherAssignment?.dateRanges,
+      ));
+      setAssignmentSummary(payload);
+    } catch (error) {
+      throw new Error(`[VOUCHER_ASSIGNMENT]: Validation error. ${error}`);
+    } finally {
+      setAssignmentSummaryLoading(false);
+    }
   };
 
-  const onAssignmentConfirmation = () => {
-    // TODO: After summary fetch, assign vouchers to the Workers.
+  const onAssignmentConfirmation = async () => {
+    try {
+      await dispatch(assignVouchers(
+        voucherAssignment?.employer?.code,
+        voucherAssignment?.workers,
+        voucherAssignment?.dateRanges,
+        'Assign Vouchers',
+      ));
+    } catch (error) {
+      throw new Error(`[ASSIGN_VOUCHERS]: Assignment error. ${error}`);
+    }
+
     setIsConfirmationModalOpen((prevState) => !prevState);
-    console.log('Assign Vouchers to the Workers');
   };
+
+  useEffect(() => {
+    if (prevSubmittingMutationRef.current && !submittingMutation) {
+      dispatch(journalize(mutation));
+    }
+  }, [submittingMutation]);
+
+  useEffect(() => {
+    prevSubmittingMutationRef.current = submittingMutation;
+  });
 
   useEffect(() => {
     const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
@@ -91,12 +129,8 @@ function VoucherAssignmentForm() {
             openState={isConfirmationModalOpen}
             onClose={() => setIsConfirmationModalOpen((prevState) => !prevState)}
             onConfirm={onAssignmentConfirmation}
-            // TODO: Change after BE implementation
-            isLoading={false}
-            error={false}
-            assignmentSummary={{
-              vouchers: 100,
-            }}
+            isLoading={assignmentSummaryLoading}
+            assignmentSummary={assignmentSummary}
           />
         </Paper>
       </Grid>

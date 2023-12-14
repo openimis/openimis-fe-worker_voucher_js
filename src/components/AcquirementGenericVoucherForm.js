@@ -14,7 +14,7 @@ function AcquirementGenericVoucherForm({
         <Grid item xs={3} className={classes.item}>
           <NumberInput
             module="workerVoucher"
-            label="workerVoucher.acquire.vouchersQuantity"
+            label="workerVoucher.vouchersQuantity"
             value={edited?.quantity}
             onChange={(quantity) => onEditedChange({ ...edited, quantity })}
             required

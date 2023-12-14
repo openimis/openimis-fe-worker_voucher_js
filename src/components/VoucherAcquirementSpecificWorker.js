@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Divider, Grid, Typography, Button, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useModulesManager, useTranslations } from '@openimis/fe-core';
+import { useModulesManager, useTranslations, journalize } from '@openimis/fe-core';
+import { specificVoucherValidation, acquireSpecificVoucher } from '../actions';
 import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AcquirementSpecificWorkerForm from './AcquirementSpecificWorkerForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
-import { specificVoucherValidation, acquireSpecificVoucher } from '../actions';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -25,6 +25,7 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 function VoucherAcquirementSpecificWorker() {
+  const prevSubmittingMutationRef = useRef();
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -33,6 +34,7 @@ function VoucherAcquirementSpecificWorker() {
   const [acquirementSummary, setAcquirementSummary] = useState({});
   const [acquirementSummaryLoading, setAcquirementSummaryLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
 
   const acquirementBlocked = (voucherAcquirement) => !voucherAcquirement?.workers?.length
   || !voucherAcquirement?.dateRanges?.length;
@@ -68,8 +70,17 @@ function VoucherAcquirementSpecificWorker() {
 
     // TODO: After summary fetch, redirect to the MPay.
     setIsPaymentModalOpen((prevState) => !prevState);
-    console.log('Redirect to the MPay...');
   };
+
+  useEffect(() => {
+    if (prevSubmittingMutationRef.current && !submittingMutation) {
+      dispatch(journalize(mutation));
+    }
+  }, [submittingMutation]);
+
+  useEffect(() => {
+    prevSubmittingMutationRef.current = submittingMutation;
+  });
 
   useEffect(() => {
     const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
