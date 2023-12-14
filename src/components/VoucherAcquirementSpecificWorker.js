@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import {
   Divider, Grid, Typography, Button, Tooltip,
@@ -9,6 +10,7 @@ import { useModulesManager, useTranslations } from '@openimis/fe-core';
 import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AcquirementSpecificWorkerForm from './AcquirementSpecificWorkerForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
+import { specificVoucherValidation, acquireSpecificVoucher } from '../actions';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -24,20 +26,46 @@ export const useStyles = makeStyles((theme) => ({
 
 function VoucherAcquirementSpecificWorker() {
   const modulesManager = useModulesManager();
+  const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
+  const [acquirementSummary, setAcquirementSummary] = useState({});
+  const [acquirementSummaryLoading, setAcquirementSummaryLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const acquirementBlocked = (voucherAcquirement) => !voucherAcquirement?.workers?.length
   || !voucherAcquirement?.dateRanges?.length;
 
-  const onVoucherAcquire = () => {
+  const onVoucherAcquire = async () => {
     setIsPaymentModalOpen((prevState) => !prevState);
-    // TODO: Fetch info about payment (acquirementSummary)
+    setAcquirementSummaryLoading(true);
+    try {
+      const { payload } = await dispatch(specificVoucherValidation(
+        voucherAcquirement?.employer?.code,
+        voucherAcquirement?.workers,
+        voucherAcquirement?.dateRanges,
+      ));
+      setAcquirementSummary(payload);
+    } catch (error) {
+      throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Validation error. ${error}`);
+    } finally {
+      setAcquirementSummaryLoading(false);
+    }
   };
 
-  const onPaymentConfirmation = () => {
+  const onPaymentConfirmation = async () => {
+    try {
+      await dispatch(acquireSpecificVoucher(
+        voucherAcquirement?.employer?.code,
+        voucherAcquirement?.workers,
+        voucherAcquirement?.dateRanges,
+        'Acquire Specific Voucher',
+      ));
+    } catch (error) {
+      throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Acquirement error. ${error}`);
+    }
+
     // TODO: After summary fetch, redirect to the MPay.
     setIsPaymentModalOpen((prevState) => !prevState);
     console.log('Redirect to the MPay...');
@@ -86,14 +114,9 @@ function VoucherAcquirementSpecificWorker() {
         openState={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen((prevState) => !prevState)}
         onConfirm={onPaymentConfirmation}
-        // TODO: Change after BE implementation
-        isLoading={false}
-        error={false}
-        acquirementSummary={{
-          pricePerVoucher: 50,
-          qtyOfVouchers: 50,
-          amountToBePaid: 2500,
-        }}
+        isLoading={acquirementSummaryLoading}
+        acquirementSummary={acquirementSummary}
+        type="acquireAssignedValidation"
       />
     </>
   );

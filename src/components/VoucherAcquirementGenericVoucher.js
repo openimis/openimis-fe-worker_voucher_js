@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import {
   Divider, Grid, Typography, Button, Tooltip,
@@ -9,6 +10,7 @@ import { useModulesManager, useTranslations } from '@openimis/fe-core';
 import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY, VOUCHER_QUANTITY_THRESHOLD } from '../constants';
 import AcquirementGenericVoucherForm from './AcquirementGenericVoucherForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
+import { acquireGenericVoucher, genericVoucherValidation } from '../actions';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -24,21 +26,45 @@ export const useStyles = makeStyles((theme) => ({
 
 function VoucherAcquirementGenericVoucher() {
   const modulesManager = useModulesManager();
+  const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
+  const [acquirementSummary, setAcquirementSummary] = useState({});
+  const [acquirementSummaryLoading, setAcquirementSummaryLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const acquirementBlocked = (voucherAcquirement) => !voucherAcquirement?.quantity
   || voucherAcquirement?.quantity > VOUCHER_QUANTITY_THRESHOLD;
 
-  const onVoucherAcquire = () => {
+  const onVoucherAcquire = async () => {
     setIsPaymentModalOpen((prevState) => !prevState);
-    // TODO: Fetch info about payment
+    setAcquirementSummaryLoading(true);
+    try {
+      const { payload } = await dispatch(genericVoucherValidation(
+        voucherAcquirement?.employer?.code,
+        voucherAcquirement?.quantity,
+      ));
+      setAcquirementSummary(payload);
+    } catch (error) {
+      throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Validation error. ${error}`);
+    } finally {
+      setAcquirementSummaryLoading(false);
+    }
   };
 
-  const onPaymentConfirmation = () => {
-    // TODO: After summary fetch, redirect to the MPay.
+  const onPaymentConfirmation = async () => {
+    try {
+      await dispatch(acquireGenericVoucher(
+        voucherAcquirement?.employer?.code,
+        voucherAcquirement?.quantity,
+        'Acquire Generic Voucher',
+      ));
+    } catch (error) {
+      throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Acquirement error. ${error}`);
+    }
+
+    // TODO: Redirect to the MPay.
     setIsPaymentModalOpen((prevState) => !prevState);
     console.log('Redirect to the MPay...');
   };
@@ -86,14 +112,9 @@ function VoucherAcquirementGenericVoucher() {
         openState={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen((prevState) => !prevState)}
         onConfirm={onPaymentConfirmation}
-        // TODO: Change after BE implementation
-        isLoading={false}
-        error={false}
-        acquirementSummary={{
-          pricePerVoucher: 50,
-          qtyOfVouchers: 50,
-          amountToBePaid: 2500,
-        }}
+        isLoading={acquirementSummaryLoading}
+        acquirementSummary={acquirementSummary}
+        type="acquireUnassignedValidation"
       />
     </>
   );

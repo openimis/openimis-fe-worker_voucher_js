@@ -16,7 +16,9 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useTranslations, useModulesManager, NumberInput } from '@openimis/fe-core';
+import {
+  useTranslations, useModulesManager, NumberInput, AmountInput,
+} from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
 export const useStyles = makeStyles((theme) => ({
@@ -26,11 +28,11 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 function VoucherAcquirementPaymentModal({
+  type,
   openState,
   onClose,
   onConfirm,
   isLoading,
-  error,
   acquirementSummary,
   readOnly = true,
 }) {
@@ -38,24 +40,28 @@ function VoucherAcquirementPaymentModal({
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [acceptAcquirement, setAcceptAcquirement] = useState(false);
-  const acquireButtonDisabled = !acceptAcquirement || isLoading || error;
+  const acquireButtonDisabled = !acceptAcquirement || isLoading || acquirementSummary?.errors;
 
   const renderContent = () => {
-    if (error) {
-      return <Typography color="error">{error}</Typography>;
-    }
-
     if (isLoading) {
       return <CircularProgress />;
+    }
+
+    if (acquirementSummary?.errors) {
+      return (
+        <Typography color="error">
+          {acquirementSummary?.errors?.map(({ message }, index) => `${index + 1}. ${message}.`)}
+        </Typography>
+      );
     }
 
     return (
       <Grid container>
         <Grid xs={4} className={classes.item}>
-          <NumberInput
+          <AmountInput
             module="workerVoucher"
             label="workerVoucher.acquire.pricePerVoucher"
-            value={acquirementSummary?.pricePerVoucher}
+            value={acquirementSummary?.data?.[type]?.pricePerVoucher}
             readOnly={readOnly}
           />
         </Grid>
@@ -63,15 +69,15 @@ function VoucherAcquirementPaymentModal({
           <NumberInput
             module="workerVoucher"
             label="workerVoucher.acquire.vouchersQuantity"
-            value={acquirementSummary?.qtyOfVouchers}
+            value={acquirementSummary?.data?.[type]?.count}
             readOnly={readOnly}
           />
         </Grid>
         <Grid xs={4} className={classes.item}>
-          <NumberInput
+          <AmountInput
             module="workerVoucher"
             label="workerVoucher.acquire.toBePaid"
-            value={acquirementSummary?.amountToBePaid}
+            value={acquirementSummary?.data?.[type]?.price}
             readOnly={readOnly}
           />
         </Grid>
@@ -103,23 +109,13 @@ function VoucherAcquirementPaymentModal({
         {acquireButtonDisabled ? (
           <Tooltip title={formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm.tooltip')}>
             <span>
-              <Button
-                onClick={onConfirm}
-                autoFocus
-                className={classes.primaryButton}
-                disabled={acquireButtonDisabled}
-              >
+              <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
                 {formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm')}
               </Button>
             </span>
           </Tooltip>
         ) : (
-          <Button
-            onClick={onConfirm}
-            autoFocus
-            className={classes.primaryButton}
-            disabled={acquireButtonDisabled}
-          >
+          <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
             {formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm')}
           </Button>
         )}

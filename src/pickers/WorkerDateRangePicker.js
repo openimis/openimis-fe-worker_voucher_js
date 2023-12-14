@@ -37,7 +37,7 @@ function WorkerDateRangePicker({
   };
 
   const addDateRange = () => {
-    const newRange = { start: startDate, end: endDate };
+    const newRange = { startDate, endDate };
     onChange([...value, newRange]);
     setStartDate(null);
     setEndDate(null);
@@ -119,7 +119,7 @@ function WorkerDateRangePicker({
                   </ListItemAvatar>
                   <ListItemText
                     primary={formatMessage('workerVoucher.WorkerDateRangePicker.dateRange')}
-                    secondary={`${range.start} | ${range.end}`}
+                    secondary={`${range.startDate} | ${range.endDate}`}
                   />
                   <ListItemSecondaryAction>
                     <Tooltip title={formatMessage('workerVoucher.WorkerDateRangePicker.deleteRange')}>
