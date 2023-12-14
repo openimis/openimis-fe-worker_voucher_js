@@ -17,7 +17,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useTranslations, useModulesManager, NumberInput, AmountInput,
+  useTranslations, useModulesManager, AmountInput,
 } from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
@@ -60,15 +60,7 @@ function VoucherAcquirementPaymentModal({
         <Grid xs={4} className={classes.item}>
           <AmountInput
             module="workerVoucher"
-            label="workerVoucher.acquire.pricePerVoucher"
-            value={acquirementSummary?.data?.[type]?.pricePerVoucher}
-            readOnly={readOnly}
-          />
-        </Grid>
-        <Grid xs={4} className={classes.item}>
-          <NumberInput
-            module="workerVoucher"
-            label="workerVoucher.acquire.vouchersQuantity"
+            label="workerVoucher.vouchersQuantity"
             value={acquirementSummary?.data?.[type]?.count}
             readOnly={readOnly}
           />
@@ -76,9 +68,19 @@ function VoucherAcquirementPaymentModal({
         <Grid xs={4} className={classes.item}>
           <AmountInput
             module="workerVoucher"
-            label="workerVoucher.acquire.toBePaid"
+            label="workerVoucher.pricePerVoucher"
+            value={acquirementSummary?.data?.[type]?.pricePerVoucher}
+            readOnly={readOnly}
+            displayZero
+          />
+        </Grid>
+        <Grid xs={4} className={classes.item}>
+          <AmountInput
+            module="workerVoucher"
+            label="workerVoucher.toBePaid"
             value={acquirementSummary?.data?.[type]?.price}
             readOnly={readOnly}
+            displayZero
           />
         </Grid>
         <FormControlLabel
