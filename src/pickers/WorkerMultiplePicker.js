@@ -55,7 +55,7 @@ function WorkerMultiplePicker({
   }, [previousWorkersChecked, data]);
 
   const filterOptions = (options) => {
-    if (!searchString || (!previousWorkersChecked && searchString.length < WORKER_THRESHOLD)) {
+    if (!searchString && (!previousWorkersChecked && searchString.length < WORKER_THRESHOLD)) {
       return [];
     }
 
