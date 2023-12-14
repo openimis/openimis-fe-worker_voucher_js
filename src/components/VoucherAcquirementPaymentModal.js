@@ -17,7 +17,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useTranslations, useModulesManager, NumberInput, AmountInput,
+  useTranslations, useModulesManager, AmountInput,
 } from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
@@ -58,7 +58,7 @@ function VoucherAcquirementPaymentModal({
     return (
       <Grid container>
         <Grid xs={4} className={classes.item}>
-          <NumberInput
+          <AmountInput
             module="workerVoucher"
             label="workerVoucher.vouchersQuantity"
             value={acquirementSummary?.data?.[type]?.count}
