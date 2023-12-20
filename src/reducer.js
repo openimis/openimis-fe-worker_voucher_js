@@ -22,6 +22,8 @@ export const ACTION_TYPE = {
   ASSIGN_VOUCHERS: 'WORKER_VOUCHER_ASSIGN_VOUCHERS',
   SEARCH_WORKER_VOUCHERS: 'WORKER_VOUCHER_WORKER_VOUCHERS',
   GET_WORKER_VOUCHER: 'WORKER_VOUCHER_GET_WORKER_VOUCHER',
+  SEARCH_VOUCHER_PRICES: 'WORKER_VOUCHER_VOUCHER_PRICES',
+  MANAGE_VOUCHER_PRICE: 'WORKER_VOUCHER_MANAGE_VOUCHER_PRICE',
 };
 
 const STORE_STATE = {
@@ -37,6 +39,12 @@ const STORE_STATE = {
   fetchedWorkerVoucher: false,
   workerVoucher: {},
   errorWorkerVoucher: null,
+  fetchingVoucherPrices: false,
+  fetchedVoucherPrices: false,
+  errorVoucherPrices: null,
+  voucherPrices: [],
+  voucherPricesPageInfo: {},
+  voucherPricesTotalCount: 0,
 };
 
 function reducer(
@@ -106,6 +114,42 @@ function reducer(
         workerVoucher: {},
         errorWorkerVoucher: null,
       };
+    case REQUEST(ACTION_TYPE.SEARCH_VOUCHER_PRICES):
+      return {
+        ...state,
+        fetchingVoucherPrices: true,
+        fetchedVoucherPrices: false,
+        errorVoucherPrices: null,
+        voucherPrices: [],
+        voucherPricesPageInfo: {},
+        voucherPricesTotalCount: 0,
+      };
+    case SUCCESS(ACTION_TYPE.SEARCH_VOUCHER_PRICES):
+      return {
+        ...state,
+        fetchingVoucherPrices: false,
+        fetchedVoucherPrices: true,
+        errorVoucherPrices: formatGraphQLError(action.payload),
+        voucherPrices: parseData(action.payload.data.voucherPrices),
+        voucherPricesPageInfo: pageInfo(action.payload.data.voucherPrices),
+        voucherPricesTotalCount: action.payload.data.voucherPrices?.totalCount ?? 0,
+      };
+    case ERROR(ACTION_TYPE.SEARCH_VOUCHER_PRICES):
+      return {
+        ...state,
+        fetchingVoucherPrices: false,
+        errorVoucherPrices: formatServerError(action.payload),
+      };
+    case CLEAR(ACTION_TYPE.SEARCH_VOUCHER_PRICES):
+      return {
+        ...state,
+        fetchingVoucherPrices: false,
+        fetchedVoucherPrices: false,
+        errorVoucherPrices: null,
+        voucherPrices: [],
+        voucherPricesPageInfo: {},
+        voucherPricesTotalCount: 0,
+      };
     case REQUEST(ACTION_TYPE.MUTATION):
       return dispatchMutationReq(state, action);
     case ERROR(ACTION_TYPE.MUTATION):
@@ -116,6 +160,8 @@ function reducer(
       return dispatchMutationResp(state, 'acquireAssignedVouchers', action);
     case SUCCESS(ACTION_TYPE.ASSIGN_VOUCHERS):
       return dispatchMutationResp(state, 'assignVouchers', action);
+    case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
+      return dispatchMutationResp(state, 'manageVoucherPrice', action);
     default:
       return state;
   }

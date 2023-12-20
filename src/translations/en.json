@@ -2,6 +2,7 @@
   "workerVoucher.menu.voucherList": "Voucher List",
   "workerVoucher.menu.voucherAcquirement": "Voucher Acquirement",
   "workerVoucher.menu.voucherAssignment": "Voucher Assignment",
+  "workerVoucher.menu.priceManagement": "Voucher Price Management",
   "workerVoucher.searcherResultsTitle": "{workerVouchersTotalCount} Vouchers Found",
   "workerVoucher.code": "Code",
   "workerVoucher.employer": "Employer",
@@ -37,6 +38,11 @@
   "workerVoucher.vouchersQuantity": "Quantity of Vouchers",
   "workerVoucher.pricePerVoucher": "Voucher Price",
   "workerVoucher.toBePaid": "Total Cost",
+  "workerVoucher.priceManagement": "Confirm Voucher Price",
+  "workerVoucher.priceManagement.subtitle": "Please fill out the price and validity range to confirm the voucher's price.",
+  "workerVoucher.priceManagement.tip": "Enter a date to view the voucher price valid on that day.",
+  "workerVoucher.validFrom": "Valid From",
+  "workerVoucher.validTo": "Valid To",
   "workerVoucher.acquire.vouchers": "Acquire Vouchers",
   "workerVoucher.assign.vouchers": "Assign Vouchers",
   "workerVoucher.acquire.confirmation": "I confirm the voucher acquirement, acknowledging that I have read and agree to the terms and policies.",
@@ -62,5 +68,8 @@
   "workerVoucher.VoucherAssignmentConfirmModal.confirm": "Assign",
   "workerVoucher.VoucherAcquirementPaymentModal.confirm.tooltip": "Please ensure that there are no errors and that you have checked the acquirement confirmation",
   "workerVoucher.VoucherAssignmentConfirmModal.confirm.tooltip": "Please ensure that there are no errors and that you have checked the assignment confirmation",
-  "workerVoucher.close": "Cancel"
+  "workerVoucher.close": "Cancel",
+  "workerVoucher.searcher.title": "{count} Voucher Prices",
+  "workerVoucher.searcher.price": "Price",
+  "workerVoucher.filter.date": "Date"
 }

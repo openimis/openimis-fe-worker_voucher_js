@@ -1,8 +1,5 @@
 import {
-  formatPageQueryWithCount,
-  graphql,
-  formatMutation,
-  graphqlWithVariables,
+  formatPageQueryWithCount, graphql, formatMutation, graphqlWithVariables,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
@@ -175,3 +172,16 @@ export function assignVouchers(phCode, workers, dateRanges, clientMutationLabel)
     },
   );
 }
+
+// export function manageVoucherPrice() {}
+
+// export function fetchVoucherPrices(modulesManager, params) {
+// const payload = formatPageQueryWithCount('workerVoucher', params, WORKER_VOUCHER_PROJECTION(modulesManager));
+// return graphql(payload, ACTION_TYPE.SEARCH_VOUCHER_PRICES);
+// }
+
+// export const clearVoucherPrices = () => (dispatch) => {
+//   dispatch({
+//     type: CLEAR(ACTION_TYPE.SEARCH_VOUCHER_PRICES),
+//   });
+// };
