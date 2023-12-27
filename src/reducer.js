@@ -161,7 +161,7 @@ function reducer(
     case SUCCESS(ACTION_TYPE.ASSIGN_VOUCHERS):
       return dispatchMutationResp(state, 'assignVouchers', action);
     case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
-      return dispatchMutationResp(state, 'manageVoucherPrice', action);
+      return dispatchMutationResp(state, 'createBusinessConfig', action);
     default:
       return state;
   }

@@ -71,5 +71,7 @@
   "workerVoucher.close": "Cancel",
   "workerVoucher.searcher.title": "{count} Voucher Prices",
   "workerVoucher.searcher.price": "Price",
-  "workerVoucher.filter.date": "Date"
+  "workerVoucher.filter.date": "Date",
+  "business_config.validation.date_range_overlap": "Unable to create the voucher price for the specified period. There is an existing voucher price defined within the selected date range.",
+  "workerVoucher.priceManagement.success": "The voucher price has been successfully set at {price}$ for the period from {dateFrom} to {dateTo}."
 }

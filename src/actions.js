@@ -173,15 +173,43 @@ export function assignVouchers(phCode, workers, dateRanges, clientMutationLabel)
   );
 }
 
-// export function manageVoucherPrice() {}
+export function manageVoucherPrice(key, value, dateValidFrom, dateValidTo, clientMutationLabel) {
+  const mutationInput = `
+  ${key ? `key: "${key}"` : ''}
+  ${value ? `value: "${value}"` : ''}
+  ${dateValidFrom ? `dateValidFrom: "${dateValidFrom}"` : ''}
+  ${dateValidTo ? `dateValidTo: "${dateValidTo}"` : ''}
+  `;
+  const mutation = formatMutation('createBusinessConfig', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
 
-// export function fetchVoucherPrices(modulesManager, params) {
-// const payload = formatPageQueryWithCount('workerVoucher', params, WORKER_VOUCHER_PROJECTION(modulesManager));
-// return graphql(payload, ACTION_TYPE.SEARCH_VOUCHER_PRICES);
-// }
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.MANAGE_VOUCHER_PRICE,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
 
-// export const clearVoucherPrices = () => (dispatch) => {
-//   dispatch({
-//     type: CLEAR(ACTION_TYPE.SEARCH_VOUCHER_PRICES),
-//   });
-// };
+export function fetchMutation(clientMutationId) {
+  return graphqlWithVariables(
+    `
+    query fetchMutation($clientMutationId: String!) {
+      mutationLogs(clientMutationId: $clientMutationId) {
+        edges {
+          node {
+            id
+            status
+            error
+          }
+        }
+      }
+    }
+    `,
+    { clientMutationId },
+  );
+}

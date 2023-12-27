@@ -7,12 +7,12 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useModulesManager, useTranslations, journalize,
-  // coreAlert,
+  useModulesManager, useTranslations, journalize, parseData, coreAlert,
 } from '@openimis/fe-core';
-import { MODULE_NAME } from '../constants';
 import PriceManagementForm from './PriceManagementForm';
 import VoucherPriceSearcher from './VoucherPriceSearcher';
+import { fetchMutation, manageVoucherPrice } from '../actions';
+import { MODULE_NAME, VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY } from '../constants';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -31,12 +31,15 @@ function VoucherPriceManagementForm() {
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const [priceManagement, setPriceManagement] = useState({});
+  const [priceManagementLoading, setPriceManagementLoading] = useState(false);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
 
   const priceManagementBlocked = (priceManagement) => !priceManagement?.price
-  || !priceManagement?.validFrom || !priceManagement?.validTo;
+  || !priceManagement?.validFrom
+  || !priceManagement?.validTo
+  || priceManagementLoading;
 
   const fetchVoucherPrices = async (params) => {
     try {
@@ -48,12 +51,45 @@ function VoucherPriceManagementForm() {
   };
 
   const onPriceManagementChange = async () => {
+    setPriceManagementLoading(true);
     try {
-      // TODO: alert if error
-      // < ----- >
-      await fetchVoucherPrices();
+      const { payload } = await dispatch(
+        manageVoucherPrice(
+          VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY,
+          priceManagement?.price,
+          priceManagement?.validFrom,
+          priceManagement?.validTo,
+          'Manage Voucher Price',
+        ),
+      );
+
+      const { clientMutationId } = payload.data.createBusinessConfig;
+      const mutationResponse = await dispatch(fetchMutation(clientMutationId));
+      const currentMutation = parseData(mutationResponse.payload.data.mutationLogs)?.[0];
+
+      if (currentMutation.error) {
+        const errorDetails = JSON.parse(currentMutation.error);
+
+        dispatch(coreAlert(
+          formatMessage('workerVoucher.menu.priceManagement'),
+          formatMessage(errorDetails?.detail || 'NOT_FOUND'),
+        ));
+        return;
+      }
+
+      dispatch(coreAlert(
+        formatMessage('workerVoucher.menu.priceManagement'),
+        formatMessageWithValues('workerVoucher.priceManagement.success', {
+          price: priceManagement.price,
+          dateFrom: priceManagement.validFrom,
+          dateTo: priceManagement.validTo,
+        }),
+      ));
+      setPriceManagement({});
     } catch (error) {
       throw new Error(`[VOUCHER_PRICE_MANAGEMENT]: Price change failed. ${error}`);
+    } finally {
+      setPriceManagementLoading(false);
     }
   };
 

@@ -33,7 +33,7 @@ function PriceManagementForm({
               // NOTE: maxDate cannot be passed if endDate does not exist.
               // Passing any other falsy value will block months manipulation.
               // eslint-disable-next-line react/jsx-props-no-spreading
-            {...(edited?.endDate ? { maxDate: edited.endDate } : null)}
+            {...(edited?.validTo ? { maxDate: edited.validTo } : null)}
           />
         </Grid>
         <Grid xs={3} className={classes.item}>
@@ -48,7 +48,7 @@ function PriceManagementForm({
               // NOTE: minDate cannot be passed if startDate does not exist.
               // Passing any other falsy value will block months manipulation.
               // eslint-disable-next-line react/jsx-props-no-spreading
-            {...(edited?.startDate ? { minDate: edited.startDate } : null)}
+            {...(edited?.validFrom ? { minDate: edited.validFrom } : null)}
           />
         </Grid>
       </Grid>
