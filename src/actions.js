@@ -1,8 +1,5 @@
 import {
-  formatPageQueryWithCount,
-  graphql,
-  formatMutation,
-  graphqlWithVariables,
+  formatPageQueryWithCount, graphql, formatMutation, graphqlWithVariables,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
@@ -173,5 +170,46 @@ export function assignVouchers(phCode, workers, dateRanges, clientMutationLabel)
       clientMutationLabel,
       requestedDateTime,
     },
+  );
+}
+
+export function manageVoucherPrice(key, value, dateValidFrom, dateValidTo, clientMutationLabel) {
+  const mutationInput = `
+  ${key ? `key: "${key}"` : ''}
+  ${value ? `value: "${value}"` : ''}
+  ${dateValidFrom ? `dateValidFrom: "${dateValidFrom}"` : ''}
+  ${dateValidTo ? `dateValidTo: "${dateValidTo}"` : ''}
+  `;
+  const mutation = formatMutation('createBusinessConfig', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.MANAGE_VOUCHER_PRICE,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function fetchMutation(clientMutationId) {
+  return graphqlWithVariables(
+    `
+    query fetchMutation($clientMutationId: String!) {
+      mutationLogs(clientMutationId: $clientMutationId) {
+        edges {
+          node {
+            id
+            status
+            error
+          }
+        }
+      }
+    }
+    `,
+    { clientMutationId },
   );
 }

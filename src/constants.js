@@ -1,17 +1,21 @@
 export const VOUCHER_RIGHT_SEARCH = 204001;
 export const EMPLOYER_RIGHT_SEARCH = 204001;
+export const VOUCHER_PRICE_MANAGEMENT_RIGHT = 204001;
 export const MODULE_NAME = 'workerVoucher';
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 
 export const DEFAULT_DEBOUNCE_TIME = 800;
 export const DEFAULT_PAGE_SIZE = 10;
+export const VOUCHER_PRICE_DEFAULT_PAGE_SIZE = 5;
 export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
+export const VOUCHER_PRICE_ROWS_PER_PAGE = [5, 10, 20, 50];
 export const EMPTY_STRING = '';
 export const CONTAINS_LOOKUP = 'Icontains';
 export const WORKER_THRESHOLD = 3;
 export const VOUCHER_QUANTITY_THRESHOLD = 1000;
 export const USER_ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
+export const VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY = 'VOUCHER_PRICE_MANAGEMENT_KEY';
 
 const WORKER_VOUCHER_STATUS = {
   AWAITING_PAYMENT: 'AWAITING_PAYMENT',
