@@ -24,6 +24,7 @@ export const ACTION_TYPE = {
   GET_WORKER_VOUCHER: 'WORKER_VOUCHER_GET_WORKER_VOUCHER',
   SEARCH_VOUCHER_PRICES: 'WORKER_VOUCHER_VOUCHER_PRICES',
   MANAGE_VOUCHER_PRICE: 'WORKER_VOUCHER_MANAGE_VOUCHER_PRICE',
+  DELETE_VOUCHER_PRICE: 'WORKER_VOUCHER_DELETE_VOUCHER_PRICE',
 };
 
 const STORE_STATE = {
@@ -130,9 +131,9 @@ function reducer(
         fetchingVoucherPrices: false,
         fetchedVoucherPrices: true,
         errorVoucherPrices: formatGraphQLError(action.payload),
-        voucherPrices: parseData(action.payload.data.voucherPrices),
-        voucherPricesPageInfo: pageInfo(action.payload.data.voucherPrices),
-        voucherPricesTotalCount: action.payload.data.voucherPrices?.totalCount ?? 0,
+        voucherPrices: parseData(action.payload.data.businessConfig),
+        voucherPricesPageInfo: pageInfo(action.payload.data.businessConfig),
+        voucherPricesTotalCount: action.payload.data.businessConfig?.totalCount ?? 0,
       };
     case ERROR(ACTION_TYPE.SEARCH_VOUCHER_PRICES):
       return {
@@ -162,6 +163,8 @@ function reducer(
       return dispatchMutationResp(state, 'assignVouchers', action);
     case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
       return dispatchMutationResp(state, 'createBusinessConfig', action);
+    case SUCCESS(ACTION_TYPE.DELETE_VOUCHER_PRICE):
+      return dispatchMutationResp(state, 'deleteBusinessConfig', action);
     default:
       return state;
   }
