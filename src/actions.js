@@ -18,6 +18,16 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
+const VOUCHER_PRICE_PROJECTION = () => [
+  'id',
+  'uuid',
+  'key',
+  'value',
+  'dateValidFrom',
+  'dateValidTo',
+  'isDeleted',
+];
+
 function formatGraphQLDateRanges(dateRanges) {
   const rangeStrings = dateRanges.map((range) => `{ startDate: "${range.startDate}", endDate: "${range.endDate}" }`);
   return `[${rangeStrings.join(', ')}]`;
@@ -211,5 +221,27 @@ export function fetchMutation(clientMutationId) {
     }
     `,
     { clientMutationId },
+  );
+}
+
+export function fetchVoucherPrices(params) {
+  const payload = formatPageQueryWithCount('businessConfig', params, VOUCHER_PRICE_PROJECTION());
+  return graphql(payload, ACTION_TYPE.SEARCH_VOUCHER_PRICES);
+}
+
+export function deleteVoucherPrice(voucherPriceUuid, clientMutationLabel) {
+  const voucherPricesUuids = `ids: ["${voucherPriceUuid}"]`;
+  const mutation = formatMutation('deleteBusinessConfig', voucherPricesUuids, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_VOUCHER_PRICE), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.DELETE_VOUCHER_PRICE,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
   );
 }

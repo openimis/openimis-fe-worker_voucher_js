@@ -19,6 +19,7 @@
   "workerVoucher.expiryDate": "Expiry Date",
   "workerVoucher.createdDate": "Created Date",
   "workerVoucher.tooltip.details": "View details",
+  "workerVoucher.voucherPrice.delete": "Delete",
   "workerVoucher.placeholder.any": "Any",
   "workerVoucher.status.AWAITING_PAYMENT": "AWAITING PAYMENT",
   "workerVoucher.status.UNASSIGNED": "UNASSIGNED",
@@ -38,9 +39,13 @@
   "workerVoucher.vouchersQuantity": "Quantity of Vouchers",
   "workerVoucher.pricePerVoucher": "Voucher Price",
   "workerVoucher.toBePaid": "Total Cost",
+  "workerVoucher.priceManagement.dialog.title": "Delete Voucher Price Confirmation ",
+  "workerVoucher.priceManagement.dialog.message": "You are about to delete the voucher price. This action cannot be undone. Please confirm if you wish to proceed with this action.",
+  "workerVoucher.priceManagement.dialog.confirm": "Confirm",
+  "workerVoucher.priceManagement.dialog.abandon": "Cancel",
   "workerVoucher.priceManagement": "Confirm Voucher Price",
-  "workerVoucher.priceManagement.subtitle": "Please fill out the price and validity range to confirm the voucher's price.",
-  "workerVoucher.priceManagement.tip": "Enter a date to view the voucher price valid on that day.",
+  "workerVoucher.priceManagement.subtitle": "Please fill out the price and validity range to confirm the voucher price.",
+  "workerVoucher.priceManagement.success": "The voucher price has been successfully set at {price}$ for the period from {dateFrom} to {dateTo}.",
   "workerVoucher.validFrom": "Valid From",
   "workerVoucher.validTo": "Valid To",
   "workerVoucher.acquire.vouchers": "Acquire Vouchers",
@@ -72,6 +77,5 @@
   "workerVoucher.searcher.title": "{count} Voucher Prices",
   "workerVoucher.searcher.price": "Price",
   "workerVoucher.filter.date": "Date",
-  "business_config.validation.date_range_overlap": "Unable to create the voucher price for the specified period. There is an existing voucher price defined within the selected date range.",
-  "workerVoucher.priceManagement.success": "The voucher price has been successfully set at {price}$ for the period from {dateFrom} to {dateTo}."
+  "business_config.validation.date_range_overlap": "Unable to create the voucher price for the specified period. There is an existing voucher price defined within the selected date range."
 }

@@ -11,8 +11,8 @@ import {
 } from '@openimis/fe-core';
 import PriceManagementForm from './PriceManagementForm';
 import VoucherPriceSearcher from './VoucherPriceSearcher';
-import { fetchMutation, manageVoucherPrice } from '../actions';
-import { MODULE_NAME, VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY } from '../constants';
+import { fetchMutation, fetchVoucherPrices, manageVoucherPrice } from '../actions';
+import { DEFAULT_VOUCHER_PRICE_FILTERS, MODULE_NAME, VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY } from '../constants';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -33,25 +33,29 @@ function VoucherPriceManagementForm() {
   const classes = useStyles();
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const [priceManagement, setPriceManagement] = useState({});
-  const [priceManagementLoading, setPriceManagementLoading] = useState(false);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
+  const {
+    voucherPrices,
+    voucherPricesTotalCount,
+    voucherPricesPageInfo,
+    fetchedVoucherPrices,
+    errorVoucherPrices,
+  } = useSelector((state) => state.workerVoucher);
 
   const priceManagementBlocked = (priceManagement) => !priceManagement?.price
   || !priceManagement?.validFrom
-  || !priceManagement?.validTo
-  || priceManagementLoading;
+  || !priceManagement?.validTo;
 
-  const fetchVoucherPrices = async (params) => {
+  const fetchPrices = async (params) => {
     try {
-      // TODO: Fetch vouchers
-      console.log(params);
+      const queryParams = [...params, `key: "${VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY}"`];
+      dispatch(fetchVoucherPrices(queryParams));
     } catch (error) {
       throw new Error(`[VOUCHER_PRICE_SEARCHER]: Fetching voucher prices failed. ${error}`);
     }
   };
 
   const onPriceManagementChange = async () => {
-    setPriceManagementLoading(true);
     try {
       const { payload } = await dispatch(
         manageVoucherPrice(
@@ -70,26 +74,30 @@ function VoucherPriceManagementForm() {
       if (currentMutation.error) {
         const errorDetails = JSON.parse(currentMutation.error);
 
-        dispatch(coreAlert(
-          formatMessage('workerVoucher.menu.priceManagement'),
-          formatMessage(errorDetails?.detail || 'NOT_FOUND'),
-        ));
+        dispatch(
+          coreAlert(
+            formatMessage('menu.priceManagement'),
+            formatMessage(errorDetails?.detail || 'NOT_FOUND'),
+          ),
+        );
         return;
       }
 
-      dispatch(coreAlert(
-        formatMessage('workerVoucher.menu.priceManagement'),
-        formatMessageWithValues('workerVoucher.priceManagement.success', {
-          price: priceManagement.price,
-          dateFrom: priceManagement.validFrom,
-          dateTo: priceManagement.validTo,
-        }),
-      ));
+      dispatch(
+        coreAlert(
+          formatMessage('menu.priceManagement'),
+          formatMessageWithValues('priceManagement.success', {
+            price: priceManagement.price,
+            dateFrom: priceManagement.validFrom,
+            dateTo: priceManagement.validTo,
+          }),
+        ),
+      );
+
       setPriceManagement({});
+      await fetchPrices(DEFAULT_VOUCHER_PRICE_FILTERS);
     } catch (error) {
       throw new Error(`[VOUCHER_PRICE_MANAGEMENT]: Price change failed. ${error}`);
-    } finally {
-      setPriceManagementLoading(false);
     }
   };
 
@@ -110,12 +118,12 @@ function VoucherPriceManagementForm() {
           <Paper className={classes.paper}>
             <Grid xs={12}>
               <Grid container className={classes.paperHeaderTitle}>
-                <Typography variant="h5">{formatMessage('workerVoucher.menu.priceManagement')}</Typography>
+                <Typography variant="h5">{formatMessage('menu.priceManagement')}</Typography>
                 <Tooltip
                   title={
                     priceManagementBlocked(priceManagement)
-                      ? formatMessage('workerVoucher.vouchers.required')
-                      : formatMessage('workerVoucher.priceManagement')
+                      ? formatMessage('vouchers.required')
+                      : formatMessage('priceManagement')
                   }
                 >
                   <span>
@@ -125,7 +133,7 @@ function VoucherPriceManagementForm() {
                       onClick={onPriceManagementChange}
                       disabled={priceManagementBlocked(priceManagement)}
                     >
-                      <Typography variant="subtitle1">{formatMessage('workerVoucher.priceManagement')}</Typography>
+                      <Typography variant="subtitle1">{formatMessage('priceManagement')}</Typography>
                     </Button>
                   </span>
                 </Tooltip>
@@ -134,7 +142,7 @@ function VoucherPriceManagementForm() {
             <Divider />
             <Grid>
               <Typography variant="subtitle1" style={{ padding: '4px' }}>
-                {formatMessage('workerVoucher.priceManagement.subtitle')}
+                {formatMessage('priceManagement.subtitle')}
               </Typography>
             </Grid>
             <Divider />
@@ -148,12 +156,12 @@ function VoucherPriceManagementForm() {
         </Grid>
       </Grid>
       <VoucherPriceSearcher
-        fetch={fetchVoucherPrices}
-        items={[{}]}
-        fetchedItems={false}
-        voucherPricesTotalCount={0}
-        itemsPageInfo={{}}
-        errorItems={null}
+        fetch={fetchPrices}
+        items={voucherPrices}
+        fetchedItems={fetchedVoucherPrices}
+        voucherPricesTotalCount={voucherPricesTotalCount}
+        itemsPageInfo={voucherPricesPageInfo}
+        errorItems={errorVoucherPrices}
       />
     </>
   );
