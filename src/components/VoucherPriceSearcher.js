@@ -52,9 +52,11 @@ function VoucherPriceSearcher({
     (voucherPrice) => toISODate(voucherPrice.dateValidTo),
     (voucherPrice) => (
       <Tooltip title={formatMessage('voucherPrice.delete')}>
-        <IconButton onClick={() => onDialogOpen(voucherPrice.uuid)} disabled={voucherPrice.isDeleted}>
-          <DeleteIcon />
-        </IconButton>
+        <span>
+          <IconButton onClick={() => onDialogOpen(voucherPrice.uuid)} disabled={voucherPrice.isDeleted}>
+            <DeleteIcon />
+          </IconButton>
+        </span>
       </Tooltip>
     ),
   ];
@@ -66,11 +68,7 @@ function VoucherPriceSearcher({
   ];
 
   const voucherPriceFilter = ({ filters, onChangeFilters }) => (
-    <VoucherPriceFilter
-      filters={filters}
-      onChangeFilters={onChangeFilters}
-      formatMessage={formatMessage}
-    />
+    <VoucherPriceFilter filters={filters} onChangeFilters={onChangeFilters} formatMessage={formatMessage} />
   );
 
   return (
