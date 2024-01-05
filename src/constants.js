@@ -21,7 +21,6 @@ export const DATE_TIME_SUFFIX = 'T00:00:00';
 export const DEFAULT_VOUCHER_PRICE_FILTERS = [
   'first: 5',
   'orderBy: ["value"]',
-  `key: ${VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY}`,
 ];
 
 const WORKER_VOUCHER_STATUS = {
