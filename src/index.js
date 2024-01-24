@@ -12,7 +12,11 @@ import VpnLockIcon from '@material-ui/icons/VpnLock';
 
 import { FormattedMessage } from '@openimis/fe-core';
 import {
-  ADMIN_RIGHT, INSPECTOR_RIGHT, VOUCHER_PRICE_MANAGEMENT_RIGHT, VOUCHER_RIGHT_SEARCH,
+  ADMIN_RIGHT,
+  EMPLOYER_RIGHT_SEARCH,
+  INSPECTOR_RIGHT,
+  VOUCHER_PRICE_MANAGEMENT_RIGHT,
+  VOUCHER_RIGHT_SEARCH,
 } from './constants';
 import VoucherAcquirementPage from './pages/VoucherAcquirementPage';
 import VoucherAssignmentPage from './pages/VoucherAssignmentPage';
@@ -56,7 +60,8 @@ const DEFAULT_CONFIG = {
       text: <FormattedMessage module="workerVoucher" id="menu.voucherAcquirement" />,
       icon: <LocalAtmIcon />,
       route: `/${ROUTE_WORKER_VOUCHER_ACQUIREMENT}`,
-      filter: (rights) => [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right)),
+      filter: (rights) => [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right))
+        && ![INSPECTOR_RIGHT, ADMIN_RIGHT].some((right) => rights.includes(right)),
     },
     {
       text: <FormattedMessage module="workerVoucher" id="menu.voucherAssignment" />,
@@ -74,12 +79,36 @@ const DEFAULT_CONFIG = {
     },
   ],
   'core.Router': [
-    { path: ROUTE_WORKER_VOUCHERS_LIST, component: VouchersPage },
-    { path: `${ROUTE_WORKER_VOUCHER}/:voucher_uuid?`, component: VoucherDetailsPage },
-    { path: ROUTE_WORKER_VOUCHER_ACQUIREMENT, component: VoucherAcquirementPage },
-    { path: ROUTE_WORKER_VOUCHER_ASSIGNMENT, component: VoucherAssignmentPage },
-    { path: ROUTE_WORKER_VOUCHER_PRICE_MANAGEMENT, component: VoucherPriceManagement },
-    { path: ROUTE_CHANGE_MOBILE_APP_PASSWORD, component: MobileAppPasswordManagement },
+    {
+      path: ROUTE_WORKER_VOUCHERS_LIST,
+      component: VouchersPage,
+      requiredRights: [VOUCHER_RIGHT_SEARCH],
+    },
+    {
+      path: `${ROUTE_WORKER_VOUCHER}/:voucher_uuid?`,
+      component: VoucherDetailsPage,
+      requiredRights: [VOUCHER_RIGHT_SEARCH],
+    },
+    {
+      path: ROUTE_WORKER_VOUCHER_ACQUIREMENT,
+      component: VoucherAcquirementPage,
+      requiredRights: [VOUCHER_RIGHT_SEARCH],
+    },
+    {
+      path: ROUTE_WORKER_VOUCHER_ASSIGNMENT,
+      component: VoucherAssignmentPage,
+      requiredRights: [EMPLOYER_RIGHT_SEARCH],
+    },
+    {
+      path: ROUTE_WORKER_VOUCHER_PRICE_MANAGEMENT,
+      component: VoucherPriceManagement,
+      requiredRights: [VOUCHER_PRICE_MANAGEMENT_RIGHT],
+    },
+    {
+      path: ROUTE_CHANGE_MOBILE_APP_PASSWORD,
+      component: MobileAppPasswordManagement,
+      requiredRights: [INSPECTOR_RIGHT, ADMIN_RIGHT],
+    },
   ],
   'profile.MainMenu': [
     {
