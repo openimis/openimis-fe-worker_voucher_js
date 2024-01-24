@@ -1,6 +1,8 @@
 export const VOUCHER_RIGHT_SEARCH = 204001;
 export const EMPLOYER_RIGHT_SEARCH = 204001;
 export const VOUCHER_PRICE_MANAGEMENT_RIGHT = 205001;
+export const INSPECTOR_RIGHT = 101301;
+export const ADMIN_RIGHT = 101103;
 export const MODULE_NAME = 'workerVoucher';
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
