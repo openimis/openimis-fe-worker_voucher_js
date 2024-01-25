@@ -92,12 +92,12 @@ const DEFAULT_CONFIG = {
     {
       path: ROUTE_WORKER_VOUCHER_ACQUIREMENT,
       component: VoucherAcquirementPage,
-      requiredRights: [VOUCHER_RIGHT_SEARCH],
+      requiredRights: [EMPLOYER_RIGHT_SEARCH],
     },
     {
       path: ROUTE_WORKER_VOUCHER_ASSIGNMENT,
       component: VoucherAssignmentPage,
-      requiredRights: [EMPLOYER_RIGHT_SEARCH],
+      requiredRights: [VOUCHER_RIGHT_SEARCH],
     },
     {
       path: ROUTE_WORKER_VOUCHER_PRICE_MANAGEMENT,
