@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
 import { Helmet, useModulesManager, useTranslations } from '@openimis/fe-core';
-import { EMPLOYER_RIGHT_SEARCH, MODULE_NAME } from '../constants';
+import { MODULE_NAME, VOUCHER_RIGHT_SEARCH } from '../constants';
 import VoucherAssignmentForm from '../components/VoucherAssignmentForm';
 
 export const useStyles = makeStyles((theme) => ({
@@ -18,7 +18,7 @@ function VoucherAssignmentPage() {
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
 
   return (
-    rights.includes(EMPLOYER_RIGHT_SEARCH) && (
+    rights.includes(VOUCHER_RIGHT_SEARCH) && (
       <div className={classes.page}>
         <Helmet title={formatMessage('workerVoucher.menu.voucherAssignment')} />
         <VoucherAssignmentForm />
