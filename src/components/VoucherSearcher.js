@@ -99,7 +99,9 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
   ];
 
   useEffect(() => {
-    setFailedExport(true);
+    if (errorWorkerVoucherExport) {
+      setFailedExport(true);
+    }
   }, [errorWorkerVoucherExport]);
 
   useEffect(() => {
@@ -108,6 +110,10 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       clearWorkerVoucherExport();
     }
   }, [workerVoucherExport]);
+
+  const handleExportErrorDialogClose = () => {
+    setFailedExport(false);
+  };
 
   const voucherFilter = ({ filters, onChangeFilters }) => (
     <VoucherFilter filters={filters} onChangeFilters={onChangeFilters} formatMessage={formatMessage} />
@@ -147,7 +153,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
             {errorWorkerVouchers?.detail}
           </DialogContent>
           <DialogActions>
-            <Button onClick={setFailedExport(false)} color="primary" variant="contained">
+            <Button onClick={handleExportErrorDialogClose} color="primary" variant="contained">
               {formatMessage('close')}
             </Button>
           </DialogActions>
