@@ -7,6 +7,8 @@
   "workerVoucher.searcherResultsTitle": "{workerVouchersTotalCount} Vouchers Found",
   "workerVoucher.code": "Code",
   "workerVoucher.employer": "Employer",
+  "workerVoucher.export.filename": "worker_voucher_export",
+  "workerVoucher.export.vouchers": "DOWNLOAD VOUCHERS",
   "workerVoucher.employer.tradename": "Employer Trade Name",
   "workerVoucher.employer.code": "Employer Code",
   "workerVoucher.worker": "Worker",

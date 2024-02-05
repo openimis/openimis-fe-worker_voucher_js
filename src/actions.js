@@ -245,3 +245,19 @@ export function deleteVoucherPrice(voucherPriceUuid, clientMutationLabel) {
     },
   );
 }
+
+export function downloadWorkerVoucher(params) {
+  const payload = `
+  {
+    workerVoucherExport${!!params && params.length ? `(${params.join(',')})` : ''}
+  }`;
+  return graphql(payload, ACTION_TYPE.EXPORT_WORKER_VOUCHER);
+}
+
+export function clearWorkerVoucherExport() {
+  return (dispatch) => {
+    dispatch({
+      type: CLEAR(ACTION_TYPE.EXPORT_WORKER_VOUCHER),
+    });
+  };
+}
