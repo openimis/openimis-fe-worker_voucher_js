@@ -1,21 +1,27 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import { IconButton, Tooltip } from '@material-ui/core';
+import {
+  IconButton, Button, Tooltip, Dialog, DialogActions, DialogTitle, DialogContent,
+} from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
-  Searcher, useHistory, useModulesManager, useTranslations,
+  Searcher, useHistory, useModulesManager, useTranslations, downloadExport,
 } from '@openimis/fe-core';
-import { fetchWorkerVouchers } from '../actions';
+import { fetchWorkerVouchers, downloadWorkerVoucher, clearWorkerVoucherExport } from '../actions';
 import {
-  DEFAULT_PAGE_SIZE, MODULE_NAME, REF_ROUTE_WORKER_VOUCHER, ROWS_PER_PAGE_OPTIONS, VOUCHER_RIGHT_SEARCH,
+  DEFAULT_PAGE_SIZE,
+  MODULE_NAME,
+  REF_ROUTE_WORKER_VOUCHER,
+  ROWS_PER_PAGE_OPTIONS,
+  VOUCHER_RIGHT_SEARCH,
 } from '../constants';
 import VoucherFilter from './VoucherFilter';
 
-function VoucherSearcher() {
+function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWorkerVoucherExport }) {
   const history = useHistory();
-  const dispatch = useDispatch();
   const modulesManager = useModulesManager();
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
@@ -26,11 +32,23 @@ function VoucherSearcher() {
     workerVouchers,
     workerVouchersPageInfo,
     workerVouchersTotalCount,
+    workerVoucherExport,
+    errorWorkerVoucherExport,
   } = useSelector((state) => state.workerVoucher);
+  const [failedExport, setFailedExport] = useState(false);
+  const exportConfiguration = {
+    exportFields: ['code', 'policyholder', 'insuree', 'status'],
+    exportFieldsColumns: {
+      code: formatMessage('code'),
+      policyholder: formatMessage('employer'),
+      insuree: formatMessage('worker'),
+      status: formatMessage('status'),
+    },
+  };
 
   const fetchVouchers = (params) => {
     try {
-      dispatch(fetchWorkerVouchers(modulesManager, params));
+      fetchWorkerVouchers(modulesManager, params);
     } catch (error) {
       throw new Error(`[VOUCHER_SEARCHER]: Fetching vouchers failed. ${error}`);
     }
@@ -57,9 +75,8 @@ function VoucherSearcher() {
 
   const rowIdentifier = (workerVoucher) => workerVoucher.uuid;
 
-  const openWorkerVoucher = (workerVoucher) => rights.includes(VOUCHER_RIGHT_SEARCH) && history.push(
-    `/${modulesManager.getRef(REF_ROUTE_WORKER_VOUCHER)}/${workerVoucher?.uuid}`,
-  );
+  const openWorkerVoucher = (workerVoucher) => rights.includes(VOUCHER_RIGHT_SEARCH)
+    && history.push(`/${modulesManager.getRef(REF_ROUTE_WORKER_VOUCHER)}/${workerVoucher?.uuid}`);
 
   const onDoubleClick = (workerVoucher) => openWorkerVoucher(workerVoucher);
 
@@ -81,30 +98,78 @@ function VoucherSearcher() {
     ),
   ];
 
+  useEffect(() => {
+    if (errorWorkerVoucherExport) {
+      setFailedExport(true);
+    }
+  }, [errorWorkerVoucherExport]);
+
+  useEffect(() => {
+    if (workerVoucherExport) {
+      downloadExport(workerVoucherExport, `${formatMessage('export.filename')}.csv`)();
+      clearWorkerVoucherExport();
+    }
+  }, [workerVoucherExport]);
+
+  const handleExportErrorDialogClose = () => {
+    setFailedExport(false);
+  };
+
   const voucherFilter = ({ filters, onChangeFilters }) => (
     <VoucherFilter filters={filters} onChangeFilters={onChangeFilters} formatMessage={formatMessage} />
   );
 
   return (
-    <Searcher
-      module="workerVoucher"
-      FilterPane={voucherFilter}
-      fetch={fetchVouchers}
-      items={workerVouchers}
-      itemsPageInfo={workerVouchersPageInfo}
-      fetchedItems={fetchedWorkerVouchers}
-      fetchingItems={fetchingWorkerVouchers}
-      errorItems={errorWorkerVouchers}
-      tableTitle={formatMessageWithValues('workerVoucher.searcherResultsTitle', { workerVouchersTotalCount })}
-      headers={headers}
-      itemFormatters={itemFormatters}
-      sorts={sorts}
-      rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-      defaultPageSize={DEFAULT_PAGE_SIZE}
-      rowIdentifier={rowIdentifier}
-      onDoubleClick={onDoubleClick}
-    />
+    <>
+      <Searcher
+        module="workerVoucher"
+        FilterPane={voucherFilter}
+        fetch={fetchVouchers}
+        items={workerVouchers}
+        itemsPageInfo={workerVouchersPageInfo}
+        fetchedItems={fetchedWorkerVouchers}
+        fetchingItems={fetchingWorkerVouchers}
+        errorItems={errorWorkerVouchers}
+        tableTitle={formatMessageWithValues('workerVoucher.searcherResultsTitle', { workerVouchersTotalCount })}
+        headers={headers}
+        itemFormatters={itemFormatters}
+        sorts={sorts}
+        rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
+        defaultPageSize={DEFAULT_PAGE_SIZE}
+        rowIdentifier={rowIdentifier}
+        onDoubleClick={onDoubleClick}
+        exportable
+        exportFetch={downloadWorkerVoucher}
+        exportFields={exportConfiguration.exportFields}
+        exportFieldsColumns={exportConfiguration.exportFieldsColumns}
+        exportFieldLabel={formatMessage('export.vouchers')}
+        chooseExportableColumns
+      />
+      {failedExport && (
+        <Dialog open={failedExport} fullWidth maxWidth="sm">
+          <DialogTitle>{errorWorkerVouchers?.message}</DialogTitle>
+          <DialogContent>
+            <strong>{`${errorWorkerVouchers?.code}:`}</strong>
+            {errorWorkerVouchers?.detail}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleExportErrorDialogClose} color="primary" variant="contained">
+              {formatMessage('close')}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+    </>
   );
 }
 
-export default VoucherSearcher;
+const mapDispatchToProps = (dispatch) => bindActionCreators(
+  {
+    downloadWorkerVoucher,
+    fetchWorkerVouchers,
+    clearWorkerVoucherExport,
+  },
+  dispatch,
+);
+
+export default connect(null, mapDispatchToProps)(VoucherSearcher);

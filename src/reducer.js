@@ -11,8 +11,7 @@ import {
   parseData,
 } from '@openimis/fe-core';
 import {
-  CLEAR,
-  ERROR, REQUEST, SUCCESS,
+  CLEAR, ERROR, REQUEST, SUCCESS,
 } from './utils/action-type';
 
 export const ACTION_TYPE = {
@@ -25,6 +24,7 @@ export const ACTION_TYPE = {
   SEARCH_VOUCHER_PRICES: 'WORKER_VOUCHER_VOUCHER_PRICES',
   MANAGE_VOUCHER_PRICE: 'WORKER_VOUCHER_MANAGE_VOUCHER_PRICE',
   DELETE_VOUCHER_PRICE: 'WORKER_VOUCHER_DELETE_VOUCHER_PRICE',
+  EXPORT_WORKER_VOUCHER: 'WORKER_VOUCHER_VOUCHER_EXPORT',
 };
 
 const STORE_STATE = {
@@ -46,12 +46,14 @@ const STORE_STATE = {
   voucherPrices: [],
   voucherPricesPageInfo: {},
   voucherPricesTotalCount: 0,
+  fetchingWorkerVoucherExport: false,
+  fetchedWorkerVoucherExport: false,
+  workerVoucherExport: null,
+  workerVoucherExportPageInfo: {},
+  errorWorkerVoucherExport: null,
 };
 
-function reducer(
-  state = STORE_STATE,
-  action,
-) {
+function reducer(state = STORE_STATE, action) {
   switch (action.type) {
     case REQUEST(ACTION_TYPE.SEARCH_WORKER_VOUCHERS):
       return {
@@ -150,6 +152,39 @@ function reducer(
         voucherPrices: [],
         voucherPricesPageInfo: {},
         voucherPricesTotalCount: 0,
+      };
+    case REQUEST(ACTION_TYPE.EXPORT_WORKER_VOUCHER):
+      return {
+        ...state,
+        fetchingWorkerVoucherExport: true,
+        fetchedWorkerVoucherExport: false,
+        workerVoucherExport: null,
+        workerVoucherExportPageInfo: {},
+        errorWorkerVoucherExport: null,
+      };
+    case SUCCESS(ACTION_TYPE.EXPORT_WORKER_VOUCHER):
+      return {
+        ...state,
+        fetchingWorkerVoucherExport: false,
+        fetchedWorkerVoucherExport: true,
+        workerVoucherExport: action.payload.data.workerVoucherExport,
+        workerVoucherExportPageInfo: pageInfo(action.payload.data.workerVoucherExportPageInfo),
+        errorWorkerVoucherExport: formatGraphQLError(action.payload),
+      };
+    case ERROR(ACTION_TYPE.EXPORT_WORKER_VOUCHER):
+      return {
+        ...state,
+        fetchingWorkerVoucherExport: false,
+        errorWorkerVoucherExport: formatServerError(action.payload),
+      };
+    case CLEAR(ACTION_TYPE.EXPORT_WORKER_VOUCHER):
+      return {
+        ...state,
+        fetchingWorkerVoucherExport: false,
+        fetchedWorkerVoucherExport: false,
+        workerVoucherExport: null,
+        workerVoucherExportPageInfo: {},
+        errorWorkerVoucherExport: null,
       };
     case REQUEST(ACTION_TYPE.MUTATION):
       return dispatchMutationReq(state, action);
