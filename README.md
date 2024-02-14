@@ -16,7 +16,7 @@ In development mode, you can use `npm link` and `npm start` to continuously scan
 __Workers and Vouchers__ ('worker.MainMenu') - it is displayed if __"isWorker"__ variable is set to __true__.
     **Workers** ('menu.workers') - workers list, it is displayed if __"isWorker"__ variable is set to __true__.
     **Voucher List** ('menu.voucherList') - vouchers list, it is displayed if user has `204001` right
-    **Voucher Acquirement** ('menu.voucherAcquirement') - voucher acquirement form, it is displayed if user has `204001` right
+    **Voucher Acquirement** ('menu.voucherAcquirement') - voucher acquirement form, it is displayed if user has `204001` right 
     **Voucher Assignment** ('menu.voucherAssignment') - voucher assignment form, it is displayed if user has `204001` right
 
 __Administration__ ('admin.mainMenu') - it is displayed by default, main entry of admin module
@@ -53,3 +53,4 @@ __Administration__ ('admin.mainMenu') - it is displayed by default, main entry o
 ## Configurations Options
 
 - `isWorker`: Specifies whether the individual should be classified and managed as a worker or a standard insuree. In Moldova, the Insuree entity is also used to represent workers. When set to true, the system displays 'Workers and Vouchers' instead of the default 'Insurees and Policies', aligning the interface with the specific needs of worker representation. Default: __false__.
+- `genericVoucherEnabled`: Specifies whether the system should enable the use of generic vouchers for the individual. When set to true, the system provides additional functionalities for handling generic vouchers, aligning the interface with the specific needs of voucher management. Default: __false__.

@@ -67,7 +67,8 @@ const DEFAULT_CONFIG = {
       text: <FormattedMessage module="workerVoucher" id="menu.voucherAssignment" />,
       icon: <GroupAddIcon />,
       route: `/${ROUTE_WORKER_VOUCHER_ASSIGNMENT}`,
-      filter: (rights) => [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right)),
+      filter: (rights, config) => config.genericVoucherEnabled
+      && [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right)),
     },
   ],
   'admin.MainMenu': [
