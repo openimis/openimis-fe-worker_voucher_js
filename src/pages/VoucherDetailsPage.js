@@ -72,7 +72,7 @@ function VoucherDetailsPage({ match }) {
           readOnly
           formatMessage={formatMessage}
           rights={rights}
-          actions={voucherActions.length ? voucherActions : null}
+          actions={voucherActions}
         />
       </div>
     )
