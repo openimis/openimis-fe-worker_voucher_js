@@ -2,16 +2,15 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
+import ReceiptIcon from '@material-ui/icons/Receipt';
 
 import {
-  Form,
-  Helmet,
-  useHistory,
-  useModulesManager,
-  useTranslations,
+  Form, Helmet, useHistory, useModulesManager, useTranslations, historyPush,
 } from '@openimis/fe-core';
 import { clearWorkerVoucher, fetchWorkerVoucher } from '../actions';
-import { EMPTY_STRING, MODULE_NAME, VOUCHER_RIGHT_SEARCH } from '../constants';
+import {
+  EMPTY_STRING, MODULE_NAME, REF_ROUTE_BILL, VOUCHER_RIGHT_SEARCH,
+} from '../constants';
 import VoucherDetailsPanel from '../components/VoucherDetailsPanel';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +23,7 @@ function VoucherDetailsPage({ match }) {
   const modulesManager = useModulesManager();
   const history = useHistory();
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
-  const rights = useSelector((state) => (state.core?.user?.i_user?.rights ?? []));
+  const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
   const workerVoucherUuid = match?.params?.voucher_uuid;
   const { workerVoucher, fetchingWorkerVoucher, errorWorkerVoucher } = useSelector((state) => state.workerVoucher);
 
@@ -45,6 +44,17 @@ function VoucherDetailsPage({ match }) {
     return () => dispatch(clearWorkerVoucher());
   }, [workerVoucherUuid]);
 
+  const redirectToTheLinkedBill = () => historyPush(modulesManager, history, REF_ROUTE_BILL, [workerVoucher.billId]);
+
+  const voucherActions = [
+    {
+      doIt: redirectToTheLinkedBill,
+      icon: <ReceiptIcon />,
+      disabled: !workerVoucher?.billId,
+      tooltip: formatMessage('navigateToTheBill.tooltip'),
+    },
+  ];
+
   return (
     rights.includes(VOUCHER_RIGHT_SEARCH) && (
       <div className={classes.page}>
@@ -62,6 +72,7 @@ function VoucherDetailsPage({ match }) {
           readOnly
           formatMessage={formatMessage}
           rights={rights}
+          actions={voucherActions}
         />
       </div>
     )

@@ -138,7 +138,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
         defaultPageSize={DEFAULT_PAGE_SIZE}
         rowIdentifier={rowIdentifier}
         onDoubleClick={onDoubleClick}
-        exportable
+        exportable={!!workerVouchers?.length}
         exportFetch={downloadWorkerVoucher}
         exportFields={exportConfiguration.exportFields}
         exportFieldsColumns={exportConfiguration.exportFieldsColumns}
