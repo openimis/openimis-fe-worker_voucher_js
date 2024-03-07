@@ -8,6 +8,7 @@ import {
 
 const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   'id',
+  'billId',
   'code',
   'status',
   'assignedDate',

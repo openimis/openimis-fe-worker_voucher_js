@@ -6,9 +6,11 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useModulesManager, useTranslations, journalize } from '@openimis/fe-core';
+import {
+  useModulesManager, useTranslations, journalize, useHistory, historyPush,
+} from '@openimis/fe-core';
 import { specificVoucherValidation, acquireSpecificVoucher } from '../actions';
-import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
+import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AcquirementSpecificWorkerForm from './AcquirementSpecificWorkerForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
 
@@ -29,6 +31,7 @@ function VoucherAcquirementSpecificWorker() {
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
   const classes = useStyles();
+  const history = useHistory();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
   const [acquirementSummary, setAcquirementSummary] = useState({});
@@ -68,7 +71,7 @@ function VoucherAcquirementSpecificWorker() {
       throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Acquirement error. ${error}`);
     }
 
-    // TODO: After summary fetch, redirect to the MPay.
+    historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
     setIsPaymentModalOpen((prevState) => !prevState);
   };
 
