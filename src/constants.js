@@ -9,6 +9,8 @@ export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
 export const REF_ROUTE_BILL = 'bill.route.bill';
 
+export const MPAY_BILL_URL = '/msystems/mpay_payment/';
+export const BILL_PAID_STATUS = '2';
 export const DEFAULT_DEBOUNCE_TIME = 800;
 export const DEFAULT_PAGE_SIZE = 10;
 export const VOUCHER_PRICE_DEFAULT_PAGE_SIZE = 5;
@@ -56,4 +58,5 @@ export const WORKER_VOUCHER_STATUS_LIST = [
 
 export const DEFAULT = {
   GENERIC_VOUCHER_ENABLED: false,
+  IS_WORKER: false,
 };

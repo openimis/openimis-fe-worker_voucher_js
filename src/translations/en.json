@@ -92,5 +92,6 @@
   "workerVoucher.searcher.price": "Price",
   "workerVoucher.filter.date": "Date",
   "business_config.validation.date_range_overlap": "Unable to create the voucher price for the specified period. There is an existing voucher price defined within the selected date range.",
-  "workerVoucher.navigateToTheBill.tooltip": "Bill"
+  "workerVoucher.navigateToTheBill.tooltip": "Bill",
+  "workerVoucher.MPayBillButton": "Pay with MPay"
 }

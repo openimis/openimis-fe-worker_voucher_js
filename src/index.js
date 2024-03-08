@@ -30,6 +30,7 @@ import WorkerMultiplePicker from './pickers/WorkerMultiplePicker';
 import WorkerDateRangePicker from './pickers/WorkerDateRangePicker';
 import VoucherPriceManagement from './pages/VoucherPriceManagement';
 import MobileAppPasswordManagement from './pages/MobileAppPasswordManagement';
+import BillVoucherHeadPanel from './components/BillVoucherHeadPanel';
 
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
 const ROUTE_WORKER_VOUCHER = 'voucher/vouchers/voucher';
@@ -119,6 +120,7 @@ const DEFAULT_CONFIG = {
       filter: (rights) => [INSPECTOR_RIGHT, ADMIN_RIGHT].some((right) => rights.includes(right)),
     },
   ],
+  'workerVoucher.VoucherHeadPanel': [BillVoucherHeadPanel],
 };
 
 export const WorkerVoucherModule = (cfg) => ({ ...DEFAULT_CONFIG, ...cfg });
