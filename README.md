@@ -28,7 +28,7 @@ __Administration__ ('admin.mainMenu') - it is displayed by default, main entry o
 
 ## Available Contribution Points
 
---- None ---
+* `workerVoucher.VoucherHeadPanel`: Designed to showcase essential information about a voucher's bill, this contribution point facilitates clear and customizable bill displays.
 
 ## Dispatched Redux Actions
 
