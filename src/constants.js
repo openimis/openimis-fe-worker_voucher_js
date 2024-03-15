@@ -3,11 +3,13 @@ export const EMPLOYER_RIGHT_SEARCH = 203000;
 export const VOUCHER_PRICE_MANAGEMENT_RIGHT = 205001;
 export const INSPECTOR_RIGHT = 204005;
 export const ADMIN_RIGHT = 204004;
+export const RIGHT_VIEW_EU_MODAL = 203000;
 export const MODULE_NAME = 'workerVoucher';
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
 export const REF_ROUTE_BILL = 'bill.route.bill';
+export const ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 
 export const MPAY_BILL_URL = '/msystems/mpay_payment/';
 export const BILL_PAID_STATUS = '2';

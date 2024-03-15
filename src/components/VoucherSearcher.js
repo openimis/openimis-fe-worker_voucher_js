@@ -13,8 +13,10 @@ import {
 import { fetchWorkerVouchers, downloadWorkerVoucher, clearWorkerVoucherExport } from '../actions';
 import {
   DEFAULT_PAGE_SIZE,
+  ECONOMIC_UNIT_STORAGE_KEY,
   MODULE_NAME,
   REF_ROUTE_WORKER_VOUCHER,
+  RIGHT_VIEW_EU_MODAL,
   ROWS_PER_PAGE_OPTIONS,
   VOUCHER_RIGHT_SEARCH,
 } from '../constants';
@@ -46,9 +48,25 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     },
   };
 
+  const getEconomicUnit = () => {
+    try {
+      const economicUnit = localStorage.getItem(ECONOMIC_UNIT_STORAGE_KEY) ?? '{}';
+      return rights.includes(RIGHT_VIEW_EU_MODAL) ? JSON.parse(economicUnit) : {};
+    } catch (error) {
+      throw new Error(`[GET_EU]: Getting economic unit failed. ${error}`);
+    }
+  };
+
   const fetchVouchers = (params) => {
     try {
-      fetchWorkerVouchers(modulesManager, params);
+      const economicUnit = getEconomicUnit();
+      const actionParams = [...params];
+
+      if (economicUnit?.id) {
+        actionParams.push(`policyholder_Id:"${economicUnit.id}"`);
+      }
+
+      fetchWorkerVouchers(modulesManager, actionParams);
     } catch (error) {
       throw new Error(`[VOUCHER_SEARCHER]: Fetching vouchers failed. ${error}`);
     }
