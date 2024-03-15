@@ -62,8 +62,8 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       const economicUnit = getEconomicUnit();
       const actionParams = [...params];
 
-      if (economicUnit?.id) {
-        actionParams.push(`policyholder_Id:"${economicUnit.id}"`);
+      if (economicUnit?.code) {
+        actionParams.push(`policyholder_Code:"${economicUnit.code}"`);
       }
 
       fetchWorkerVouchers(modulesManager, actionParams);
