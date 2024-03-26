@@ -147,10 +147,10 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       />
       {failedExport && (
         <Dialog open={failedExport} fullWidth maxWidth="sm">
-          <DialogTitle>{errorWorkerVouchers?.message}</DialogTitle>
+          <DialogTitle>{errorWorkerVoucherExport?.message}</DialogTitle>
           <DialogContent>
-            <strong>{`${errorWorkerVouchers?.code}:`}</strong>
-            {errorWorkerVouchers?.detail}
+            <strong>{`${errorWorkerVoucherExport?.code}:`}</strong>
+            {errorWorkerVoucherExport?.detail}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleExportErrorDialogClose} color="primary" variant="contained">
