@@ -72,7 +72,7 @@ const DEFAULT_CONFIG = {
       && [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right)),
     },
   ],
-  'admin.MainMenu': [
+  'admin.voucher.MainMenu': [
     {
       text: <FormattedMessage module="workerVoucher" id="menu.priceManagement" />,
       icon: <MonetizationOnIcon />,
