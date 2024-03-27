@@ -109,6 +109,8 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       downloadExport(workerVoucherExport, `${formatMessage('export.filename')}.csv`)();
       clearWorkerVoucherExport();
     }
+
+    return setFailedExport(false);
   }, [workerVoucherExport]);
 
   const handleExportErrorDialogClose = () => {
