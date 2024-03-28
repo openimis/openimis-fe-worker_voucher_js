@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -35,7 +35,9 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     workerVoucherExport,
     errorWorkerVoucherExport,
   } = useSelector((state) => state.workerVoucher);
+  const { economicUnit } = useSelector((state) => state.policyHolder);
   const [failedExport, setFailedExport] = useState(false);
+  const [queryParams, setQueryParams] = useState([]);
   const exportConfiguration = {
     exportFields: ['code', 'policyholder', 'insuree', 'status'],
     exportFieldsColumns: {
@@ -46,13 +48,22 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     },
   };
 
-  const fetchVouchers = (params) => {
-    try {
-      fetchWorkerVouchers(modulesManager, params);
-    } catch (error) {
-      throw new Error(`[VOUCHER_SEARCHER]: Fetching vouchers failed. ${error}`);
-    }
-  };
+  const fetchVouchers = useCallback(
+    (params) => {
+      try {
+        const actionParams = [...params];
+
+        if (economicUnit?.code) {
+          actionParams.push(`policyholder_Code:"${economicUnit.code}"`);
+        }
+
+        fetchWorkerVouchers(modulesManager, actionParams);
+      } catch (error) {
+        throw new Error(`[VOUCHER_SEARCHER]: Fetching vouchers failed. ${error}`);
+      }
+    },
+    [economicUnit],
+  );
 
   const headers = () => [
     'workerVoucher.code',
@@ -121,6 +132,34 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     <VoucherFilter filters={filters} onChangeFilters={onChangeFilters} formatMessage={formatMessage} />
   );
 
+  const filtersToQueryParams = ({
+    filters, pageSize, beforeCursor, afterCursor, orderBy,
+  }) => {
+    const queryParams = Object.keys(filters)
+      .filter((f) => !!filters[f].filter)
+      .map((f) => filters[f].filter);
+    if (!beforeCursor && !afterCursor) {
+      queryParams.push(`first: ${pageSize}`);
+    }
+    if (afterCursor) {
+      queryParams.push(`after: "${afterCursor}"`);
+      queryParams.push(`first: ${pageSize}`);
+    }
+    if (beforeCursor) {
+      queryParams.push(`before: "${beforeCursor}"`);
+      queryParams.push(`last: ${pageSize}`);
+    }
+    if (orderBy) {
+      queryParams.push(`orderBy: ["${orderBy}"]`);
+    }
+    setQueryParams(queryParams);
+    return queryParams;
+  };
+
+  useEffect(() => {
+    fetchVouchers(queryParams);
+  }, [economicUnit, queryParams]);
+
   return (
     <>
       <Searcher
@@ -132,6 +171,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
         fetchedItems={fetchedWorkerVouchers}
         fetchingItems={fetchingWorkerVouchers}
         errorItems={errorWorkerVouchers}
+        filtersToQueryParams={filtersToQueryParams}
         tableTitle={formatMessageWithValues('workerVoucher.searcherResultsTitle', { workerVouchersTotalCount })}
         headers={headers}
         itemFormatters={itemFormatters}
