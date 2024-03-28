@@ -8,6 +8,7 @@ export const MODULE_NAME = 'workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
 export const REF_ROUTE_BILL = 'bill.route.bill';
+export const ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 
 export const MPAY_BILL_URL = '/msystems/mpay_payment/';
 export const BILL_PAID_STATUS = '2';
