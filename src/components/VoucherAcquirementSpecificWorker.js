@@ -7,10 +7,11 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useModulesManager, useTranslations, journalize, useHistory, historyPush,
+  useModulesManager, useTranslations, journalize, parseData, coreAlert,
 } from '@openimis/fe-core';
-import { specificVoucherValidation, acquireSpecificVoucher } from '../actions';
-import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
+import { specificVoucherValidation, acquireSpecificVoucher, fetchMutation } from '../actions';
+import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
+import { payWithMPay } from '../utils/utils';
 import AcquirementSpecificWorkerForm from './AcquirementSpecificWorkerForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
 
@@ -31,7 +32,6 @@ function VoucherAcquirementSpecificWorker() {
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const history = useHistory();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
   const [acquirementSummary, setAcquirementSummary] = useState({});
@@ -46,11 +46,13 @@ function VoucherAcquirementSpecificWorker() {
     setIsPaymentModalOpen((prevState) => !prevState);
     setAcquirementSummaryLoading(true);
     try {
-      const { payload } = await dispatch(specificVoucherValidation(
-        voucherAcquirement?.employer?.code,
-        voucherAcquirement?.workers,
-        voucherAcquirement?.dateRanges,
-      ));
+      const { payload } = await dispatch(
+        specificVoucherValidation(
+          voucherAcquirement?.employer?.code,
+          voucherAcquirement?.workers,
+          voucherAcquirement?.dateRanges,
+        ),
+      );
       setAcquirementSummary(payload);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Validation error. ${error}`);
@@ -61,17 +63,37 @@ function VoucherAcquirementSpecificWorker() {
 
   const onPaymentConfirmation = async () => {
     try {
-      await dispatch(acquireSpecificVoucher(
-        voucherAcquirement?.employer?.code,
-        voucherAcquirement?.workers,
-        voucherAcquirement?.dateRanges,
-        'Acquire Specific Voucher',
-      ));
+      const { payload } = await dispatch(
+        acquireSpecificVoucher(
+          voucherAcquirement?.employer?.code,
+          voucherAcquirement?.workers,
+          voucherAcquirement?.dateRanges,
+          'Acquire Specific Voucher',
+        ),
+      );
+
+      const { clientMutationId } = payload.data.acquireAssignedVouchers;
+      const acquirementMutation = await dispatch(fetchMutation(clientMutationId));
+      const currentMutation = parseData(acquirementMutation.payload.data.mutationLogs)?.[0];
+
+      if (currentMutation.error) {
+        const errorDetails = JSON.parse(currentMutation.error);
+
+        dispatch(
+          coreAlert(formatMessage('menu.voucherAcquirement'), formatMessage(errorDetails?.detail || 'NOT_FOUND')),
+        );
+        return;
+      }
+
+      const {
+        worker_voucher: { bill_id: billId },
+      } = JSON.parse(currentMutation.jsonExt);
+
+      await payWithMPay(billId);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Acquirement error. ${error}`);
     }
 
-    historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
     setIsPaymentModalOpen((prevState) => !prevState);
   };
 
@@ -100,9 +122,12 @@ function VoucherAcquirementSpecificWorker() {
       <Grid xs={12}>
         <Grid container className={classes.paperHeaderTitle}>
           <Typography variant="h5">{formatMessage('workerVoucher.acquirement.method.SPECIFIC_WORKER')}</Typography>
-          <Tooltip title={acquirementBlocked(voucherAcquirement)
-            ? formatMessage('workerVoucher.vouchers.required')
-            : formatMessage('workerVoucher.acquire.vouchers')}
+          <Tooltip
+            title={
+              acquirementBlocked(voucherAcquirement)
+                ? formatMessage('workerVoucher.vouchers.required')
+                : formatMessage('workerVoucher.acquire.vouchers')
+            }
           >
             <span>
               <Button

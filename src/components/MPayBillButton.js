@@ -3,10 +3,9 @@ import React from 'react';
 import { Grid, Button, Typography } from '@material-ui/core';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
-import { useModulesManager, useTranslations, baseApiUrl } from '@openimis/fe-core';
-import {
-  BILL_PAID_STATUS, MODULE_NAME, MPAY_BILL_URL,
-} from '../constants';
+import { useModulesManager, useTranslations } from '@openimis/fe-core';
+import { BILL_PAID_STATUS, MODULE_NAME } from '../constants';
+import { payWithMPay } from '../utils/utils';
 
 function MPayBillButton({ bill }) {
   const modulesManager = useModulesManager();
@@ -15,17 +14,9 @@ function MPayBillButton({ bill }) {
 
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
 
-  const handleOnClick = (e) => {
+  const handleOnClick = async (e) => {
     e.preventDefault();
-
-    try {
-      const redirectToURL = new URL(`${window.location.origin}${baseApiUrl}${MPAY_BILL_URL}`);
-      redirectToURL.searchParams.set('bill', bill.id);
-
-      window.open(redirectToURL.href, '_blank');
-    } catch (error) {
-      throw new Error('Redirection failed.', error);
-    }
+    await payWithMPay(bill.id);
   };
 
   return (
