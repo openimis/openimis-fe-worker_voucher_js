@@ -1,61 +1,69 @@
 import React, { useState, useMemo } from 'react';
 
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 import {
   useGraphqlQuery, useTranslations, Autocomplete, useModulesManager, parseData,
 } from '@openimis/fe-core';
-import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY, WORKER_THRESHOLD } from '../constants';
+import WorkerImportDialog from '../components/WorkerImportDialog';
+import {
+  MODULE_NAME,
+  USER_ECONOMIC_UNIT_STORAGE_KEY,
+  WORKER_IMPORT_PREVIOUS_WORKERS,
+  WORKER_THRESHOLD,
+} from '../constants';
 
 function WorkerMultiplePicker({
-  readOnly,
-  value,
-  onChange,
-  required,
-  multiple = true,
-  filterSelectedOptions,
-  previousWorkersCheckbox,
+  readOnly, value, onChange, required, multiple = true, filterSelectedOptions,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
-  const [previousWorkersChecked, setPreviousWorkersChecked] = useState(false);
   const [searchString, setSearchString] = useState('');
   const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
   const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
+  const [configurationDialogOpen, setConfigurationDialogOpen] = useState(false);
+  const [importPlan, setImportPlan] = useState(undefined);
 
-  const {
-    isLoading,
-    data,
-    error,
-  } = useGraphqlQuery(
+  const { isLoading, data, error } = useGraphqlQuery(
     `
-    query WorkerMultiplePicker($economicUnitCode: String!, $fetchPreviousWorkers: Boolean!) {
-      allInsurees: insurees @skip(if: $fetchPreviousWorkers) {
+    query WorkerMultiplePicker($economicUnitCode: String!) {
+      allInsurees: insurees {
         edges {
           node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
         }
       }
-      previousInsurees: previousWorkers(economicUnitCode: $economicUnitCode) @include(if: $fetchPreviousWorkers) {
+      previousInsurees: previousWorkers(economicUnitCode: $economicUnitCode) {
         edges {
           node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
         }
-      }
+      },
+      previousDayInsurees: previousWorkers(economicUnitCode: $economicUnitCode) {
+        edges {
+          node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
+        }
+      },
     }    
     `,
     {
       economicUnitCode: userEconomicUnit?.code || '',
-      fetchPreviousWorkers: previousWorkersChecked,
     },
   );
 
-  const workers = useMemo(() => {
-    const currentWorkersData = previousWorkersChecked ? data?.previousInsurees : data?.allInsurees;
+  const { workers, previousWorkers, previousDayWorkers } = useMemo(() => {
+    const currentWorkersData = data?.allInsurees;
+    const previousWorkersData = data?.previousInsurees;
+    const previousDayWorkersData = data?.previousDayInsurees;
 
-    return parseData(currentWorkersData);
-  }, [previousWorkersChecked, data]);
+    return {
+      workers: parseData(currentWorkersData),
+      previousWorkers: parseData(previousWorkersData),
+      previousDayWorkers: parseData(previousDayWorkersData),
+    };
+  }, [data]);
 
   const filterOptions = (options) => {
-    if (!previousWorkersChecked && searchString.length < WORKER_THRESHOLD) {
+    if (searchString.length < WORKER_THRESHOLD) {
       return [];
     }
 
@@ -63,8 +71,30 @@ function WorkerMultiplePicker({
     return filteredOptions;
   };
 
+  const handleImportDialogOpen = () => {
+    setConfigurationDialogOpen((prevState) => !prevState);
+  };
+
+  const handleImport = () => {
+    setConfigurationDialogOpen(false);
+
+    const currentValueSet = new Set(value.map((worker) => worker.id));
+    const getUniqueWorkers = (workers) => workers.filter((worker) => !currentValueSet.has(worker.id));
+
+    onChange([...value, ...getUniqueWorkers(
+      importPlan === WORKER_IMPORT_PREVIOUS_WORKERS ? previousWorkers : previousDayWorkers,
+    )]);
+  };
+
   return (
-    <>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '8px',
+        alignItems: 'start',
+      }}
+    >
       <Autocomplete
         multiple={multiple}
         required={required}
@@ -77,7 +107,7 @@ function WorkerMultiplePicker({
         readOnly={readOnly}
         placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
         noOptionsText={
-          (!previousWorkersChecked && searchString.length < WORKER_THRESHOLD)
+          searchString.length < WORKER_THRESHOLD
             ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
             : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')
         }
@@ -87,24 +117,23 @@ function WorkerMultiplePicker({
         onInputChange={() => {}}
         setCurrentString={setSearchString}
       />
-      {previousWorkersCheckbox && (
-        <FormControlLabel
-          control={(
-            <Checkbox
-              color="primary"
-              checked={previousWorkersChecked}
-              onChange={(e) => {
-                setPreviousWorkersChecked(e.target.checked);
-                if (e.target.checked) {
-                  setSearchString('');
-                }
-              }}
-            />
-          )}
-          label={formatMessage('workerVoucher.WorkerMultiplePicker.checkbox.label')}
-        />
-      )}
-    </>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<PersonAddIcon />}
+        size="large"
+        onClick={handleImportDialogOpen}
+      >
+        {formatMessage('workerVoucher.workerImport.confirm')}
+      </Button>
+      <WorkerImportDialog
+        open={configurationDialogOpen}
+        onClose={handleImportDialogOpen}
+        importPlan={importPlan}
+        setImportPlan={setImportPlan}
+        onConfirm={handleImport}
+      />
+    </div>
   );
 }
 

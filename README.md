@@ -53,4 +53,4 @@ __Administration__ ('admin.mainMenu') - it is displayed by default, main entry o
 ## Configurations Options
 
 - `isWorker`: Specifies whether the individual should be classified and managed as a worker or a standard insuree. In Moldova, the Insuree entity is also used to represent workers. When set to true, the system displays 'Workers and Vouchers' instead of the default 'Insurees and Policies', aligning the interface with the specific needs of worker representation. Default: __false__.
-- `genericVoucherEnabled`: Specifies whether the system should enable the use of generic vouchers for the individual. When set to true, the system provides additional functionalities for handling generic vouchers, aligning the interface with the specific needs of voucher management. Default: __false__.
+- `genericVoucherEnabled`: Specifies whether the system should enable the use of generic vouchers for the worker. When set to true, the system provides additional functionalities for handling generic vouchers, aligning the interface with the specific needs of voucher management. Default: __false__.
