@@ -157,7 +157,9 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
   };
 
   useEffect(() => {
-    fetchVouchers(queryParams);
+    if (queryParams.length) {
+      fetchVouchers(queryParams);
+    }
   }, [economicUnit, queryParams]);
 
   return (

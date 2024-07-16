@@ -69,7 +69,8 @@ const DEFAULT_CONFIG = {
       icon: <GroupAddIcon />,
       route: `/${ROUTE_WORKER_VOUCHER_ASSIGNMENT}`,
       filter: (rights, config) => config.genericVoucherEnabled
-      && [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right)),
+      && [VOUCHER_RIGHT_SEARCH].some((right) => rights.includes(right))
+      && ![INSPECTOR_RIGHT, ADMIN_RIGHT].some((right) => rights.includes(right)),
     },
   ],
   'admin.voucher.MainMenu': [
