@@ -40,7 +40,7 @@ function VoucherDetailsPanel({
   const classes = useStyles();
 
   const handlePrint = useReactToPrint({
-    documentTitle: `Print ${workerVoucher.code} Voucher`,
+    documentTitle: `${workerVoucher.code}`,
   });
 
   const redirectToTheLinkedBill = () => historyPush(modulesManager, history, REF_ROUTE_BILL, [workerVoucher.billId]);
