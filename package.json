@@ -43,5 +43,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "react-to-print": "^2.15.1"
+  }
 }
