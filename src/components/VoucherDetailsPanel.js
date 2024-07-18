@@ -1,6 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable react/button-has-type */
-/* eslint-disable react/no-unstable-nested-components */
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
