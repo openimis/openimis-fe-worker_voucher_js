@@ -2,14 +2,13 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
-import ReceiptIcon from '@material-ui/icons/Receipt';
 
 import {
-  Form, Helmet, useHistory, useModulesManager, useTranslations, historyPush,
+  Form, Helmet, useHistory, useModulesManager, useTranslations,
 } from '@openimis/fe-core';
 import { clearWorkerVoucher, fetchWorkerVoucher } from '../actions';
 import {
-  EMPTY_STRING, MODULE_NAME, REF_ROUTE_BILL, VOUCHER_RIGHT_SEARCH,
+  EMPTY_STRING, MODULE_NAME, VOUCHER_RIGHT_SEARCH,
 } from '../constants';
 import VoucherDetailsPanel from '../components/VoucherDetailsPanel';
 
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   page: theme.page,
 }));
 
-function VoucherDetailsPage({ match }) {
+function VoucherDetailsPage({ match, logo }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const modulesManager = useModulesManager();
@@ -44,17 +43,6 @@ function VoucherDetailsPage({ match }) {
     return () => dispatch(clearWorkerVoucher());
   }, [workerVoucherUuid]);
 
-  const redirectToTheLinkedBill = () => historyPush(modulesManager, history, REF_ROUTE_BILL, [workerVoucher.billId]);
-
-  const voucherActions = [
-    {
-      doIt: redirectToTheLinkedBill,
-      icon: <ReceiptIcon />,
-      disabled: !workerVoucher?.billId,
-      tooltip: formatMessage('navigateToTheBill.tooltip'),
-    },
-  ];
-
   return (
     rights.includes(VOUCHER_RIGHT_SEARCH) && (
       <div className={classes.page}>
@@ -70,9 +58,9 @@ function VoucherDetailsPage({ match }) {
           back={() => history.goBack()}
           HeadPanel={VoucherDetailsPanel}
           readOnly
+          logo={logo}
           formatMessage={formatMessage}
           rights={rights}
-          actions={voucherActions}
         />
       </div>
     )
