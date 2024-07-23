@@ -97,5 +97,14 @@
   "workerVoucher.workerImport.previousWorkers": "Add workers I've worked with",
   "workerVoucher.workerImport.previousDay": "Add workers from the previous day only",
   "workerVoucher.workerImport.cancel": "Cancel",
-  "workerVoucher.workerImport.confirm": "Import"
+  "workerVoucher.workerImport.confirm": "Import",
+  "workerVoucher.printVoucher": "Print",
+  "workerVoucher.printVoucher.title": "Voucher {voucherCode}",
+  "workerVoucher.template.voucherCode": "Voucher Code",
+  "workerVoucher.template.status": "Status",
+  "workerVoucher.template.worker": "Worker",
+  "workerVoucher.template.employer": "Employer",
+  "workerVoucher.template.createdDate": "Created Date",
+  "workerVoucher.template.assignedDate": "Assigned Date",
+  "workerVoucher.template.valueOfVoucher": "Value of voucher"
 }

@@ -8,6 +8,7 @@ export const MODULE_NAME = 'workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
 export const REF_ROUTE_BILL = 'bill.route.bill';
+export const REF_GET_BILL_LINE_ITEM = 'bill.action.fetchBillLineItems';
 export const ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 
 export const MPAY_BILL_URL = '/msystems/mpay_payment/';
@@ -21,7 +22,7 @@ export const EMPTY_STRING = '';
 export const CONTAINS_LOOKUP = 'Icontains';
 export const STARTS_WITH_LOOKUP = 'Istartswith';
 export const WORKER_THRESHOLD = 3;
-export const VOUCHER_QUANTITY_THRESHOLD = 1000;
+export const VOUCHER_QUANTITY_THRESHOLD = 10000;
 export const USER_ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 export const VOUCHER_PRICE_MANAGEMENT_BUSINESS_KEY = 'VOUCHER_PRICE_MANAGEMENT_KEY';
 export const DATE_TIME_SUFFIX = 'T00:00:00';
