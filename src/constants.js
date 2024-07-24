@@ -62,3 +62,17 @@ export const DEFAULT = {
   GENERIC_VOUCHER_ENABLED: false,
   IS_WORKER: false,
 };
+
+export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';
+export const WORKER_IMPORT_PREVIOUS_DAY = 'previousDay';
+
+export const WORKER_IMPORT_PLANS = [
+  {
+    value: WORKER_IMPORT_PREVIOUS_WORKERS,
+    labelKey: 'workerVoucher.workerImport.previousWorkers',
+  },
+  {
+    value: WORKER_IMPORT_PREVIOUS_DAY,
+    labelKey: 'workerVoucher.workerImport.previousDay',
+  },
+];

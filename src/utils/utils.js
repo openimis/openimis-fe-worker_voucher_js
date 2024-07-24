@@ -13,3 +13,11 @@ export const payWithMPay = async (billId) => {
     throw new Error('Redirection to MPay failed.', error);
   }
 };
+
+export const getYesterdaysDate = () => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  return yesterday.toISOString().split('T')[0];
+};
