@@ -13,6 +13,7 @@ import {
   WORKER_IMPORT_PREVIOUS_WORKERS,
   WORKER_THRESHOLD,
 } from '../constants';
+import { getYesterdaysDate } from '../utils/utils';
 
 function WorkerMultiplePicker({
   readOnly, value, onChange, required, multiple = true, filterSelectedOptions,
@@ -24,29 +25,58 @@ function WorkerMultiplePicker({
   const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
   const [configurationDialogOpen, setConfigurationDialogOpen] = useState(false);
   const [importPlan, setImportPlan] = useState(undefined);
+  const yesterday = getYesterdaysDate();
 
   const { isLoading, data, error } = useGraphqlQuery(
     `
-    query WorkerMultiplePicker($economicUnitCode: String!) {
-      allInsurees: insurees {
-        edges {
-          node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
+      query WorkerMultiplePicker($economicUnitCode: String!, $dateRange: DateRangeInclusiveInputType) {
+        allInsurees: insurees {
+          edges {
+            node {
+              id
+              uuid
+              chfId
+              lastName
+              otherNames
+              dob
+            }
+          }
+        }
+        previousInsurees: previousWorkers(economicUnitCode: $economicUnitCode) {
+          edges {
+            node {
+              id
+              uuid
+              chfId
+              lastName
+              otherNames
+              dob
+            }
+          }
+        }
+        previousDayInsurees: previousWorkers(
+          economicUnitCode: $economicUnitCode
+          dateRange: $dateRange
+        ) {
+          edges {
+            node {
+              id
+              uuid
+              chfId
+              lastName
+              otherNames
+              dob
+            }
+          }
         }
       }
-      previousInsurees: previousWorkers(economicUnitCode: $economicUnitCode) {
-        edges {
-          node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
-        }
-      },
-      previousDayInsurees: previousWorkers(economicUnitCode: $economicUnitCode) {
-        edges {
-          node ${modulesManager.getProjection('insuree.InsureePicker.projection')}
-        }
-      },
-    }    
     `,
     {
       economicUnitCode: userEconomicUnit?.code || '',
+      dateRange: {
+        startDate: yesterday,
+        endDate: yesterday,
+      },
     },
   );
 
@@ -81,9 +111,10 @@ function WorkerMultiplePicker({
     const currentValueSet = new Set(value.map((worker) => worker.id));
     const getUniqueWorkers = (workers) => workers.filter((worker) => !currentValueSet.has(worker.id));
 
-    onChange([...value, ...getUniqueWorkers(
-      importPlan === WORKER_IMPORT_PREVIOUS_WORKERS ? previousWorkers : previousDayWorkers,
-    )]);
+    onChange([
+      ...value,
+      ...getUniqueWorkers(importPlan === WORKER_IMPORT_PREVIOUS_WORKERS ? previousWorkers : previousDayWorkers),
+    ]);
   };
 
   return (

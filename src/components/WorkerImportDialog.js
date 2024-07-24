@@ -31,9 +31,7 @@ function WorkerImportDialog({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg">
-      <DialogTitle>
-        {formatMessage('workerVoucher.workerImport.title')}
-      </DialogTitle>
+      <DialogTitle>{formatMessage('workerVoucher.workerImport.title')}</DialogTitle>
       <Divider />
       <DialogContent>
         <RadioGroup
