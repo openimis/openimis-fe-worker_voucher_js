@@ -56,7 +56,7 @@ function WorkerImportDialog({
         <Button onClick={onClose} className={classes.secondaryButton}>
           {formatMessage('workerVoucher.workerImport.cancel')}
         </Button>
-        <Button onClick={onConfirm} autoFocus className={classes.primaryButton}>
+        <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={!importPlan}>
           {formatMessage('workerVoucher.workerImport.confirm')}
         </Button>
       </DialogActions>
