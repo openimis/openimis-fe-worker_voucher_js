@@ -70,7 +70,6 @@
   "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
   "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters of National ID",
   "workerVoucher.WorkerMultiplePicker.noOptions": "No results",
-  "workerVoucher.WorkerMultiplePicker.checkbox.label": "Show only workers I've previously worked with",
   "workerVoucher.WorkerDateRangePicker.startDate": "Start Date",
   "workerVoucher.WorkerDateRangePicker.endDate": "End Date",
   "workerVoucher.WorkerDateRangePicker.addButton": "Add Date Range",
@@ -93,5 +92,19 @@
   "workerVoucher.filter.date": "Date",
   "business_config.validation.date_range_overlap": "Unable to create the voucher price for the specified period. There is an existing voucher price defined within the selected date range.",
   "workerVoucher.navigateToTheBill.tooltip": "Bill",
-  "workerVoucher.MPayBillButton": "Pay with MPay"
+  "workerVoucher.MPayBillButton": "Pay with MPay",
+  "workerVoucher.workerImport.title": "Import Workers",
+  "workerVoucher.workerImport.previousWorkers": "Add workers I've worked with",
+  "workerVoucher.workerImport.previousDay": "Add workers from the previous day only",
+  "workerVoucher.workerImport.cancel": "Cancel",
+  "workerVoucher.workerImport.confirm": "Import",
+  "workerVoucher.printVoucher": "Print",
+  "workerVoucher.printVoucher.title": "Voucher {voucherCode}",
+  "workerVoucher.template.voucherCode": "Voucher Code",
+  "workerVoucher.template.status": "Status",
+  "workerVoucher.template.worker": "Worker",
+  "workerVoucher.template.employer": "Employer",
+  "workerVoucher.template.createdDate": "Created Date",
+  "workerVoucher.template.assignedDate": "Assigned Date",
+  "workerVoucher.template.valueOfVoucher": "Value of voucher"
 }

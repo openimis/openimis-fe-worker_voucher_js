@@ -8,6 +8,7 @@ export const MODULE_NAME = 'workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
 export const REF_ROUTE_BILL = 'bill.route.bill';
+export const REF_GET_BILL_LINE_ITEM = 'bill.action.fetchBillLineItems';
 export const ECONOMIC_UNIT_STORAGE_KEY = 'userEconomicUnit';
 
 export const MPAY_BILL_URL = '/msystems/mpay_payment/';
@@ -61,3 +62,17 @@ export const DEFAULT = {
   GENERIC_VOUCHER_ENABLED: false,
   IS_WORKER: false,
 };
+
+export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';
+export const WORKER_IMPORT_PREVIOUS_DAY = 'previousDay';
+
+export const WORKER_IMPORT_PLANS = [
+  {
+    value: WORKER_IMPORT_PREVIOUS_WORKERS,
+    labelKey: 'workerVoucher.workerImport.previousWorkers',
+  },
+  {
+    value: WORKER_IMPORT_PREVIOUS_DAY,
+    labelKey: 'workerVoucher.workerImport.previousDay',
+  },
+];
