@@ -6,9 +6,12 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useModulesManager, useTranslations, journalize } from '@openimis/fe-core';
-import { acquireGenericVoucher, genericVoucherValidation } from '../actions';
+import {
+  useModulesManager, useTranslations, journalize, parseData, coreAlert,
+} from '@openimis/fe-core';
+import { acquireGenericVoucher, genericVoucherValidation, fetchMutation } from '../actions';
 import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY, VOUCHER_QUANTITY_THRESHOLD } from '../constants';
+import { payWithMPay } from '../utils/utils';
 import AcquirementGenericVoucherForm from './AcquirementGenericVoucherForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
 
@@ -57,16 +60,33 @@ function VoucherAcquirementGenericVoucher() {
 
   const onPaymentConfirmation = async () => {
     try {
-      await dispatch(acquireGenericVoucher(
+      const { payload } = await dispatch(acquireGenericVoucher(
         voucherAcquirement?.employer?.code,
         voucherAcquirement?.quantity,
         'Acquire Generic Voucher',
       ));
+
+      const { clientMutationId } = payload.data.acquireUnassignedVouchers;
+      const acquirementMutation = await dispatch(fetchMutation(clientMutationId));
+      const currentMutation = parseData(acquirementMutation.payload.data.mutationLogs)?.[0];
+
+      if (currentMutation.error) {
+        const errorDetails = JSON.parse(currentMutation.error);
+
+        dispatch(
+          coreAlert(formatMessage('menu.voucherAcquirement'), formatMessage(errorDetails?.detail || 'NOT_FOUND')),
+        );
+        return;
+      }
+
+      const {
+        worker_voucher: { bill_id: billId },
+      } = JSON.parse(currentMutation.jsonExt);
+      await payWithMPay(billId);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Acquirement error. ${error}`);
     }
 
-    // TODO: Redirect to the MPay.
     setIsPaymentModalOpen((prevState) => !prevState);
   };
 
