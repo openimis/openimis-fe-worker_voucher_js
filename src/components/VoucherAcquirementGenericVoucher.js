@@ -79,12 +79,10 @@ function VoucherAcquirementGenericVoucher() {
         return;
       }
 
-      // TODO: Implement the MPay payment redirection after BE integration
-      // const {
-      //   worker_voucher: { bill_id: billId },
-      // } = JSON.parse(currentMutation.jsonExt);
-      // await payWithMPay(billId);
-      await payWithMPay('dummyBillId');
+      const {
+        worker_voucher: { bill_id: billId },
+      } = JSON.parse(currentMutation.jsonExt);
+      await payWithMPay(billId);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Acquirement error. ${error}`);
     }
