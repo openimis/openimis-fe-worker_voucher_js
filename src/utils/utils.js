@@ -21,3 +21,15 @@ export const getYesterdaysDate = () => {
 
   return yesterday.toISOString().split('T')[0];
 };
+
+export const extractWorkerName = (worker, isAssignedStatus) => {
+  if (!worker || !isAssignedStatus) return '';
+
+  return `${worker.chfId} ${worker.otherNames} ${worker.lastName}`;
+};
+
+export const extractEmployerName = (employer) => {
+  if (!employer) return '';
+
+  return `${employer.code} ${employer.tradeName}`;
+};

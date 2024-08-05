@@ -100,11 +100,10 @@
   "workerVoucher.workerImport.confirm": "Import",
   "workerVoucher.printVoucher": "Print",
   "workerVoucher.printVoucher.title": "Voucher {voucherCode}",
-  "workerVoucher.template.voucherCode": "Voucher Code",
-  "workerVoucher.template.status": "Status",
-  "workerVoucher.template.worker": "Worker",
-  "workerVoucher.template.employer": "Employer",
-  "workerVoucher.template.createdDate": "Created Date",
-  "workerVoucher.template.assignedDate": "Assigned Date",
-  "workerVoucher.template.valueOfVoucher": "Value of voucher"
+  "workerVoucher.template.validityAnnotation": "The voucher can be assigned until the end of the calendar year.",
+  "workerVoucher.template.employmentVoucher": "Employment Voucher",
+  "workerVoucher.template.validOn": "Valid on the day",
+  "workerVoucher.template.voucherIdNo": "IDNO: {idNo}",
+  "workerVoucher.template.voucherEmployer": "EMPLOYER: {employer}",
+  "workerVoucher.template.workerAnnotation": "IDNP / Day laborer's name"
 }
