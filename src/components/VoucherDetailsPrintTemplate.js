@@ -6,64 +6,62 @@ import { useDispatch } from 'react-redux';
 import { Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useTranslations, useModulesManager, formatDateFromISO } from '@openimis/fe-core';
-import { MODULE_NAME, REF_GET_BILL_LINE_ITEM } from '../constants';
+import { useTranslations, useModulesManager } from '@openimis/fe-core';
+import {
+  EMPTY_STRING, MODULE_NAME, REF_GET_BILL_LINE_ITEM, WORKER_VOUCHER_STATUS,
+} from '../constants';
+import { extractEmployerName, extractWorkerName } from '../utils/utils';
 
-const useStyles = makeStyles(() => ({
-  topHeader: {
-    display: 'flex',
-    justifyContent: 'start',
-    alignItems: 'center',
-    width: '100%',
-
-    '& img': {
-      minWidth: '250px',
-      maxWidth: '300px',
-      width: 'auto',
-      height: 'auto',
+const useStyles = makeStyles((theme) => ({
+  '@global': {
+    '*': {
+      margin: 0,
+      padding: 0,
+      boxSizing: 'border-box',
     },
   },
-  printContainer: {
+  container: {
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '20px',
-    fontWeight: '500',
-  },
-  date: {
-    fontSize: '16px',
-  },
-  detailsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '12px',
-    width: '100%',
-  },
-  detailRow: {
-    display: 'flex',
+    backgroundColor: theme.palette.background.default,
     flexDirection: 'row',
-    alignItems: 'center',
+    height: '320px',
+    padding: '24px',
     justifyContent: 'space-between',
-    padding: '4px',
+    borderLeft: `10px solid ${theme.palette.primary.main}`,
+    borderRight: `10px solid ${theme.palette.primary.main}`,
   },
-  detailName: {
-    fontWeight: '600',
-    fontSize: '16px',
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  voucherValue: {
+    fontSize: '48px',
+    fontWeight: 900,
+    letterSpacing: '-2px',
+    textAlign: 'right',
+  },
+  annotation: {
+    fontSize: '12px',
+    fontStyle: 'italic',
+  },
+  voucherTitle: {
+    fontSize: '32px',
+    fontWeight: 900,
     textTransform: 'uppercase',
   },
-  detailValue: {
-    fontWeight: '500',
-    backgroundColor: '#f5f5f5',
-    padding: '6px',
-    borderRadius: '8px',
-    fontSize: '15px',
+  voucherDetail: {
+    fontSize: '16px',
+    fontWeight: 400,
   },
-  containerPadding: {
-    padding: '32px',
+  workerInfo: {
+    fontSize: '16px',
+    fontWeight: 500,
   },
-  dividerMargin: {
-    margin: '12px 0',
+  manualFill: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
   },
 }));
 
@@ -71,10 +69,10 @@ const VoucherDetailsPrintTemplate = forwardRef(({ workerVoucher, logo }, ref) =>
   const dispatch = useDispatch();
   const classes = useStyles();
   const modulesManager = useModulesManager();
-  const { formatMessage } = useTranslations(modulesManager, MODULE_NAME);
-
-  const getBillLineItem = useMemo(() => modulesManager.getRef(REF_GET_BILL_LINE_ITEM), [modulesManager]);
+  const { formatMessage, formatMessageWithValues } = useTranslations(modulesManager, MODULE_NAME);
+  const isAssignedStatus = workerVoucher.status === WORKER_VOUCHER_STATUS.AWAITING_PAYMENT;
   const [voucherValue, setVoucherValue] = useState(null);
+  const getBillLineItem = useMemo(() => modulesManager.getRef(REF_GET_BILL_LINE_ITEM), [modulesManager]);
 
   useEffect(() => {
     const fetchVoucherValue = async () => {
@@ -94,44 +92,53 @@ const VoucherDetailsPrintTemplate = forwardRef(({ workerVoucher, logo }, ref) =>
   }, [dispatch, getBillLineItem, workerVoucher.uuid]);
 
   return (
-    <div ref={ref} className={classes.containerPadding}>
-      <div className={classes.topHeader}>
-        <img src={logo} alt="Logo of Ministerul Muncii și Protecţiei Sociale al Republicii Moldova" />
+    <div ref={ref} className={classes.container}>
+      <div className={classes.section}>
+        {isAssignedStatus ? (
+          EMPTY_STRING
+        ) : (
+          <p className={classes.annotation}>{formatMessage('workerVoucher.template.validityAnnotation')}</p>
+        )}
+
+        <div>
+          <p className={classes.voucherTitle}>{formatMessage('workerVoucher.template.employmentVoucher')}</p>
+          <p className={classes.voucherDetail}>
+            {formatMessageWithValues('workerVoucher.template.voucherIdNo', {
+              idNo: workerVoucher.code,
+            })}
+          </p>
+          <p className={classes.voucherDetail}>
+            {formatMessageWithValues('workerVoucher.template.voucherEmployer', {
+              employer: extractEmployerName(workerVoucher.policyholder),
+            })}
+          </p>
+        </div>
+
+        <div className={classes.manualFill}>
+          <div>
+            <p className={classes.workerInfo}>{extractWorkerName(workerVoucher.insuree, isAssignedStatus)}</p>
+            <Divider />
+            <p className={classes.annotation}>{formatMessage('workerVoucher.template.workerAnnotation')}</p>
+          </div>
+          <div>
+            <p className={classes.workerInfo}>
+              {isAssignedStatus && workerVoucher?.assignedDate ? workerVoucher.assignedDate : EMPTY_STRING}
+            </p>
+            <Divider />
+            <p className={classes.annotation}>{formatMessage('workerVoucher.template.validOn')}</p>
+          </div>
+        </div>
       </div>
-      <Divider className={classes.dividerMargin} />
-      <div className={classes.detailsContainer}>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.voucherCode')}</p>
-          <p className={classes.detailValue}>{workerVoucher.code}</p>
+
+      <div className={classes.section}>
+        <div className={classes.ministryLogo}>
+          <img
+            src={logo}
+            style={{ width: '240px' }}
+            alt="Logo of Ministerul Muncii și Protecţiei Sociale al Republicii Moldova"
+          />
         </div>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.status')}</p>
-          <p className={classes.detailValue}>{workerVoucher.status}</p>
-        </div>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.worker')}</p>
-          <p className={classes.detailValue}>
-            {`${workerVoucher.insuree?.otherNames} ${workerVoucher.insuree?.lastName}`}
-          </p>
-        </div>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.employer')}</p>
-          <p className={classes.detailValue}>
-            {`${workerVoucher.policyholder?.code} ${workerVoucher.policyholder?.tradeName}`}
-          </p>
-        </div>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.createdDate')}</p>
-          <p className={classes.detailValue}>{formatDateFromISO(modulesManager, null, workerVoucher.dateCreated)}</p>
-        </div>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.assignedDate')}</p>
-          <p className={classes.detailValue}>{formatDateFromISO(modulesManager, null, workerVoucher.assignedDate)}</p>
-        </div>
-        <div className={classes.detailRow}>
-          <p className={classes.detailName}>{formatMessage('workerVoucher.template.valueOfVoucher')}</p>
-          <p className={classes.detailValue}>{`${formatMessage('currency')} ${voucherValue}`}</p>
-        </div>
+        <p className={classes.voucherValue}>{`${voucherValue || 0} ${formatMessage('currency')}`}</p>
       </div>
     </div>
   );

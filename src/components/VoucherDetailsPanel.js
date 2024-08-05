@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
@@ -12,7 +11,7 @@ import ReceiptIcon from '@material-ui/icons/Receipt';
 import {
   FormattedMessage, useModulesManager, useHistory, historyPush,
 } from '@openimis/fe-core';
-import { REF_ROUTE_BILL, VOUCHER_RIGHT_SEARCH } from '../constants';
+import { PRINTABLE, REF_ROUTE_BILL, VOUCHER_RIGHT_SEARCH } from '../constants';
 import VoucherDetailsEmployer from './VoucherDetailsEmployer';
 import VoucherDetailsVoucher from './VoucherDetailsVoucher';
 import VoucherDetailsWorker from './VoucherDetailsWorker';
@@ -62,22 +61,25 @@ function VoucherDetailsPanel({
           </Grid>
           {rights.includes(VOUCHER_RIGHT_SEARCH) && (
             <Grid item className={classes.actionButtons}>
+              {PRINTABLE.includes(workerVoucher.status) && (
+                <Button
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  startIcon={<PrintIcon />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePrint(null, () => voucherPrintTemplateRef.current);
+                  }}
+                >
+                  <Typography variant="subtitle1">{formatMessage('workerVoucher.printVoucher')}</Typography>
+                </Button>
+              )}
               <Button
                 size="small"
                 variant="contained"
                 color="primary"
-                startIcon={<PrintIcon />}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handlePrint(null, () => voucherPrintTemplateRef.current);
-                }}
-              >
-                <Typography variant="subtitle1">{formatMessage('workerVoucher.printVoucher')}</Typography>
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
+                disabled={!workerVoucher.billId}
                 startIcon={<ReceiptIcon />}
                 onClick={redirectToTheLinkedBill}
               >
