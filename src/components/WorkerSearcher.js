@@ -54,8 +54,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         const actionParams = [...params];
 
         if (economicUnit?.code) {
-          // TODO: This need to be adjusted when the BE is ready
-          // actionParams.push(`policyholder_Code:"${economicUnit.code}"`);
+          actionParams.push(`policyHolderCode:"${economicUnit.code}"`);
         }
 
         fetchWorkersAction(modulesManager, actionParams);
