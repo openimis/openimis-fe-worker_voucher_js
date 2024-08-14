@@ -3,6 +3,10 @@ export const EMPLOYER_RIGHT_SEARCH = 203000;
 export const VOUCHER_PRICE_MANAGEMENT_RIGHT = 205001;
 export const INSPECTOR_RIGHT = 204005;
 export const ADMIN_RIGHT = 204004;
+export const RIGHT_WORKER_SEARCH = 101101;
+export const RIGHT_WORKER_ADD = 101102;
+export const RIGHT_WORKER_EDIT = 101103;
+export const RIGHT_WORKER_DELETE = 101104;
 export const MODULE_NAME = 'workerVoucher';
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
@@ -66,6 +70,7 @@ export const WORKER_VOUCHER_STATUS_LIST = [
 export const DEFAULT = {
   GENERIC_VOUCHER_ENABLED: false,
   IS_WORKER: false,
+  WORKER_VOUCHER_COUNT_LIMIT: 120,
 };
 
 export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';

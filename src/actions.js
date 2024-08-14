@@ -1,5 +1,5 @@
 import {
-  formatPageQueryWithCount, graphql, formatMutation, graphqlWithVariables,
+  formatPageQueryWithCount, graphql, formatMutation, graphqlWithVariables, formatGQLString,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
@@ -27,6 +27,22 @@ const VOUCHER_PRICE_PROJECTION = () => [
   'dateValidFrom',
   'dateValidTo',
   'isDeleted',
+];
+
+const WORKER_PROJECTION = () => [
+  'id',
+  'uuid',
+  'validityFrom',
+  'validityTo',
+  'chfId',
+  'otherNames',
+  'lastName',
+  'phone',
+  'gender{code}',
+  'dob',
+  'marital',
+  'status',
+  'jsonExt',
 ];
 
 function formatGraphQLDateRanges(dateRanges) {
@@ -267,4 +283,83 @@ export function clearWorkerVoucherExport() {
       type: CLEAR(ACTION_TYPE.EXPORT_WORKER_VOUCHER),
     });
   };
+}
+
+export function fetchWorkers(modulesManager, params) {
+  const queryParams = [...params];
+  const payload = formatPageQueryWithCount('worker', queryParams, WORKER_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.GET_WORKERS);
+}
+
+export function fetchWorker(modulesManager, params) {
+  const queryParams = [...params];
+  const payload = formatPageQueryWithCount('worker', queryParams, WORKER_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.GET_WORKER);
+}
+
+export function downloadWorkers(params) {
+  const payload = `
+  {
+    insureesExport${!!params && params.length ? `(${params.join(',')})` : ''}
+  }`;
+  return graphql(payload, ACTION_TYPE.WORKERS_EXPORT);
+}
+
+export function clearWorkersExport() {
+  return (dispatch) => {
+    dispatch({
+      type: CLEAR(ACTION_TYPE.WORKERS_EXPORT),
+    });
+  };
+}
+
+export const clearWorker = () => (dispatch) => {
+  dispatch({
+    type: CLEAR(ACTION_TYPE.GET_WORKER),
+  });
+};
+
+export function fetchWorkerVoucherCount(workerId) {
+  return graphqlWithVariables(
+    `
+      query ($workerId: String!) {
+        worker(uuid: $workerId) {
+          edges {
+            node {
+              vouchersThisYear
+            }
+          }
+        } 
+      }
+    `,
+    { workerId },
+    ACTION_TYPE.VOUCHER_COUNT,
+  );
+}
+
+export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) {
+  // TODO: This needs to be adjusted when the BE is ready
+  // ${phCode ? `economicUnitCode: "${phCode}"` : ''}
+  const mutationInput = `
+    ${worker.chfId ? `chfId: "${formatGQLString(worker.chfId)}"` : ''}
+    ${worker.lastName ? `lastName: "${formatGQLString(worker.lastName)}"` : ''}
+    ${worker.otherNames ? `otherNames: "${formatGQLString(worker.otherNames)}"` : ''}
+    ${!!worker.gender && !!worker.gender.code ? `genderId: "${worker.gender.code}"` : ''}
+    ${worker.dob ? `dob: "${worker.dob}"` : ''}
+  `;
+
+  // TODO: Mutation needs to be adjusted when the BE is ready
+  const mutation = formatMutation('createInsuree', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.APPEND_WORKER), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.APPEND_WORKER,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
 }
