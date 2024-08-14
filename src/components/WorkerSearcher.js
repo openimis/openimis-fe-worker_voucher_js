@@ -52,6 +52,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     (params) => {
       try {
         const actionParams = [...params];
+        
         if (economicUnit?.code) {
           actionParams.push(`policyHolderCode:"${economicUnit.code}"`);
         }
