@@ -1,5 +1,9 @@
 import {
-  formatPageQueryWithCount, graphql, formatMutation, graphqlWithVariables, formatGQLString,
+  formatPageQueryWithCount,
+  graphql,
+  formatMutation,
+  graphqlWithVariables,
+  formatGQLString,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
@@ -19,15 +23,7 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
-const VOUCHER_PRICE_PROJECTION = () => [
-  'id',
-  'uuid',
-  'key',
-  'value',
-  'dateValidFrom',
-  'dateValidTo',
-  'isDeleted',
-];
+const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
 
 const WORKER_PROJECTION = () => [
   'id',
@@ -338,9 +334,8 @@ export function fetchWorkerVoucherCount(workerId) {
 }
 
 export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) {
-  // TODO: This needs to be adjusted when the BE is ready
-  // ${phCode ? `economicUnitCode: "${phCode}"` : ''}
   const mutationInput = `
+    ${phCode ? `economicUnitCode: "${phCode}"` : ''}
     ${worker.chfId ? `chfId: "${formatGQLString(worker.chfId)}"` : ''}
     ${worker.lastName ? `lastName: "${formatGQLString(worker.lastName)}"` : ''}
     ${worker.otherNames ? `otherNames: "${formatGQLString(worker.otherNames)}"` : ''}
@@ -348,8 +343,7 @@ export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) 
     ${worker.dob ? `dob: "${worker.dob}"` : ''}
   `;
 
-  // TODO: Mutation needs to be adjusted when the BE is ready
-  const mutation = formatMutation('createInsuree', mutationInput, clientMutationLabel);
+  const mutation = formatMutation('createWorker', mutationInput, clientMutationLabel);
   const requestedDateTime = new Date();
 
   return graphql(
@@ -357,6 +351,26 @@ export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) 
     [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.APPEND_WORKER), ERROR(ACTION_TYPE.MUTATION)],
     {
       actionType: ACTION_TYPE.APPEND_WORKER,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function deleteWorkerFromEconomicUnit(workerToDelete, clientMutationLabel) {
+  const mutationInput = `
+    ${workerToDelete.uuid ? `uuids: ["${workerToDelete.uuid}"]` : ''}
+  `;
+
+  const mutation = formatMutation('deletePolicyHolderInsuree', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_WORKER), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.DELETE_WORKER,
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,
       requestedDateTime,

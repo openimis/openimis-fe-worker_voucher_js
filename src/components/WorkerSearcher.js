@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useSelector, connect } from 'react-redux';
+import React, {
+  useState, useEffect, useCallback, useRef,
+} from 'react';
+import { useSelector, useDispatch, connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import {
@@ -9,9 +11,11 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
-  Searcher, useHistory, useModulesManager, useTranslations, downloadExport,
+  Searcher, useHistory, useModulesManager, useTranslations, downloadExport, SelectDialog, journalize,
 } from '@openimis/fe-core';
-import { fetchWorkers, downloadWorkers, clearWorkersExport } from '../actions';
+import {
+  fetchWorkers, downloadWorkers, clearWorkersExport, deleteWorkerFromEconomicUnit,
+} from '../actions';
 import {
   DEFAULT_PAGE_SIZE,
   MODULE_NAME,
@@ -24,8 +28,10 @@ import WorkerFilter from './WorkerFilter';
 function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, clearWorkersExport }) {
   const history = useHistory();
   const modulesManager = useModulesManager();
+  const dispatch = useDispatch();
+  const prevSubmittingMutationRef = useRef();
+
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
-  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const {
     fetchingWorkers,
     fetchedWorkers,
@@ -35,10 +41,18 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     workersTotalCount,
     workersExport,
     errorWorkersExport,
+    mutation,
+    submittingMutation,
   } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
+
+  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
+
   const [failedExport, setFailedExport] = useState(false);
   const [queryParams, setQueryParams] = useState([]);
+  const [deleteWorkerDialogOpen, setDeleteWorkerDialogOpen] = useState(false);
+  const [workerToDelete, setWorkerToDelete] = useState(null);
+
   const exportConfiguration = {
     exportFields: ['chf_id', 'last_name', 'other_names'],
     exportFieldsColumns: {
@@ -83,12 +97,27 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   const openWorker = (worker) => rights.includes(RIGHT_WORKER_SEARCH)
     && history.push(`/${modulesManager.getRef('workerVoucher.route.worker')}/${worker?.uuid}`);
 
-  // eslint-disable-next-line no-unused-vars
-  const deleteWorker = (worker) => {
-    // TODO: Implement delete worker
+  const onDoubleClick = (worker) => openWorker(worker);
+
+  const onDeleteWorkerDialogOpen = (worker) => {
+    setDeleteWorkerDialogOpen((prevState) => !prevState);
+    setWorkerToDelete(worker);
   };
 
-  const onDoubleClick = (worker) => openWorker(worker);
+  const onDeleteWorkerDialogClose = () => {
+    setDeleteWorkerDialogOpen((prevState) => !prevState);
+    setWorkerToDelete(null);
+  };
+
+  const onDeleteWorkerConfirm = async () => {
+    try {
+      await dispatch(deleteWorkerFromEconomicUnit(workerToDelete, 'Delete Worker'));
+    } catch (error) {
+      throw new Error(`[WORKER_SEARCHER]: Deletion failed. ${error}`);
+    } finally {
+      setDeleteWorkerDialogOpen((prevState) => !prevState);
+    }
+  };
 
   const itemFormatters = () => [
     (worker) => worker.chfId,
@@ -105,7 +134,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         )}
         {rights.includes(RIGHT_WORKER_DELETE) && (
           <Tooltip title={formatMessage('workerVoucher.tooltip.delete')}>
-            <IconButton onClick={() => deleteWorker(worker)}>
+            <IconButton onClick={() => onDeleteWorkerDialogOpen(worker)}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
@@ -167,6 +196,16 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     }
   }, [economicUnit, queryParams]);
 
+  useEffect(() => {
+    if (prevSubmittingMutationRef.current && !submittingMutation) {
+      dispatch(journalize(mutation));
+    }
+  }, [submittingMutation]);
+
+  useEffect(() => {
+    prevSubmittingMutationRef.current = submittingMutation;
+  });
+
   return (
     <>
       <Searcher
@@ -208,6 +247,16 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
           </DialogActions>
         </Dialog>
       )}
+      <SelectDialog
+        confirmState={deleteWorkerDialogOpen}
+        onConfirm={() => onDeleteWorkerConfirm()}
+        onClose={() => onDeleteWorkerDialogClose()}
+        module="workerVoucher"
+        confirmTitle="WorkerSearcher.dialog.title"
+        confirmMessage="WorkerSearcher.dialog.message"
+        confirmationButton="WorkerSearcher.dialog.confirm"
+        rejectionButton="WorkerSearcher.dialog.abandon"
+      />
     </>
   );
 }

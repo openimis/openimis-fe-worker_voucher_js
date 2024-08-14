@@ -30,6 +30,7 @@ export const ACTION_TYPE = {
   GET_WORKER: 'WORKER_VOUCHER_GET_WORKER',
   WORKERS_EXPORT: 'WORKER_VOUCHER_WORKERS_EXPORT',
   VOUCHER_COUNT: 'WORKER_VOUCHER_VOUCHER_COUNT',
+  DELETE_WORKER: 'WORKER_VOUCHER_DELETE_WORKER',
 };
 
 const STORE_STATE = {
@@ -310,8 +311,9 @@ function reducer(state = STORE_STATE, action) {
     case SUCCESS(ACTION_TYPE.ASSIGN_VOUCHERS):
       return dispatchMutationResp(state, 'assignVouchers', action);
     case SUCCESS(ACTION_TYPE.APPEND_WORKER):
-      // TODO: To be changed after BE implementation
-      return dispatchMutationResp(state, 'createInsuree', action);
+      return dispatchMutationResp(state, 'createWorker', action);
+    case SUCCESS(ACTION_TYPE.DELETE_WORKER):
+      return dispatchMutationResp(state, 'deletePolicyHolderInsuree', action);
     case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
       return dispatchMutationResp(state, 'createBusinessConfig', action);
     case SUCCESS(ACTION_TYPE.DELETE_VOUCHER_PRICE):
