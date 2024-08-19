@@ -12,7 +12,9 @@ import {
 } from '@openimis/fe-core';
 import { fetchWorkerVouchers, downloadWorkerVoucher, clearWorkerVoucherExport } from '../actions';
 import {
+  ADMIN_RIGHT,
   DEFAULT_PAGE_SIZE,
+  INSPECTOR_RIGHT,
   MODULE_NAME,
   REF_ROUTE_WORKER_VOUCHER,
   ROWS_PER_PAGE_OPTIONS,
@@ -38,6 +40,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
   const { economicUnit } = useSelector((state) => state.policyHolder);
   const [failedExport, setFailedExport] = useState(false);
   const [queryParams, setQueryParams] = useState([]);
+  const isAdminOrInspector = rights.includes(INSPECTOR_RIGHT) || rights.includes(ADMIN_RIGHT);
   const exportConfiguration = {
     exportFields: ['code', 'policyholder', 'insuree', 'status'],
     exportFieldsColumns: {
@@ -53,7 +56,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       try {
         const actionParams = [...params];
 
-        if (economicUnit?.code) {
+        if (economicUnit?.code && !isAdminOrInspector) {
           actionParams.push(`policyholder_Code:"${economicUnit.code}"`);
         }
 

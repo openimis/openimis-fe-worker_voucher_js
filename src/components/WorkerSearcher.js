@@ -17,7 +17,9 @@ import {
   fetchWorkers, downloadWorkers, clearWorkersExport, deleteWorkerFromEconomicUnit,
 } from '../actions';
 import {
+  ADMIN_RIGHT,
   DEFAULT_PAGE_SIZE,
+  INSPECTOR_RIGHT,
   MODULE_NAME,
   RIGHT_WORKER_DELETE,
   RIGHT_WORKER_SEARCH,
@@ -45,6 +47,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     submittingMutation,
   } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
+  const isAdminOrInspector = rights.includes(INSPECTOR_RIGHT) || rights.includes(ADMIN_RIGHT);
 
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
 
@@ -67,7 +70,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
       try {
         const actionParams = [...params];
 
-        if (economicUnit?.code) {
+        if (economicUnit?.code && !isAdminOrInspector) {
           actionParams.push(`policyHolderCode:"${economicUnit.code}"`);
         }
 
