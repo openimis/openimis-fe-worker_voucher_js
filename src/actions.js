@@ -358,8 +358,10 @@ export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) 
   );
 }
 
-export function deleteWorkerFromEconomicUnit(workerToDelete, clientMutationLabel) {
+export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clientMutationLabel) {
+  // TODO: Integrate it after BE is ready
   const mutationInput = `
+    ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : ''}
     ${workerToDelete.uuid ? `uuids: ["${workerToDelete.uuid}"]` : ''}
   `;
 

@@ -67,7 +67,7 @@ function WorkerDetailsPage({ match }) {
 
   const saveWorker = (data) => {
     try {
-      // TODO: We need to hardcode dob and gender for now, as they are not part of the worker data
+      // NOTE: We need to hardcode dob and gender for now, as they are not part of the worker data
       /* eslint-disable no-param-reassign */
       data.dob = '1990-01-01';
       data.gender = {

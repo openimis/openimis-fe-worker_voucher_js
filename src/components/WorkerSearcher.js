@@ -111,7 +111,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
 
   const onDeleteWorkerConfirm = async () => {
     try {
-      await dispatch(deleteWorkerFromEconomicUnit(workerToDelete, 'Delete Worker'));
+      await dispatch(deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, 'Delete Worker'));
     } catch (error) {
       throw new Error(`[WORKER_SEARCHER]: Deletion failed. ${error}`);
     } finally {
