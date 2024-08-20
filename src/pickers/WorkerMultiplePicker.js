@@ -1,12 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Button } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 import {
-  useGraphqlQuery, useTranslations, Autocomplete, useModulesManager, parseData,
+  Autocomplete,
+  parseData,
+  useGraphqlQuery,
+  useModulesManager,
+  useTranslations,
 } from '@openimis/fe-core';
-import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
@@ -14,6 +17,7 @@ import {
   WORKER_THRESHOLD,
 } from '../constants';
 import { getYesterdaysDate } from '../utils/utils';
+import WorkerImportDialog from '../components/WorkerImportDialog';
 
 function WorkerMultiplePicker({
   readOnly, value, onChange, required, multiple = true, filterSelectedOptions,
@@ -30,7 +34,7 @@ function WorkerMultiplePicker({
   const { isLoading, data, error } = useGraphqlQuery(
     `
       query WorkerMultiplePicker($economicUnitCode: String!, $dateRange: DateRangeInclusiveInputType) {
-        allInsurees: insurees {
+        allAvailableWorkers: worker(policyHolderCode: $economicUnitCode) {
           edges {
             node {
               id
@@ -42,7 +46,7 @@ function WorkerMultiplePicker({
             }
           }
         }
-        previousInsurees: previousWorkers(economicUnitCode: $economicUnitCode) {
+        previousWorkers: previousWorkers(economicUnitCode: $economicUnitCode) {
           edges {
             node {
               id
@@ -54,7 +58,7 @@ function WorkerMultiplePicker({
             }
           }
         }
-        previousDayInsurees: previousWorkers(
+        previousDayWorkers: previousWorkers(
           economicUnitCode: $economicUnitCode
           dateRange: $dateRange
         ) {
@@ -81,9 +85,9 @@ function WorkerMultiplePicker({
   );
 
   const { workers, previousWorkers, previousDayWorkers } = useMemo(() => {
-    const currentWorkersData = data?.allInsurees;
-    const previousWorkersData = data?.previousInsurees;
-    const previousDayWorkersData = data?.previousDayInsurees;
+    const currentWorkersData = data?.allAvailableWorkers;
+    const previousWorkersData = data?.previousWorkers;
+    const previousDayWorkersData = data?.previousDayWorkers;
 
     return {
       workers: parseData(currentWorkersData),
