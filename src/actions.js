@@ -25,7 +25,8 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
 
 const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
 
-const WORKER_PROJECTION = () => [
+// eslint-disable-next-line no-unused-vars
+const WORKER_PROJECTION = (modulesManager) => [
   'id',
   'uuid',
   'validityFrom',

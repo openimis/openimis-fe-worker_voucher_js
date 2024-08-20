@@ -56,7 +56,7 @@ function WorkerDetailsPage({ match }) {
 
   useEffect(() => () => dispatch(clearWorker()), []);
 
-  // TODO: Adjust the canSave function when the BE is ready
+  // TODO: Adjust the canSave function when MConnect integration is ready
   const canSave = () => {
     if (edited?.uuid || !edited?.chfId || !edited?.lastName || !edited?.otherNames) {
       return false;
