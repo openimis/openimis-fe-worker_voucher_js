@@ -58,6 +58,9 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
 
   const exportConfiguration = {
     exportFields: ['chf_id', 'last_name', 'other_names'],
+    additionalExportFields: {
+      policyHolderCode: economicUnit?.code,
+    },
     exportFieldsColumns: {
       chf_id: formatMessage('worker.chfId'),
       last_name: formatMessage('worker.lastName'),
@@ -231,6 +234,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         onDoubleClick={onDoubleClick}
         exportable={!!workers?.length}
         exportFetch={downloadWorkers}
+        additionalExportFields={exportConfiguration.additionalExportFields}
         exportFields={exportConfiguration.exportFields}
         exportFieldsColumns={exportConfiguration.exportFieldsColumns}
         exportFieldLabel={formatMessage('export.workers')}
