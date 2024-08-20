@@ -1,5 +1,9 @@
 import {
-  formatPageQueryWithCount, graphql, formatMutation, graphqlWithVariables,
+  formatPageQueryWithCount,
+  graphql,
+  formatMutation,
+  graphqlWithVariables,
+  formatGQLString,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
@@ -19,14 +23,23 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
-const VOUCHER_PRICE_PROJECTION = () => [
+const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
+
+// eslint-disable-next-line no-unused-vars
+const WORKER_PROJECTION = (modulesManager) => [
   'id',
   'uuid',
-  'key',
-  'value',
-  'dateValidFrom',
-  'dateValidTo',
-  'isDeleted',
+  'validityFrom',
+  'validityTo',
+  'chfId',
+  'otherNames',
+  'lastName',
+  'phone',
+  'gender{code}',
+  'dob',
+  'marital',
+  'status',
+  'jsonExt',
 ];
 
 function formatGraphQLDateRanges(dateRanges) {
@@ -267,4 +280,103 @@ export function clearWorkerVoucherExport() {
       type: CLEAR(ACTION_TYPE.EXPORT_WORKER_VOUCHER),
     });
   };
+}
+
+export function fetchWorkers(modulesManager, params) {
+  const queryParams = [...params];
+  const payload = formatPageQueryWithCount('worker', queryParams, WORKER_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.GET_WORKERS);
+}
+
+export function fetchWorker(modulesManager, params) {
+  const queryParams = [...params];
+  const payload = formatPageQueryWithCount('worker', queryParams, WORKER_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.GET_WORKER);
+}
+
+export function downloadWorkers(params) {
+  const payload = `
+  {
+    insureesExport${!!params && params.length ? `(${params.join(',')})` : ''}
+  }`;
+  return graphql(payload, ACTION_TYPE.WORKERS_EXPORT);
+}
+
+export function clearWorkersExport() {
+  return (dispatch) => {
+    dispatch({
+      type: CLEAR(ACTION_TYPE.WORKERS_EXPORT),
+    });
+  };
+}
+
+export const clearWorker = () => (dispatch) => {
+  dispatch({
+    type: CLEAR(ACTION_TYPE.GET_WORKER),
+  });
+};
+
+export function fetchWorkerVoucherCount(workerId) {
+  return graphqlWithVariables(
+    `
+      query ($workerId: String!) {
+        worker(uuid: $workerId) {
+          edges {
+            node {
+              vouchersThisYear
+            }
+          }
+        } 
+      }
+    `,
+    { workerId },
+    ACTION_TYPE.VOUCHER_COUNT,
+  );
+}
+
+export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) {
+  const mutationInput = `
+    ${phCode ? `economicUnitCode: "${phCode}"` : ''}
+    ${worker.chfId ? `chfId: "${formatGQLString(worker.chfId)}"` : ''}
+    ${worker.lastName ? `lastName: "${formatGQLString(worker.lastName)}"` : ''}
+    ${worker.otherNames ? `otherNames: "${formatGQLString(worker.otherNames)}"` : ''}
+    ${!!worker.gender && !!worker.gender.code ? `genderId: "${worker.gender.code}"` : ''}
+    ${worker.dob ? `dob: "${worker.dob}"` : ''}
+  `;
+
+  const mutation = formatMutation('createWorker', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.APPEND_WORKER), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.APPEND_WORKER,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clientMutationLabel) {
+  // TODO: Integrate it after BE is ready
+  const mutationInput = `
+    ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : ''}
+    ${workerToDelete.uuid ? `uuids: ["${workerToDelete.uuid}"]` : ''}
+  `;
+
+  const mutation = formatMutation('deletePolicyHolderInsuree', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_WORKER), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.DELETE_WORKER,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
 }

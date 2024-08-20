@@ -9,12 +9,16 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import VpnLockIcon from '@material-ui/icons/VpnLock';
+import People from '@material-ui/icons/People';
 
 import { FormattedMessage } from '@openimis/fe-core';
 import {
   ADMIN_RIGHT,
   EMPLOYER_RIGHT_SEARCH,
   INSPECTOR_RIGHT,
+  RIGHT_WORKER_ADD,
+  RIGHT_WORKER_EDIT,
+  RIGHT_WORKER_SEARCH,
   VOUCHER_PRICE_MANAGEMENT_RIGHT,
   VOUCHER_RIGHT_SEARCH,
 } from './constants';
@@ -31,6 +35,8 @@ import WorkerDateRangePicker from './pickers/WorkerDateRangePicker';
 import VoucherPriceManagement from './pages/VoucherPriceManagement';
 import MobileAppPasswordManagement from './pages/MobileAppPasswordManagement';
 import BillVoucherHeadPanel from './components/BillVoucherHeadPanel';
+import WorkersPage from './pages/WorkersPage';
+import WorkerDetailsPage from './pages/WorkerDetailsPage';
 
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
 const ROUTE_WORKER_VOUCHER = 'voucher/vouchers/voucher';
@@ -38,6 +44,8 @@ const ROUTE_WORKER_VOUCHER_ACQUIREMENT = 'voucher/acquirement';
 const ROUTE_WORKER_VOUCHER_ASSIGNMENT = 'voucher/assignment';
 const ROUTE_WORKER_VOUCHER_PRICE_MANAGEMENT = 'voucher/price';
 const ROUTE_CHANGE_MOBILE_APP_PASSWORD = 'profile/mobile/password';
+const ROUTE_WORKER_VOUCHER_WORKER_LIST = 'voucher/vouchers/workers';
+const ROUTE_WORKER_VOUCHER_WORKER = 'voucher/vouchers/workers/worker';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
@@ -45,12 +53,20 @@ const DEFAULT_CONFIG = {
   refs: [
     { key: 'workerVoucher.route.workerVouchers', ref: ROUTE_WORKER_VOUCHERS_LIST },
     { key: 'workerVoucher.route.workerVoucher', ref: ROUTE_WORKER_VOUCHER },
+    { key: 'workerVoucher.route.workers', ref: ROUTE_WORKER_VOUCHER_WORKER_LIST },
+    { key: 'workerVoucher.route.worker', ref: ROUTE_WORKER_VOUCHER_WORKER },
     { key: 'workerVoucher.WorkerVoucherStatusPicker', ref: WorkerVoucherStatusPicker },
     { key: 'workerVoucher.VoucherAcquirementMethodPicker', ref: VoucherAcquirementMethodPicker },
     { key: 'workerVoucher.WorkerMultiplePicker', ref: WorkerMultiplePicker },
     { key: 'workerVoucher.WorkerDateRangePicker', ref: WorkerDateRangePicker },
   ],
   'worker.MainMenu': [
+    {
+      text: <FormattedMessage module="workerVoucher" id="menu.workersList" />,
+      icon: <People />,
+      route: `/${ROUTE_WORKER_VOUCHER_WORKER_LIST}`,
+      filter: (rights) => [RIGHT_WORKER_SEARCH].some((right) => rights.includes(right)),
+    },
     {
       text: <FormattedMessage module="workerVoucher" id="menu.voucherList" />,
       icon: <ListAltIcon />,
@@ -91,6 +107,16 @@ const DEFAULT_CONFIG = {
       path: `${ROUTE_WORKER_VOUCHER}/:voucher_uuid?`,
       component: VoucherDetailsPage,
       requiredRights: [VOUCHER_RIGHT_SEARCH],
+    },
+    {
+      path: ROUTE_WORKER_VOUCHER_WORKER_LIST,
+      component: WorkersPage,
+      requiredRights: [RIGHT_WORKER_SEARCH],
+    },
+    {
+      path: `${ROUTE_WORKER_VOUCHER_WORKER}/:worker_uuid?`,
+      component: WorkerDetailsPage,
+      requiredRights: [RIGHT_WORKER_ADD, RIGHT_WORKER_EDIT],
     },
     {
       path: ROUTE_WORKER_VOUCHER_ACQUIREMENT,
