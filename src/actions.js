@@ -297,7 +297,7 @@ export function fetchWorker(modulesManager, params) {
 export function downloadWorkers(params) {
   const payload = `
   {
-    insureesExport${!!params && params.length ? `(${params.join(',')})` : ''}
+    workerExport${!!params && params.length ? `(${params.join(',')})` : ''}
   }`;
   return graphql(payload, ACTION_TYPE.WORKERS_EXPORT);
 }

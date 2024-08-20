@@ -253,7 +253,7 @@ function reducer(state = STORE_STATE, action) {
         ...state,
         fetchingWorkersExport: false,
         fetchedWorkersExport: true,
-        workersExport: action.payload.data.insureesExport,
+        workersExport: action.payload.data.workerExport,
         errorWorkersExport: formatGraphQLError(action.payload),
       };
     case ERROR(ACTION_TYPE.WORKERS_EXPORT):
