@@ -19,6 +19,7 @@ import {
 import {
   ADMIN_RIGHT,
   DEFAULT_PAGE_SIZE,
+  EMPTY_OBJECT,
   INSPECTOR_RIGHT,
   MODULE_NAME,
   RIGHT_WORKER_DELETE,
@@ -234,7 +235,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         onDoubleClick={onDoubleClick}
         exportable={!!workers?.length}
         exportFetch={downloadWorkers}
-        additionalExportFields={exportConfiguration.additionalExportFields}
+        additionalExportFields={isAdminOrInspector ? EMPTY_OBJECT : exportConfiguration.additionalExportFields}
         exportFields={exportConfiguration.exportFields}
         exportFieldsColumns={exportConfiguration.exportFieldsColumns}
         exportFieldLabel={formatMessage('export.workers')}
