@@ -23,6 +23,7 @@ export const VOUCHER_PRICE_DEFAULT_PAGE_SIZE = 5;
 export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 export const VOUCHER_PRICE_ROWS_PER_PAGE = [5, 10, 20, 50];
 export const EMPTY_STRING = '';
+export const EMPTY_OBJECT = {};
 export const CONTAINS_LOOKUP = 'Icontains';
 export const STARTS_WITH_LOOKUP = 'Istartswith';
 export const WORKER_THRESHOLD = 3;

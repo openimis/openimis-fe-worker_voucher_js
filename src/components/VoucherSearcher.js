@@ -14,6 +14,7 @@ import { fetchWorkerVouchers, downloadWorkerVoucher, clearWorkerVoucherExport } 
 import {
   ADMIN_RIGHT,
   DEFAULT_PAGE_SIZE,
+  EMPTY_OBJECT,
   INSPECTOR_RIGHT,
   MODULE_NAME,
   REF_ROUTE_WORKER_VOUCHER,
@@ -43,6 +44,9 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
   const isAdminOrInspector = rights.includes(INSPECTOR_RIGHT) || rights.includes(ADMIN_RIGHT);
   const exportConfiguration = {
     exportFields: ['code', 'policyholder', 'insuree', 'status'],
+    additionalExportFields: {
+      policyholder_Code: economicUnit?.code,
+    },
     exportFieldsColumns: {
       code: formatMessage('code'),
       policyholder: formatMessage('employer'),
@@ -189,6 +193,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
         exportFetch={downloadWorkerVoucher}
         exportFields={exportConfiguration.exportFields}
         exportFieldsColumns={exportConfiguration.exportFieldsColumns}
+        additionalExportFields={isAdminOrInspector ? EMPTY_OBJECT : exportConfiguration.additionalExportFields}
         exportFieldLabel={formatMessage('export.vouchers')}
         chooseExportableColumns
       />
