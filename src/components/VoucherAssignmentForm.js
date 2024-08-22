@@ -6,9 +6,11 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { useModulesManager, useTranslations, journalize } from '@openimis/fe-core';
+import {
+  useModulesManager, useTranslations, journalize, historyPush, useHistory,
+} from '@openimis/fe-core';
 import { assignVouchers, voucherAssignmentValidation } from '../actions';
-import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
+import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AssignmentVoucherForm from './AssignmentVoucherForm';
 import VoucherAssignmentConfirmModal from './VoucherAssignmentConfirmModal';
 
@@ -29,6 +31,7 @@ function VoucherAssignmentForm() {
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
   const classes = useStyles();
+  const history = useHistory();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAssignment, setVoucherAssignment] = useState({});
   const [assignmentSummary, setAssignmentSummary] = useState({});
@@ -64,6 +67,7 @@ function VoucherAssignmentForm() {
         voucherAssignment?.dateRanges,
         'Assign Vouchers',
       ));
+      historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
     } catch (error) {
       throw new Error(`[ASSIGN_VOUCHERS]: Assignment error. ${error}`);
     }
