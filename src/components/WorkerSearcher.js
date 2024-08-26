@@ -131,7 +131,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     (worker) => worker.lastName,
     (worker) => worker.otherNames,
     (worker) => (
-      <>
+      <div style={{ textAlign: 'right' }}>
         {rights.includes(RIGHT_WORKER_SEARCH) && (
           <Tooltip title={formatMessage('workerVoucher.tooltip.details')}>
             <IconButton onClick={() => openWorker(worker)}>
@@ -146,7 +146,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
             </IconButton>
           </Tooltip>
         )}
-      </>
+      </div>
     ),
   ];
 
