@@ -362,7 +362,7 @@ export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) 
 export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clientMutationLabel) {
   const mutationInput = `
     ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : ''}
-    ${workerToDelete.uuid ? `uuids: ["${workerToDelete.uuid}"]` : ''}
+    ${workerToDelete.uuid ? `uuid: "${workerToDelete.uuid}"` : ''}
   `;
 
   const mutation = formatMutation('deleteWorker', mutationInput, clientMutationLabel);
