@@ -70,7 +70,7 @@ const VoucherDetailsPrintTemplate = forwardRef(({ workerVoucher, logo }, ref) =>
   const classes = useStyles();
   const modulesManager = useModulesManager();
   const { formatMessage, formatMessageWithValues } = useTranslations(modulesManager, MODULE_NAME);
-  const isAssignedStatus = workerVoucher.status === WORKER_VOUCHER_STATUS.AWAITING_PAYMENT;
+  const isAssignedStatus = workerVoucher.status === WORKER_VOUCHER_STATUS.ASSIGNED;
   const [voucherValue, setVoucherValue] = useState(null);
   const getBillLineItem = useMemo(() => modulesManager.getRef(REF_GET_BILL_LINE_ITEM), [modulesManager]);
 

@@ -11,6 +11,7 @@ import {
 } from '../actions';
 import { EMPTY_STRING, MODULE_NAME, RIGHT_WORKER_SEARCH } from '../constants';
 import WorkerMasterPanel from '../components/WorkerMasterPanel';
+import WorkerMConnectMasterPanel from '../components/WorkerMConnectMasterPanel';
 
 const useStyles = makeStyles((theme) => ({
   page: theme.page,
@@ -31,6 +32,7 @@ function WorkerDetailsPage({ match }) {
   const [reset, setReset] = useState(0);
   const [workerVoucherCount, setWorkerVoucherCount] = useState(0);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
+  const [searchWorker, setSearchWorker] = useState(null);
 
   const titleParams = (worker) => ({
     chfId: worker?.chfId ?? EMPTY_STRING,
@@ -56,9 +58,13 @@ function WorkerDetailsPage({ match }) {
 
   useEffect(() => () => dispatch(clearWorker()), []);
 
-  // TODO: Adjust the canSave function when MConnect integration is ready
   const canSave = () => {
-    if (edited?.uuid || !edited?.chfId || !edited?.lastName || !edited?.otherNames) {
+    if (!edited?.chfId) {
+      return false;
+    }
+
+    // TODO: Add more validation here
+    if (!searchWorker) {
       return false;
     }
 
@@ -103,8 +109,10 @@ function WorkerDetailsPage({ match }) {
           titleParams={titleParams(worker)}
           edited={edited}
           back={() => history.goBack()}
-          Panels={[WorkerMasterPanel]}
+          Panels={edited?.uuid ? [WorkerMasterPanel] : [WorkerMConnectMasterPanel]}
           formatMessage={formatMessage}
+          searchWorker={searchWorker}
+          setSearchWorker={setSearchWorker}
           rights={rights}
           onEditedChanged={setEdited}
           canSave={canSave}
