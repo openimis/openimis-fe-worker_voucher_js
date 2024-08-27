@@ -8,6 +8,7 @@ export const RIGHT_WORKER_ADD = 101102;
 export const RIGHT_WORKER_EDIT = 101103;
 export const RIGHT_WORKER_DELETE = 101104;
 export const MODULE_NAME = 'workerVoucher';
+export const MAX_CELLS = 8;
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
@@ -73,10 +74,15 @@ export const DEFAULT = {
   WORKER_VOUCHER_COUNT_LIMIT: 120,
 };
 
+export const WORKER_IMPORT_ALL_WORKERS = 'allWorkers';
 export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';
 export const WORKER_IMPORT_PREVIOUS_DAY = 'previousDay';
 
 export const WORKER_IMPORT_PLANS = [
+  {
+    value: WORKER_IMPORT_ALL_WORKERS,
+    labelKey: 'workerVoucher.workerImport.allWorkers',
+  },
   {
     value: WORKER_IMPORT_PREVIOUS_WORKERS,
     labelKey: 'workerVoucher.workerImport.previousWorkers',
