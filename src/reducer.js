@@ -313,7 +313,7 @@ function reducer(state = STORE_STATE, action) {
     case SUCCESS(ACTION_TYPE.APPEND_WORKER):
       return dispatchMutationResp(state, 'createWorker', action);
     case SUCCESS(ACTION_TYPE.DELETE_WORKER):
-      return dispatchMutationResp(state, 'deletePolicyHolderInsuree', action);
+      return dispatchMutationResp(state, 'deleteWorker', action);
     case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
       return dispatchMutationResp(state, 'createBusinessConfig', action);
     case SUCCESS(ACTION_TYPE.DELETE_VOUCHER_PRICE):

@@ -360,13 +360,12 @@ export function appendWorkerToEconomicUnit(phCode, worker, clientMutationLabel) 
 }
 
 export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clientMutationLabel) {
-  // TODO: Integrate it after BE is ready
   const mutationInput = `
     ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : ''}
-    ${workerToDelete.uuid ? `uuids: ["${workerToDelete.uuid}"]` : ''}
+    ${workerToDelete.uuid ? `uuid: "${workerToDelete.uuid}"` : ''}
   `;
 
-  const mutation = formatMutation('deletePolicyHolderInsuree', mutationInput, clientMutationLabel);
+  const mutation = formatMutation('deleteWorker', mutationInput, clientMutationLabel);
   const requestedDateTime = new Date();
 
   return graphql(
