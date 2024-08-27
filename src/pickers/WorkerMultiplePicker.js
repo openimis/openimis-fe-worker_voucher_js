@@ -4,12 +4,9 @@ import { Button } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 import {
-  Autocomplete,
-  parseData,
-  useGraphqlQuery,
-  useModulesManager,
-  useTranslations,
+  Autocomplete, parseData, useGraphqlQuery, useModulesManager, useTranslations,
 } from '@openimis/fe-core';
+import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
@@ -17,7 +14,6 @@ import {
   WORKER_THRESHOLD,
 } from '../constants';
 import { getYesterdaysDate } from '../utils/utils';
-import WorkerImportDialog from '../components/WorkerImportDialog';
 
 function WorkerMultiplePicker({
   readOnly, value, onChange, required, multiple = true, filterSelectedOptions,
@@ -96,12 +92,22 @@ function WorkerMultiplePicker({
     };
   }, [data]);
 
+  const filterOptionsBySearchString = (options) => options.filter((option) => {
+    const filterableSearchString = searchString.toLowerCase();
+
+    return (
+      option?.chfId.includes(filterableSearchString)
+        || option?.lastName.toLowerCase().includes(filterableSearchString)
+        || option?.otherNames.toLowerCase().includes(filterableSearchString)
+    );
+  });
+
   const filterOptions = (options) => {
     if (searchString.length < WORKER_THRESHOLD) {
       return [];
     }
 
-    const filteredOptions = options.filter((option) => option?.chfId.includes(searchString));
+    const filteredOptions = filterOptionsBySearchString(options);
     return filteredOptions;
   };
 

@@ -84,7 +84,7 @@
   "workerVoucher.assign.confirmation": "I confirm the voucher assignment, acknowledging that I have read and agree to the terms and policies.",
   "workerVoucher.vouchers.required": "You need to fill out all required fields to continue",
   "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
-  "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters of National ID",
+  "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters to start search",
   "workerVoucher.WorkerMultiplePicker.noOptions": "No results",
   "workerVoucher.WorkerDateRangePicker.startDate": "Start Date",
   "workerVoucher.WorkerDateRangePicker.endDate": "End Date",
