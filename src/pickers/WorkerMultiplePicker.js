@@ -8,8 +8,12 @@ import {
 } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
+  EMPTY_STRING,
+  MAX_CELLS,
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
+  WORKER_IMPORT_ALL_WORKERS,
+  WORKER_IMPORT_PREVIOUS_DAY,
   WORKER_IMPORT_PREVIOUS_WORKERS,
   WORKER_THRESHOLD,
 } from '../constants';
@@ -72,7 +76,7 @@ function WorkerMultiplePicker({
       }
     `,
     {
-      economicUnitCode: userEconomicUnit?.code || '',
+      economicUnitCode: userEconomicUnit?.code || EMPTY_STRING,
       dateRange: {
         startDate: yesterday,
         endDate: yesterday,
@@ -80,13 +84,13 @@ function WorkerMultiplePicker({
     },
   );
 
-  const { workers, previousWorkers, previousDayWorkers } = useMemo(() => {
+  const { allWorkers, previousWorkers, previousDayWorkers } = useMemo(() => {
     const currentWorkersData = data?.allAvailableWorkers;
     const previousWorkersData = data?.previousWorkers;
     const previousDayWorkersData = data?.previousDayWorkers;
 
     return {
-      workers: parseData(currentWorkersData),
+      allWorkers: parseData(currentWorkersData),
       previousWorkers: parseData(previousWorkersData),
       previousDayWorkers: parseData(previousDayWorkersData),
     };
@@ -115,32 +119,43 @@ function WorkerMultiplePicker({
     setConfigurationDialogOpen((prevState) => !prevState);
   };
 
+  const importPlanWorkers = (importPlan) => {
+    switch (importPlan) {
+      case WORKER_IMPORT_ALL_WORKERS:
+        return allWorkers;
+      case WORKER_IMPORT_PREVIOUS_WORKERS:
+        return previousWorkers;
+      case WORKER_IMPORT_PREVIOUS_DAY:
+        return previousDayWorkers;
+      default:
+        return [];
+    }
+  };
+
   const handleImport = () => {
     setConfigurationDialogOpen(false);
 
     const currentValueSet = new Set(value.map((worker) => worker.id));
     const getUniqueWorkers = (workers) => workers.filter((worker) => !currentValueSet.has(worker.id));
 
-    onChange([
-      ...value,
-      ...getUniqueWorkers(importPlan === WORKER_IMPORT_PREVIOUS_WORKERS ? previousWorkers : previousDayWorkers),
-    ]);
+    onChange([...value, ...getUniqueWorkers(importPlanWorkers(importPlan))]);
   };
 
   return (
     <div
       style={{
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
         gap: '8px',
-        alignItems: 'start',
+        alignItems: 'end',
       }}
     >
       <Autocomplete
         multiple={multiple}
         required={required}
         error={error}
-        options={workers}
+        options={allWorkers}
+        limitTags={MAX_CELLS}
         onChange={onChange}
         value={value}
         isLoading={isLoading}
