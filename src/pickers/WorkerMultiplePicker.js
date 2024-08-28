@@ -9,6 +9,8 @@ import {
 } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
+  EMPTY_STRING,
+  MAX_CELLS,
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
   WORKER_IMPORT_ALL_WORKERS,
@@ -102,12 +104,20 @@ function WorkerMultiplePicker({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', gap: '8px', alignItems: 'start' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        alignItems: 'end',
+      }}
+    >
       <Autocomplete
         multiple={multiple}
         required={required}
         error={error}
         options={allWorkers}
+        limitTags={MAX_CELLS}
         onChange={onChange}
         value={value}
         isLoading={isLoading}

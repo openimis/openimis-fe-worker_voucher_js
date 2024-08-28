@@ -8,6 +8,7 @@ export const RIGHT_WORKER_ADD = 101102;
 export const RIGHT_WORKER_EDIT = 101103;
 export const RIGHT_WORKER_DELETE = 101104;
 export const MODULE_NAME = 'workerVoucher';
+export const MAX_CELLS = 8;
 
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
