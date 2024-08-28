@@ -73,10 +73,15 @@ export const DEFAULT = {
   WORKER_VOUCHER_COUNT_LIMIT: 120,
 };
 
+export const WORKER_IMPORT_ALL_WORKERS = 'allWorkers';
 export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';
 export const WORKER_IMPORT_PREVIOUS_DAY = 'previousDay';
 
 export const WORKER_IMPORT_PLANS = [
+  {
+    value: WORKER_IMPORT_ALL_WORKERS,
+    labelKey: 'workerVoucher.workerImport.allWorkers',
+  },
   {
     value: WORKER_IMPORT_PREVIOUS_WORKERS,
     labelKey: 'workerVoucher.workerImport.previousWorkers',
