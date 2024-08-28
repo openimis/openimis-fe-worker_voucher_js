@@ -11,7 +11,14 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
-  Searcher, useHistory, useModulesManager, useTranslations, downloadExport, SelectDialog, journalize,
+  Searcher,
+  useHistory,
+  useModulesManager,
+  useTranslations,
+  downloadExport,
+  SelectDialog,
+  journalize,
+  EXPORT_FILE_FORMATS,
 } from '@openimis/fe-core';
 import {
   fetchWorkers, downloadWorkers, clearWorkersExport, deleteWorkerFromEconomicUnit,
@@ -56,6 +63,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   const [queryParams, setQueryParams] = useState([]);
   const [deleteWorkerDialogOpen, setDeleteWorkerDialogOpen] = useState(false);
   const [workerToDelete, setWorkerToDelete] = useState(null);
+  const [exportFileFormat, setExportFileFormat] = useState(EXPORT_FILE_FORMATS.csv);
 
   const exportConfiguration = {
     exportFields: ['chf_id', 'last_name', 'other_names'],
@@ -67,6 +75,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
       last_name: formatMessage('worker.lastName'),
       other_names: formatMessage('worker.otherNames'),
     },
+    exportFileFormats: EXPORT_FILE_FORMATS,
   };
 
   const fetchWorkers = useCallback(
@@ -159,7 +168,11 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
 
   useEffect(() => {
     if (workersExport) {
-      downloadExport(workersExport, `${formatMessage('export.workers.filename')}.csv`)();
+      downloadExport(
+        workersExport,
+        `${formatMessage('export.workers.filename')}.${exportFileFormat}`,
+        exportFileFormat,
+      )();
       clearWorkersExport();
     }
 
@@ -241,6 +254,10 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         exportFieldsColumns={exportConfiguration.exportFieldsColumns}
         exportFieldLabel={formatMessage('export.workers')}
         chooseExportableColumns
+        chooseFileFormat
+        exportFileFormats={EXPORT_FILE_FORMATS}
+        exportFileFormat={exportFileFormat}
+        setExportFileFormat={setExportFileFormat}
       />
       {failedExport && (
         <Dialog open={failedExport} fullWidth maxWidth="sm">
