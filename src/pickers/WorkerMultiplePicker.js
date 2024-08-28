@@ -34,7 +34,7 @@ function WorkerMultiplePicker({
   const { isLoading, data, error } = useGraphqlQuery(
     `
       query WorkerMultiplePicker($economicUnitCode: String!, $dateRange: DateRangeInclusiveInputType) {
-        allAvailableWorkers: worker(policyHolderCode: $economicUnitCode) {
+        allAvailableWorkers: worker(economicUnitCode: $economicUnitCode) {
           edges {
             node {
               id

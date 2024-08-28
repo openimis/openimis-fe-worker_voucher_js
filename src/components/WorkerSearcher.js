@@ -68,7 +68,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   const exportConfiguration = {
     exportFields: ['chf_id', 'last_name', 'other_names'],
     additionalExportFields: {
-      policyHolderCode: economicUnit?.code,
+      economicUnitCode: economicUnit?.code,
     },
     exportFieldsColumns: {
       chf_id: formatMessage('worker.chfId'),
@@ -84,7 +84,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         const actionParams = [...params];
 
         if (economicUnit?.code && !isAdminOrInspector) {
-          actionParams.push(`policyHolderCode:"${economicUnit.code}"`);
+          actionParams.push(`economicUnitCode:"${economicUnit.code}"`);
         }
 
         fetchWorkersAction(modulesManager, actionParams);
