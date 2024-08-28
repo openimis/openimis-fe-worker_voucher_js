@@ -60,7 +60,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   const exportConfiguration = {
     exportFields: ['chf_id', 'last_name', 'other_names'],
     additionalExportFields: {
-      policyHolderCode: economicUnit?.code,
+      economicUnitCode: economicUnit?.code,
     },
     exportFieldsColumns: {
       chf_id: formatMessage('worker.chfId'),
@@ -75,7 +75,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         const actionParams = [...params];
 
         if (economicUnit?.code && !isAdminOrInspector) {
-          actionParams.push(`policyHolderCode:"${economicUnit.code}"`);
+          actionParams.push(`economicUnitCode:"${economicUnit.code}"`);
         }
 
         fetchWorkersAction(modulesManager, actionParams);
@@ -119,6 +119,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   const onDeleteWorkerConfirm = async () => {
     try {
       await dispatch(deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, 'Delete Worker'));
+      fetchWorkers(queryParams);
     } catch (error) {
       throw new Error(`[WORKER_SEARCHER]: Deletion failed. ${error}`);
     } finally {
@@ -131,7 +132,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     (worker) => worker.lastName,
     (worker) => worker.otherNames,
     (worker) => (
-      <>
+      <div style={{ textAlign: 'right' }}>
         {rights.includes(RIGHT_WORKER_SEARCH) && (
           <Tooltip title={formatMessage('workerVoucher.tooltip.details')}>
             <IconButton onClick={() => openWorker(worker)}>
@@ -146,7 +147,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
             </IconButton>
           </Tooltip>
         )}
-      </>
+      </div>
     ),
   ];
 

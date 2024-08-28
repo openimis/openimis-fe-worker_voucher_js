@@ -108,11 +108,13 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     (workerVoucher) => workerVoucher.assignedDate,
     (workerVoucher) => workerVoucher.expiryDate,
     (workerVoucher) => (
-      <Tooltip title={formatMessage('workerVoucher.tooltip.details')}>
-        <IconButton onClick={() => openWorkerVoucher(workerVoucher)}>
-          <VisibilityIcon />
-        </IconButton>
-      </Tooltip>
+      <div style={{ textAlign: 'right' }}>
+        <Tooltip title={formatMessage('workerVoucher.tooltip.details')}>
+          <IconButton onClick={() => openWorkerVoucher(workerVoucher)}>
+            <VisibilityIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
     ),
   ];
 
