@@ -498,3 +498,17 @@ export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clien
     },
   );
 }
+
+export function validateMConnectWorker(nationalId, economicUnitCode) {
+  return graphqlWithVariables(
+    `
+    query validateMConnectWorker($nationalId: String!, $economicUnitCode: String!) {
+      onlineWorkerData(nationalId: $nationalId, economicUnitCode: $economicUnitCode) {
+        lastName
+        otherNames
+      }
+    }
+  `,
+    { nationalId, economicUnitCode },
+  );
+}
