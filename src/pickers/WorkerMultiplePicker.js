@@ -44,11 +44,11 @@ function WorkerMultiplePicker({
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const { 
-          allAvailableWorkers, 
-          previousWorkers, 
-          previousDayWorkers 
-        } = await fetchAllAvailableWorkers(dispatch, economicUnitCode, { startDate: yesterday, endDate: yesterday }); 
+        const {
+          allAvailableWorkers,
+          previousWorkers,
+          previousDayWorkers,
+        } = await fetchAllAvailableWorkers(dispatch, economicUnitCode, { startDate: yesterday, endDate: yesterday });
         setAllWorkers(allAvailableWorkers);
         setPreviousWorkers(previousWorkers);
         setPreviousDayWorkers(previousDayWorkers);
@@ -78,7 +78,7 @@ function WorkerMultiplePicker({
   };
 
   const handleImportDialogOpen = () => {
-    setConfigurationDialogOpen(prevState => !prevState);
+    setConfigurationDialogOpen((prevState) => !prevState);
   };
 
   const importPlanWorkers = (importPlan) => {
