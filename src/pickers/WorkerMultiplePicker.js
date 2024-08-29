@@ -1,14 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Button } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 import {
-  Autocomplete, parseData, useGraphqlQuery, useModulesManager, useTranslations,
+  Autocomplete, useModulesManager, useTranslations,
 } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
-  EMPTY_STRING,
   MAX_CELLS,
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
@@ -18,91 +18,55 @@ import {
   WORKER_THRESHOLD,
 } from '../constants';
 import { getYesterdaysDate } from '../utils/utils';
+import { fetchAllAvailableWorkers } from '../actions';
 
 function WorkerMultiplePicker({
   readOnly, value, onChange, required, multiple = true, filterSelectedOptions,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+  const dispatch = useDispatch();
+  const [allWorkers, setAllWorkers] = useState([]);
+  const [previousWorkers, setPreviousWorkers] = useState([]);
+  const [previousDayWorkers, setPreviousDayWorkers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [searchString, setSearchString] = useState('');
-  const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
-  const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
   const [configurationDialogOpen, setConfigurationDialogOpen] = useState(false);
   const [importPlan, setImportPlan] = useState(undefined);
   const yesterday = getYesterdaysDate();
 
-  const { isLoading, data, error } = useGraphqlQuery(
-    `
-      query WorkerMultiplePicker($economicUnitCode: String!, $dateRange: DateRangeInclusiveInputType) {
-        allAvailableWorkers: worker(economicUnitCode: $economicUnitCode) {
-          edges {
-            node {
-              id
-              uuid
-              chfId
-              lastName
-              otherNames
-              dob
-            }
-          }
-        }
-        previousWorkers: previousWorkers(economicUnitCode: $economicUnitCode) {
-          edges {
-            node {
-              id
-              uuid
-              chfId
-              lastName
-              otherNames
-              dob
-            }
-          }
-        }
-        previousDayWorkers: previousWorkers(
-          economicUnitCode: $economicUnitCode
-          dateRange: $dateRange
-        ) {
-          edges {
-            node {
-              id
-              uuid
-              chfId
-              lastName
-              otherNames
-              dob
-            }
-          }
-        }
+  const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
+  const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
+  const economicUnitCode = userEconomicUnit?.code || '';
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const { 
+          allAvailableWorkers, 
+          previousWorkers, 
+          previousDayWorkers 
+        } = await fetchAllAvailableWorkers(dispatch, economicUnitCode, { startDate: yesterday, endDate: yesterday }); 
+        setAllWorkers(allAvailableWorkers);
+        setPreviousWorkers(previousWorkers);
+        setPreviousDayWorkers(previousDayWorkers);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
       }
-    `,
-    {
-      economicUnitCode: userEconomicUnit?.code || EMPTY_STRING,
-      dateRange: {
-        startDate: yesterday,
-        endDate: yesterday,
-      },
-    },
-  );
-
-  const { allWorkers, previousWorkers, previousDayWorkers } = useMemo(() => {
-    const currentWorkersData = data?.allAvailableWorkers;
-    const previousWorkersData = data?.previousWorkers;
-    const previousDayWorkersData = data?.previousDayWorkers;
-
-    return {
-      allWorkers: parseData(currentWorkersData),
-      previousWorkers: parseData(previousWorkersData),
-      previousDayWorkers: parseData(previousDayWorkersData),
     };
-  }, [data]);
+    loadData();
+  }, [dispatch, economicUnitCode, yesterday]);
 
   const filterOptionsBySearchString = (options) => options.filter((option) => {
     const filterableSearchString = searchString.toLowerCase();
-
     return (
       option?.chfId.includes(filterableSearchString)
-        || option?.lastName.toLowerCase().includes(filterableSearchString)
-        || option?.otherNames.toLowerCase().includes(filterableSearchString)
+      || option?.lastName.toLowerCase().includes(filterableSearchString)
+      || option?.otherNames.toLowerCase().includes(filterableSearchString)
     );
   });
 
@@ -110,13 +74,11 @@ function WorkerMultiplePicker({
     if (searchString.length < WORKER_THRESHOLD) {
       return [];
     }
-
-    const filteredOptions = filterOptionsBySearchString(options);
-    return filteredOptions;
+    return filterOptionsBySearchString(options);
   };
 
   const handleImportDialogOpen = () => {
-    setConfigurationDialogOpen((prevState) => !prevState);
+    setConfigurationDialogOpen(prevState => !prevState);
   };
 
   const importPlanWorkers = (importPlan) => {
