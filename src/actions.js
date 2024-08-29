@@ -307,7 +307,7 @@ const processCategoryData = (category, data, allData) => {
 };
 
 export async function fetchAllPages(dispatch, query, variables) {
-  let allData = {
+  const allData = {
     allAvailableWorkers: [],
     previousWorkers: [],
     previousDayWorkers: [],
@@ -317,8 +317,9 @@ export async function fetchAllPages(dispatch, query, variables) {
 
   while (hasNextPage) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       const response = await dispatch(
-        graphqlWithVariables(query, { ...variables, after })
+        graphqlWithVariables(query, { ...variables, after }),
       );
       const data = response?.payload?.data || {};
 
@@ -326,24 +327,21 @@ export async function fetchAllPages(dispatch, query, variables) {
       const previousWorkersInfo = processCategoryData('previousWorkers', data, allData);
       const previousDayWorkersInfo = processCategoryData('previousDayWorkers', data, allData);
 
-      hasNextPage =
-        allAvailableWorkersInfo.hasNextPage ||
-        previousWorkersInfo.hasNextPage ||
-        previousDayWorkersInfo.hasNextPage;
+      hasNextPage = allAvailableWorkersInfo.hasNextPage
+        || previousWorkersInfo.hasNextPage
+        || previousDayWorkersInfo.hasNextPage;
 
-      after =
-        allAvailableWorkersInfo.endCursor ||
-        previousWorkersInfo.endCursor ||
-        previousDayWorkersInfo.endCursor;
-      
+      after = allAvailableWorkersInfo.endCursor
+        || previousWorkersInfo.endCursor
+        || previousDayWorkersInfo.endCursor;
+
       if (
-        !allAvailableWorkersInfo.hasNextPage &&
-        !previousWorkersInfo.hasNextPage &&
-        !previousDayWorkersInfo.hasNextPage
+        !allAvailableWorkersInfo.hasNextPage
+        && !previousWorkersInfo.hasNextPage
+        && !previousDayWorkersInfo.hasNextPage
       ) {
         hasNextPage = false;
       }
-
     } catch (error) {
       console.error('Error fetching paginated data:', error);
       hasNextPage = false;
@@ -409,7 +407,7 @@ export async function fetchAllAvailableWorkers(dispatch, economicUnitCode, dateR
       }
     }  
   `;
-  const response = await fetchAllPages(dispatch, query, { economicUnitCode, dateRange },)
+  const response = await fetchAllPages(dispatch, query, { economicUnitCode, dateRange });
   return response;
 }
 
@@ -502,7 +500,7 @@ export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clien
 export function validateMConnectWorker(nationalId, economicUnitCode) {
   return graphqlWithVariables(
     `
-    query validateMConnectWorker($nationalId: String!, $economicUnitCode: String!) {
+    query validateMConnectWorker($nationalId: String!, $economicUnitCode: ID!) {
       onlineWorkerData(nationalId: $nationalId, economicUnitCode: $economicUnitCode) {
         lastName
         otherNames
