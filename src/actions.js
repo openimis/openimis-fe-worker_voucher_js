@@ -4,6 +4,7 @@ import {
   formatMutation,
   graphqlWithVariables,
   formatGQLString,
+  parseData,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
@@ -292,6 +293,124 @@ export function fetchWorker(modulesManager, params) {
   const queryParams = [...params];
   const payload = formatPageQueryWithCount('worker', queryParams, WORKER_PROJECTION(modulesManager));
   return graphql(payload, ACTION_TYPE.GET_WORKER);
+}
+
+const processCategoryData = (category, data, allData) => {
+  if (data[category]) {
+    allData[category].push(...parseData(data[category]));
+    return {
+      hasNextPage: data[category].pageInfo.hasNextPage,
+      endCursor: data[category].pageInfo.endCursor,
+    };
+  }
+  return { hasNextPage: false, endCursor: null };
+};
+
+export async function fetchAllPages(dispatch, query, variables) {
+  let allData = {
+    allAvailableWorkers: [],
+    previousWorkers: [],
+    previousDayWorkers: [],
+  };
+  let hasNextPage = true;
+  let after = 'YXJyYXljb25uZWN0aW9uOjA=';
+
+  while (hasNextPage) {
+    try {
+      const response = await dispatch(
+        graphqlWithVariables(query, { ...variables, after })
+      );
+      const data = response?.payload?.data || {};
+
+      const allAvailableWorkersInfo = processCategoryData('allAvailableWorkers', data, allData);
+      const previousWorkersInfo = processCategoryData('previousWorkers', data, allData);
+      const previousDayWorkersInfo = processCategoryData('previousDayWorkers', data, allData);
+
+      hasNextPage =
+        allAvailableWorkersInfo.hasNextPage ||
+        previousWorkersInfo.hasNextPage ||
+        previousDayWorkersInfo.hasNextPage;
+
+      after =
+        allAvailableWorkersInfo.endCursor ||
+        previousWorkersInfo.endCursor ||
+        previousDayWorkersInfo.endCursor;
+      
+      if (
+        !allAvailableWorkersInfo.hasNextPage &&
+        !previousWorkersInfo.hasNextPage &&
+        !previousDayWorkersInfo.hasNextPage
+      ) {
+        hasNextPage = false;
+      }
+
+    } catch (error) {
+      console.error('Error fetching paginated data:', error);
+      hasNextPage = false;
+    }
+  }
+  return allData;
+}
+
+export async function fetchAllAvailableWorkers(dispatch, economicUnitCode, dateRange) {
+  const query = `
+    query WorkerMultiplePicker($economicUnitCode: String!, $dateRange: DateRangeInclusiveInputType, $after: String!) {
+      allAvailableWorkers: worker(economicUnitCode: $economicUnitCode, after: $after) {
+        edges {
+          node {
+            id
+            uuid
+            chfId
+            lastName
+            otherNames
+            dob
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+      previousWorkers: previousWorkers(economicUnitCode: $economicUnitCode, after: $after) {
+        edges {
+            node {
+              id
+              uuid
+              chfId
+              lastName
+              otherNames
+              dob
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+    }
+    previousDayWorkers: previousWorkers(
+        economicUnitCode: $economicUnitCode
+        dateRange: $dateRange
+        after: $after
+      ) {
+        edges {
+          node {
+            id
+            uuid
+            chfId
+            lastName
+            otherNames
+            dob
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }  
+  `;
+  const response = await fetchAllPages(dispatch, query, { economicUnitCode, dateRange },)
+  return response;
 }
 
 export function downloadWorkers(params) {
