@@ -1,15 +1,13 @@
 import React from 'react';
 
-import {
-  Divider, Grid, Paper, Typography,
-} from '@material-ui/core';
+import { Grid, Paper, Typography } from '@material-ui/core';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ClearIcon from '@material-ui/icons/Clear';
+import ErrorIcon from '@material-ui/icons/Error';
 import PersonIcon from '@material-ui/icons/Person';
 import { makeStyles } from '@material-ui/styles';
 
-import {
-  FormattedMessage, ProgressOrError, PublishedComponent, TextInput,
-} from '@openimis/fe-core';
+import { FormattedMessage, ProgressOrError, TextInput } from '@openimis/fe-core';
 import { EMPTY_STRING } from '../constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,15 +21,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  center: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
-export default function WorkerMConnectPreview({
-  isLoading = false, error = null, searchWorker, edited,
-}) {
+export default function WorkerMConnectPreview({ isLoading = false, error = null, searchWorker }) {
   const classes = useStyles();
 
   const renderWorkerOutput = (worker) => {
-    if (!worker) {
+    if (!worker?.lastName && !worker?.otherNames) {
       return (
         <Grid container className={classes.notFoundItem}>
           {error ? <ClearIcon color="error" fontSize="large" /> : <PersonIcon color="primary" fontSize="large" />}
@@ -45,16 +46,20 @@ export default function WorkerMConnectPreview({
 
     return (
       <Grid container className={classes.item}>
-        <Grid item xs={12} className={classes.item}>
-          <PublishedComponent pubRef="insuree.Avatar" photo={edited?.photo ?? null} readOnly withMeta={false} />
-        </Grid>
-        <Divider />
         <Grid container className={classes.item}>
           <Grid item xs={4} className={classes.item}>
             <TextInput
               module="workerVoucher"
               label="workerVoucher.worker.lastName"
-              value={edited?.lastName ?? EMPTY_STRING}
+              value={worker?.lastName ?? EMPTY_STRING}
+              readOnly
+            />
+          </Grid>
+          <Grid item xs={4} className={classes.item}>
+            <TextInput
+              module="workerVoucher"
+              label="workerVoucher.worker.otherNames"
+              value={worker?.otherNames ?? EMPTY_STRING}
               readOnly
             />
           </Grid>
@@ -63,13 +68,28 @@ export default function WorkerMConnectPreview({
     );
   };
 
+  const renderIcon = () => {
+    if (error && !searchWorker?.lastName && !searchWorker?.otherNames) {
+      return <ErrorIcon size="large" color="error" />;
+    }
+
+    if (searchWorker.chfId) {
+      return <CheckCircleIcon size="large" color="primary" />;
+    }
+
+    return EMPTY_STRING;
+  };
+
   return (
     <Paper className={classes.paper}>
       <Grid className={classes.tableTitle}>
-        <Grid item xs={12} container alignItems="center" className={classes.item}>
+        <Grid item xs={12} container alignItems="center" justifyContent="space-between" className={classes.item}>
           <Typography variant="h6">
             <FormattedMessage module="workerVoucher" id="workerVoucher.WorkerMConnectAddForm.preview" />
           </Typography>
+          <div className={classes.center}>
+            {renderIcon()}
+          </div>
         </Grid>
       </Grid>
       {isLoading ? (

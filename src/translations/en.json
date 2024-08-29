@@ -128,6 +128,7 @@
   "workerVoucher.additionalFields.negotiated_remuneration": "Negotiated Remuneration",
   "workerVoucher.WorkerMConnectAddForm.title": "Worker",
   "workerVoucher.WorkerMConnectAddForm.error": "Worker not found. Ensure that the National ID is correct and try again.",
+  "workerVoucher.WorkerMConnectAddForm.serverError": "Failed to fetch worker details. Internal server error.",
   "workerVoucher.WorkerMConnectAddForm.preview": "Worker Preview",
   "workerVoucher.WorkerMConnectAddForm.search": "Search",
   "workerVoucher.WorkerMConnectAddForm.notFound": "Worker not found. Ensure that the National ID is correct and try again.",

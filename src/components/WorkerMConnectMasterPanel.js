@@ -1,18 +1,11 @@
 import React from 'react';
 
 import {
-  Divider,
-  Grid,
-  Paper,
-  Typography,
+  Divider, Grid, Paper, Typography,
 } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
 
-import {
-  FormPanel,
-  FormattedMessage,
-  withModulesManager,
-} from '@openimis/fe-core';
+import { FormPanel, FormattedMessage, withModulesManager } from '@openimis/fe-core';
 import WorkerMConnectAddForm from './WorkerMConnectAddForm';
 
 const styles = (theme) => ({
@@ -26,14 +19,12 @@ const styles = (theme) => ({
 });
 
 class WorkerMConnectMasterPanel extends FormPanel {
-  updateChfId = (chfId) => {
-    this.updateAttribute('chfId', chfId);
+  updateWorkerData = (attributes) => {
+    this.updateAttributes(attributes);
   };
 
   render() {
-    const {
-      classes, edited, searchWorker, setSearchWorker,
-    } = this.props;
+    const { classes, edited } = this.props;
 
     return (
       <Grid container>
@@ -53,12 +44,7 @@ class WorkerMConnectMasterPanel extends FormPanel {
               </Grid>
             </Grid>
             <Divider />
-            <WorkerMConnectAddForm
-              edited={edited}
-              searchWorker={searchWorker}
-              setSearchWorker={setSearchWorker}
-              updateChfId={this.updateChfId}
-            />
+            <WorkerMConnectAddForm edited={edited} updateWorkerData={this.updateWorkerData} />
           </Paper>
         </Grid>
       </Grid>

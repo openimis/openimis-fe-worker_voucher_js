@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { Grid, Divider } from '@material-ui/core';
+import { Divider, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import _debounce from 'lodash/debounce';
 
 import { TextInput, useModulesManager, useTranslations } from '@openimis/fe-core';
-import { DEFAULT_DEBOUNCE_TIME, EMPTY_STRING, MODULE_NAME } from '../constants';
+
+import { validateMConnectWorker } from '../actions';
+import {
+  DEFAULT_DEBOUNCE_TIME, EMPTY_STRING, MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY,
+} from '../constants';
 import WorkerMConnectPreview from './WorkerMConnectPreview';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,31 +22,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function WorkerMConnectAddForm({
-  updateChfId, searchWorker, setSearchWorker, edited,
-}) {
+export default function WorkerMConnectAddForm({ updateWorkerData, edited }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
+  const userEconomicUnit = JSON.parse(storedUserEconomicUnit ?? '{}');
 
   const validateWorker = async (chfId) => {
     setIsLoading(true);
     try {
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Determines if the error it returned or not
-          const isError = true;
+      const mConnectValidation = await dispatch(validateMConnectWorker(chfId, userEconomicUnit?.code));
 
-          if (isError) {
-            reject(new Error(formatMessage('workerVoucher.WorkerMConnectAddForm.error')));
-          } else {
-            setSearchWorker({ chfId });
-            resolve();
-          }
-        }, 2000);
-      });
+      if (mConnectValidation?.error) {
+        throw new Error(formatMessage('workerVoucher.WorkerMConnectAddForm.serverError'));
+      }
+
+      const { lastName, otherNames } = mConnectValidation?.payload?.data?.onlineWorkerData ?? {};
+
+      if (!lastName || !otherNames) {
+        throw new Error(formatMessage('workerVoucher.WorkerMConnectAddForm.error'));
+      }
+
+      updateWorkerData({ chfId, lastName, otherNames });
     } catch (error) {
       setError(error.message);
     } finally {
@@ -51,7 +57,6 @@ export default function WorkerMConnectAddForm({
 
   const debouncedSearchWorker = _debounce(async (chfId) => {
     setError(null);
-    updateChfId(chfId);
     await validateWorker(chfId);
   }, DEFAULT_DEBOUNCE_TIME);
 
@@ -69,12 +74,7 @@ export default function WorkerMConnectAddForm({
           />
         </Grid>
         <Divider />
-        <WorkerMConnectPreview
-          isLoading={isLoading}
-          error={error}
-          searchWorker={searchWorker}
-          edited={edited}
-        />
+        <WorkerMConnectPreview isLoading={isLoading} error={error} searchWorker={edited} />
       </Grid>
     </Grid>
   );

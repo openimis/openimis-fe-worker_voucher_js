@@ -32,7 +32,6 @@ function WorkerDetailsPage({ match }) {
   const [reset, setReset] = useState(0);
   const [workerVoucherCount, setWorkerVoucherCount] = useState(0);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
-  const [searchWorker, setSearchWorker] = useState(null);
 
   const titleParams = (worker) => ({
     chfId: worker?.chfId ?? EMPTY_STRING,
@@ -59,12 +58,7 @@ function WorkerDetailsPage({ match }) {
   useEffect(() => () => dispatch(clearWorker()), []);
 
   const canSave = () => {
-    if (!edited?.chfId) {
-      return false;
-    }
-
-    // TODO: Add more validation here
-    if (!searchWorker) {
+    if (!edited?.chfId || !edited?.lastName || !edited?.otherNames) {
       return false;
     }
 
@@ -109,10 +103,8 @@ function WorkerDetailsPage({ match }) {
           titleParams={titleParams(worker)}
           edited={edited}
           back={() => history.goBack()}
-          Panels={edited?.uuid ? [WorkerMasterPanel] : [WorkerMConnectMasterPanel]}
+          Panels={workerUuid ? [WorkerMasterPanel] : [WorkerMConnectMasterPanel]}
           formatMessage={formatMessage}
-          searchWorker={searchWorker}
-          setSearchWorker={setSearchWorker}
           rights={rights}
           onEditedChanged={setEdited}
           canSave={canSave}
