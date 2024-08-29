@@ -44,6 +44,7 @@ export default function WorkerMConnectAddForm({ updateWorkerData, edited }) {
       const { lastName, otherNames } = mConnectValidation?.payload?.data?.onlineWorkerData ?? {};
 
       if (!lastName || !otherNames) {
+        updateWorkerData({ chfId, lastName: EMPTY_STRING, otherNames: EMPTY_STRING });
         throw new Error(formatMessage('workerVoucher.WorkerMConnectAddForm.error'));
       }
 
