@@ -9,7 +9,9 @@ import {
 import {
   appendWorkerToEconomicUnit, clearWorker, fetchWorker, fetchWorkerVoucherCount,
 } from '../actions';
-import { EMPTY_STRING, MODULE_NAME, RIGHT_WORKER_SEARCH } from '../constants';
+import {
+  EMPTY_STRING, MODULE_NAME, RIGHT_WORKER_SEARCH, USER_ECONOMIC_UNIT_STORAGE_KEY,
+} from '../constants';
 import WorkerMasterPanel from '../components/WorkerMasterPanel';
 import WorkerMConnectMasterPanel from '../components/WorkerMConnectMasterPanel';
 
@@ -24,7 +26,8 @@ function WorkerDetailsPage({ match }) {
   const modulesManager = useModulesManager();
   const history = useHistory();
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
-  const { economicUnit } = useSelector((state) => state.policyHolder);
+  const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
+  const economicUnit = JSON.parse(storedUserEconomicUnit ?? '{}');
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
   const workerUuid = match?.params?.worker_uuid;
   const { worker } = useSelector((state) => state.workerVoucher);
@@ -40,7 +43,7 @@ function WorkerDetailsPage({ match }) {
   useEffect(async () => {
     try {
       if (workerUuid) {
-        const params = [`uuid: "${workerUuid}"`];
+        const params = [`uuid: "${workerUuid}", economicUnitCode: "${economicUnit.code}"`];
         const workerData = await dispatch(fetchWorker(modulesManager, params));
         const workerVoucherCountData = await dispatch(fetchWorkerVoucherCount(workerUuid));
 
