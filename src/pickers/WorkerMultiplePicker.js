@@ -9,7 +9,6 @@ import {
 } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
-  EMPTY_STRING,
   MAX_CELLS,
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
@@ -45,13 +44,14 @@ function WorkerMultiplePicker({
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const queryResult = await fetchAllAvailableWorkers(dispatch, economicUnitCode, { startDate: yesterday, endDate: yesterday });
-        const currentWorkersData = queryResult?.allAvailableWorkers;
-        const previousWorkersData = queryResult?.previousWorkers;
-        const previousDayWorkersData = queryResult?.previousDayWorkers;  
-        setAllWorkers(currentWorkersData);
-        setPreviousWorkers(previousWorkersData);
-        setPreviousDayWorkers(previousDayWorkersData);
+        const { 
+          allAvailableWorkers, 
+          previousWorkers, 
+          previousDayWorkers 
+        } = await fetchAllAvailableWorkers(dispatch, economicUnitCode, { startDate: yesterday, endDate: yesterday }); 
+        setAllWorkers(allAvailableWorkers);
+        setPreviousWorkers(previousWorkers);
+        setPreviousDayWorkers(previousDayWorkers);
       } catch (err) {
         setError(err);
       } finally {

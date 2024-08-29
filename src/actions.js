@@ -295,6 +295,17 @@ export function fetchWorker(modulesManager, params) {
   return graphql(payload, ACTION_TYPE.GET_WORKER);
 }
 
+const processCategoryData = (category, data, allData) => {
+  if (data[category]) {
+    allData[category].push(...parseData(data[category]));
+    return {
+      hasNextPage: data[category].pageInfo.hasNextPage,
+      endCursor: data[category].pageInfo.endCursor,
+    };
+  }
+  return { hasNextPage: false, endCursor: null };
+};
+
 export async function fetchAllPages(dispatch, query, variables) {
   let allData = {
     allAvailableWorkers: [],
@@ -311,41 +322,28 @@ export async function fetchAllPages(dispatch, query, variables) {
       );
       const data = response?.payload?.data || {};
 
-      if (data.allAvailableWorkers) {
-        allData.allAvailableWorkers.push(
-          ...parseData(data.allAvailableWorkers)
-        );
-        hasNextPage = data.allAvailableWorkers.pageInfo.hasNextPage;
-        after = data.allAvailableWorkers.pageInfo.endCursor;
-      }
+      const allAvailableWorkersInfo = processCategoryData('allAvailableWorkers', data, allData);
+      const previousWorkersInfo = processCategoryData('previousWorkers', data, allData);
+      const previousDayWorkersInfo = processCategoryData('previousDayWorkers', data, allData);
 
-      if (data.previousWorkers) {
-        allData.previousWorkers.push(
-          ...parseData(data.previousWorkers)
-        );
-        if (data.previousWorkers.pageInfo.hasNextPage) {
-          hasNextPage = true;
-          after = data.previousWorkers.pageInfo.endCursor;
-        }
-      }
+      hasNextPage =
+        allAvailableWorkersInfo.hasNextPage ||
+        previousWorkersInfo.hasNextPage ||
+        previousDayWorkersInfo.hasNextPage;
 
-      if (data.previousDayWorkers) {
-        allData.previousDayWorkers.push(
-          ...parseData(data.previousDayWorkers)
-        );
-        if (data.previousDayWorkers.pageInfo.hasNextPage) {
-          hasNextPage = true;
-          after = data.previousDayWorkers.pageInfo.endCursor;
-        }
-      }
-
+      after =
+        allAvailableWorkersInfo.endCursor ||
+        previousWorkersInfo.endCursor ||
+        previousDayWorkersInfo.endCursor;
+      
       if (
-        !data.allAvailableWorkers?.pageInfo.hasNextPage &&
-        !data.previousWorkers?.pageInfo.hasNextPage &&
-        !data.previousDayWorkers?.pageInfo.hasNextPage
+        !allAvailableWorkersInfo.hasNextPage &&
+        !previousWorkersInfo.hasNextPage &&
+        !previousDayWorkersInfo.hasNextPage
       ) {
         hasNextPage = false;
       }
+
     } catch (error) {
       console.error('Error fetching paginated data:', error);
       hasNextPage = false;
@@ -357,7 +355,7 @@ export async function fetchAllPages(dispatch, query, variables) {
 export async function fetchAllAvailableWorkers(dispatch, economicUnitCode, dateRange) {
   const query = `
     query WorkerMultiplePicker($economicUnitCode: String!, $dateRange: DateRangeInclusiveInputType, $after: String!) {
-      allAvailableWorkers: worker(policyHolderCode: $economicUnitCode, after: $after) {
+      allAvailableWorkers: worker(economicUnitCode: $economicUnitCode, after: $after) {
         edges {
           node {
             id
