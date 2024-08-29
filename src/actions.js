@@ -343,7 +343,6 @@ export async function fetchAllPages(dispatch, query, variables) {
         hasNextPage = false;
       }
     } catch (error) {
-      console.error('Error fetching paginated data:', error);
       hasNextPage = false;
     }
   }
