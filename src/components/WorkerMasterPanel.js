@@ -57,8 +57,6 @@ class WorkerMasterPanel extends FormPanel {
 
     const limitReached = workerVoucherCount >= this.workerVoucherCountLimit;
 
-    const getUrl = (photo) => (photo?.photo ? `data:image/png;base64,${photo.photo}` : null);
-
     return (
       <Grid container>
         <Grid item xs={12}>
@@ -96,7 +94,7 @@ class WorkerMasterPanel extends FormPanel {
                   <Grid item xs={4} className={classes.item}>
                     <PublishedComponent
                       pubRef="insuree.Avatar"
-                      photo={getUrl(edited?.photo)}
+                      photo={edited?.photo}
                       readOnly
                       withMeta={false}
                     />
