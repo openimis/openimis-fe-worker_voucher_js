@@ -38,6 +38,7 @@ function VoucherAssignmentForm() {
   const [assignmentSummaryLoading, setAssignmentSummaryLoading] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
+  const { economicUnit } = useSelector((state) => state.policyHolder);
 
   const assignmentBlocked = (voucherAssignment) => !voucherAssignment?.workers?.length
   || !voucherAssignment?.dateRanges?.length;
@@ -91,9 +92,11 @@ function VoucherAssignmentForm() {
     if (storedUserEconomicUnit) {
       const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
 
-      setVoucherAssignment((prevState) => ({ ...prevState, employer: userEconomicUnit }));
+      setVoucherAssignment((prevState) => ({
+        ...prevState, employer: userEconomicUnit, workers: [], dateRanges: [],
+      }));
     }
-  }, [setVoucherAssignment]);
+  }, [setVoucherAssignment, economicUnit]);
 
   return (
     <Grid container>

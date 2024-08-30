@@ -38,6 +38,7 @@ function VoucherAcquirementSpecificWorker() {
   const [acquirementSummaryLoading, setAcquirementSummaryLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
+  const { economicUnit } = useSelector((state) => state.policyHolder);
 
   const acquirementBlocked = (voucherAcquirement) => !voucherAcquirement?.workers?.length
   || !voucherAcquirement?.dateRanges?.length;
@@ -113,9 +114,11 @@ function VoucherAcquirementSpecificWorker() {
     if (storedUserEconomicUnit) {
       const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
 
-      setVoucherAcquirement((prevState) => ({ ...prevState, employer: userEconomicUnit }));
+      setVoucherAcquirement((prevState) => ({
+        ...prevState, employer: userEconomicUnit, workers: [], dateRanges: [],
+      }));
     }
-  }, [setVoucherAcquirement]);
+  }, [setVoucherAcquirement, economicUnit]);
 
   return (
     <>
