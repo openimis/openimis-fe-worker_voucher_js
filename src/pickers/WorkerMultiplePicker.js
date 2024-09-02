@@ -32,6 +32,7 @@ function WorkerMultiplePicker({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchString, setSearchString] = useState('');
+  const isDisabled = readOnly || isLoading;
   const [configurationDialogOpen, setConfigurationDialogOpen] = useState(false);
   const [importPlan, setImportPlan] = useState(undefined);
   const yesterday = getYesterdaysDate();
@@ -71,7 +72,7 @@ function WorkerMultiplePicker({
   });
 
   const filterOptions = (options) => {
-    if (searchString.length < WORKER_THRESHOLD) {
+    if (searchString.length < WORKER_THRESHOLD || isLoading) {
       return [];
     }
     return filterOptionsBySearchString(options);
@@ -122,7 +123,7 @@ function WorkerMultiplePicker({
         value={value}
         isLoading={isLoading}
         label={formatMessage('workerVoucher.workers')}
-        readOnly={readOnly}
+        readOnly={isDisabled}
         placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
         noOptionsText={
           searchString.length < WORKER_THRESHOLD
