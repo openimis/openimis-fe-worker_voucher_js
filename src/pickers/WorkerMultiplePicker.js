@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Button } from '@material-ui/core';
+import { Button, CircularProgress } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-import {
-  Autocomplete, useModulesManager, useTranslations,
-} from '@openimis/fe-core';
+import { Autocomplete, useModulesManager, useTranslations } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
   MAX_CELLS,
@@ -45,11 +43,11 @@ function WorkerMultiplePicker({
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const {
-          allAvailableWorkers,
-          previousWorkers,
-          previousDayWorkers,
-        } = await fetchAllAvailableWorkers(dispatch, economicUnitCode, { startDate: yesterday, endDate: yesterday });
+        const { allAvailableWorkers, previousWorkers, previousDayWorkers } = await fetchAllAvailableWorkers(
+          dispatch,
+          economicUnitCode,
+          { startDate: yesterday, endDate: yesterday },
+        );
         setAllWorkers(allAvailableWorkers);
         setPreviousWorkers(previousWorkers);
         setPreviousDayWorkers(previousDayWorkers);
@@ -66,8 +64,8 @@ function WorkerMultiplePicker({
     const filterableSearchString = searchString.toLowerCase();
     return (
       option?.chfId.includes(filterableSearchString)
-      || option?.lastName.toLowerCase().includes(filterableSearchString)
-      || option?.otherNames.toLowerCase().includes(filterableSearchString)
+        || option?.lastName.toLowerCase().includes(filterableSearchString)
+        || option?.otherNames.toLowerCase().includes(filterableSearchString)
     );
   });
 
@@ -139,8 +137,9 @@ function WorkerMultiplePicker({
       <Button
         variant="contained"
         color="primary"
-        startIcon={<PersonAddIcon />}
+        startIcon={isLoading ? <CircularProgress size={20} color="secondary" /> : <PersonAddIcon />}
         size="large"
+        disabled={isDisabled}
         onClick={handleImportDialogOpen}
       >
         {formatMessage('workerVoucher.workerImport.confirm')}
