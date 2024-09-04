@@ -8,7 +8,7 @@ import {
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
-  Searcher, useHistory, useModulesManager, useTranslations, downloadExport,
+  Searcher, useHistory, useModulesManager, useTranslations, downloadExport, EXPORT_FILE_FORMATS,
 } from '@openimis/fe-core';
 import { fetchWorkerVouchers, downloadWorkerVoucher, clearWorkerVoucherExport } from '../actions';
 import {
@@ -26,8 +26,8 @@ import VoucherFilter from './VoucherFilter';
 function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWorkerVoucherExport }) {
   const history = useHistory();
   const modulesManager = useModulesManager();
+
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
-  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const {
     fetchingWorkerVouchers,
     fetchedWorkerVouchers,
@@ -39,9 +39,14 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     errorWorkerVoucherExport,
   } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
+  const isAdminOrInspector = rights.includes(INSPECTOR_RIGHT) || rights.includes(ADMIN_RIGHT);
+
+  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
+
   const [failedExport, setFailedExport] = useState(false);
   const [queryParams, setQueryParams] = useState([]);
-  const isAdminOrInspector = rights.includes(INSPECTOR_RIGHT) || rights.includes(ADMIN_RIGHT);
+  const [exportFileFormat, setExportFileFormat] = useState(EXPORT_FILE_FORMATS.csv);
+
   const exportConfiguration = {
     exportFields: ['code', 'policyholder', 'insuree', 'status'],
     additionalExportFields: {
@@ -53,6 +58,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       insuree: formatMessage('worker'),
       status: formatMessage('status'),
     },
+    exportFileFormats: EXPORT_FILE_FORMATS,
   };
 
   const fetchVouchers = useCallback(
@@ -126,7 +132,11 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
 
   useEffect(() => {
     if (workerVoucherExport) {
-      downloadExport(workerVoucherExport, `${formatMessage('export.filename')}.csv`)();
+      downloadExport(
+        workerVoucherExport,
+        `${formatMessage('export.filename')}.${exportFileFormat}`,
+        exportFileFormat,
+      )();
       clearWorkerVoucherExport();
     }
 
@@ -198,6 +208,10 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
         additionalExportFields={isAdminOrInspector ? EMPTY_OBJECT : exportConfiguration.additionalExportFields}
         exportFieldLabel={formatMessage('export.vouchers')}
         chooseExportableColumns
+        chooseFileFormat
+        exportFileFormats={EXPORT_FILE_FORMATS}
+        exportFileFormat={exportFileFormat}
+        setExportFileFormat={setExportFileFormat}
       />
       {failedExport && (
         <Dialog open={failedExport} fullWidth maxWidth="sm">
