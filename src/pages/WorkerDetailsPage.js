@@ -45,10 +45,12 @@ function WorkerDetailsPage({ match }) {
       if (workerUuid) {
         const params = [`uuid: "${workerUuid}", economicUnitCode: "${economicUnit.code}"`];
         const workerData = await dispatch(fetchWorker(modulesManager, params));
-        const workerVoucherCountData = await dispatch(fetchWorkerVoucherCount(workerUuid));
+        const workerVoucherCountData = await dispatch(fetchWorkerVoucherCount(workerUuid, economicUnit.code));
 
         const worker = parseData(workerData.payload.data.worker)?.[0];
-        const workerVoucherCount = parseData(workerVoucherCountData.payload.data.worker)?.[0]?.vouchersThisYear;
+        const workerVoucherCountJSON = parseData(workerVoucherCountData.payload.data.worker)?.[0]?.vouchersThisYear;
+
+        const workerVoucherCount = JSON.parse(workerVoucherCountJSON)[economicUnit.code] ?? 0;
 
         setEdited(worker);
         setWorkerVoucherCount(workerVoucherCount);
