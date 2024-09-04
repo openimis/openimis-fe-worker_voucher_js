@@ -433,11 +433,11 @@ export const clearWorker = () => (dispatch) => {
   });
 };
 
-export function fetchWorkerVoucherCount(workerId) {
+export function fetchWorkerVoucherCount(workerId, economicUnitCode) {
   return graphqlWithVariables(
     `
-      query ($workerId: String!) {
-        worker(uuid: $workerId) {
+      query ($workerId: String!, $economicUnitCode: String!) {
+        worker(uuid: $workerId, economicUnitCode: $economicUnitCode) {
           edges {
             node {
               vouchersThisYear
@@ -446,7 +446,7 @@ export function fetchWorkerVoucherCount(workerId) {
         } 
       }
     `,
-    { workerId },
+    { workerId, economicUnitCode },
     ACTION_TYPE.VOUCHER_COUNT,
   );
 }
