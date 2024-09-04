@@ -110,7 +110,7 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
     (workerVoucher) => (workerVoucher.insuree
       ? `${workerVoucher.insuree?.chfId} ${workerVoucher.insuree?.lastName}`
       : formatMessage('workerVoucher.unassigned')),
-    (workerVoucher) => workerVoucher.status,
+    (workerVoucher) => formatMessage(`workerVoucher.status.${workerVoucher.status}`),
     (workerVoucher) => workerVoucher.assignedDate,
     (workerVoucher) => workerVoucher.expiryDate,
     (workerVoucher) => (

@@ -94,7 +94,7 @@ class WorkerMasterPanel extends FormPanel {
                   <Grid item xs={4} className={classes.item}>
                     <PublishedComponent
                       pubRef="insuree.Avatar"
-                      photo={edited?.photo ?? null}
+                      photo={edited?.photo}
                       readOnly
                       withMeta={false}
                     />

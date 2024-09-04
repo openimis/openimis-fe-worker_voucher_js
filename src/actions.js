@@ -36,11 +36,12 @@ const WORKER_PROJECTION = (modulesManager) => [
   'otherNames',
   'lastName',
   'phone',
-  'gender{code}',
+  'gender { code }',
   'dob',
   'marital',
   'status',
   'jsonExt',
+  'photo { photo }',
 ];
 
 function formatGraphQLDateRanges(dateRanges) {
