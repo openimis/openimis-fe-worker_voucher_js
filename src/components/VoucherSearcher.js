@@ -132,7 +132,11 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
 
   useEffect(() => {
     if (workerVoucherExport) {
-      downloadExport(workerVoucherExport, `${formatMessage('export.filename')}.csv`)();
+      downloadExport(
+        workerVoucherExport,
+        `${formatMessage('export.filename')}.${exportFileFormat}`,
+        exportFileFormat,
+      )();
       clearWorkerVoucherExport();
     }
 
