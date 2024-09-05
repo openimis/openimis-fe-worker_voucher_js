@@ -22,7 +22,7 @@ import {
 import { MODULE_NAME } from '../constants';
 
 export const useStyles = makeStyles((theme) => ({
-  primaryButton: theme.dialog.primaryButton,
+  primaryButton: { ...theme.dialog.primaryButton, padding: '6px 12px' },
   secondaryButton: theme.dialog.secondaryButton,
   item: theme.paper.item,
 }));
@@ -39,13 +39,9 @@ function VoucherAssignmentConfirmModal({
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [acceptAssignment, setAcceptAssignment] = useState(false);
-  const acquireButtonDisabled = !acceptAssignment || isLoading || assignmentSummary?.errors;
+  const assignButtonDisabled = !acceptAssignment || isLoading || assignmentSummary?.errors;
 
   const renderContent = () => {
-    if (isLoading) {
-      return <CircularProgress />;
-    }
-
     if (assignmentSummary?.errors) {
       return (
         <Typography color="error">
@@ -89,6 +85,7 @@ function VoucherAssignmentConfirmModal({
               color="primary"
               checked={acceptAssignment}
               onChange={(e) => setAcceptAssignment(e.target.checked)}
+              disabled={isLoading}
             />
           )}
           label={formatMessage('workerVoucher.assign.confirmation')}
@@ -98,25 +95,31 @@ function VoucherAssignmentConfirmModal({
   };
 
   return (
-    <Dialog open={openState} onClose={onClose}>
+    <Dialog open={openState} onClose={onClose} disableBackdropClick={isLoading}>
       <DialogTitle>{formatMessage('workerVoucher.VoucherAssignmentConfirmModal.title')}</DialogTitle>
       <Divider />
       <DialogContent>{renderContent()}</DialogContent>
       <Divider style={{ margin: '12px 0' }} />
       <DialogActions>
-        <Button onClick={onClose} className={classes.secondaryButton}>
+        <Button onClick={onClose} className={classes.secondaryButton} disabled={isLoading}>
           {formatMessage('workerVoucher.close')}
         </Button>
-        {acquireButtonDisabled ? (
+        {assignButtonDisabled ? (
           <Tooltip title={formatMessage('workerVoucher.VoucherAssignmentConfirmModal.confirm.tooltip')}>
             <span>
-              <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
+              <Button
+                startIcon={isLoading && <CircularProgress size={16} color="secondary" />}
+                onClick={onConfirm}
+                autoFocus
+                className={classes.primaryButton}
+                disabled={assignButtonDisabled}
+              >
                 {formatMessage('workerVoucher.VoucherAssignmentConfirmModal.confirm')}
               </Button>
             </span>
           </Tooltip>
         ) : (
-          <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
+          <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={assignButtonDisabled}>
             {formatMessage('workerVoucher.VoucherAssignmentConfirmModal.confirm')}
           </Button>
         )}

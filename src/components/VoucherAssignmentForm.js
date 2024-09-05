@@ -36,6 +36,7 @@ function VoucherAssignmentForm() {
   const [voucherAssignment, setVoucherAssignment] = useState({});
   const [assignmentSummary, setAssignmentSummary] = useState({});
   const [assignmentSummaryLoading, setAssignmentSummaryLoading] = useState(false);
+  const [isAssignmentLoading, setIsAssignmentLoading] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
@@ -61,6 +62,7 @@ function VoucherAssignmentForm() {
   };
 
   const onAssignmentConfirmation = async () => {
+    setIsAssignmentLoading(true);
     try {
       await dispatch(assignVouchers(
         voucherAssignment?.employer?.code,
@@ -71,6 +73,8 @@ function VoucherAssignmentForm() {
       historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
     } catch (error) {
       throw new Error(`[ASSIGN_VOUCHERS]: Assignment error. ${error}`);
+    } finally {
+      setIsAssignmentLoading(false);
     }
 
     setIsConfirmationModalOpen((prevState) => !prevState);
@@ -136,7 +140,7 @@ function VoucherAssignmentForm() {
             openState={isConfirmationModalOpen}
             onClose={() => setIsConfirmationModalOpen((prevState) => !prevState)}
             onConfirm={onAssignmentConfirmation}
-            isLoading={assignmentSummaryLoading}
+            isLoading={assignmentSummaryLoading || isAssignmentLoading}
             assignmentSummary={assignmentSummary}
           />
         </Paper>

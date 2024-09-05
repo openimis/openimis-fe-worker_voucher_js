@@ -22,7 +22,7 @@ import {
 import { MODULE_NAME } from '../constants';
 
 export const useStyles = makeStyles((theme) => ({
-  primaryButton: theme.dialog.primaryButton,
+  primaryButton: { ...theme.dialog.primaryButton, padding: '6px 12px' },
   secondaryButton: theme.dialog.secondaryButton,
   item: theme.paper.item,
 }));
@@ -43,10 +43,6 @@ function VoucherAcquirementPaymentModal({
   const acquireButtonDisabled = !acceptAcquirement || isLoading || acquirementSummary?.errors;
 
   const renderContent = () => {
-    if (isLoading) {
-      return <CircularProgress />;
-    }
-
     if (acquirementSummary?.errors) {
       return (
         <Typography color="error">
@@ -90,6 +86,7 @@ function VoucherAcquirementPaymentModal({
               color="primary"
               checked={acceptAcquirement}
               onChange={(e) => setAcceptAcquirement(e.target.checked)}
+              disabled={isLoading}
             />
           )}
           label={formatMessage('workerVoucher.acquire.confirmation')}
@@ -99,19 +96,25 @@ function VoucherAcquirementPaymentModal({
   };
 
   return (
-    <Dialog open={openState} onClose={onClose}>
+    <Dialog open={openState} onClose={onClose} disableBackdropClick={isLoading}>
       <DialogTitle>{formatMessage('workerVoucher.VoucherAcquirementPaymentModal.title')}</DialogTitle>
       <Divider />
       <DialogContent>{renderContent()}</DialogContent>
       <Divider style={{ margin: '12px 0' }} />
       <DialogActions>
-        <Button onClick={onClose} className={classes.secondaryButton}>
+        <Button onClick={onClose} className={classes.secondaryButton} disabled={isLoading}>
           {formatMessage('workerVoucher.close')}
         </Button>
         {acquireButtonDisabled ? (
           <Tooltip title={formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm.tooltip')}>
             <span>
-              <Button onClick={onConfirm} autoFocus className={classes.primaryButton} disabled={acquireButtonDisabled}>
+              <Button
+                startIcon={isLoading && <CircularProgress size={16} color="secondary" />}
+                onClick={onConfirm}
+                autoFocus
+                className={classes.primaryButton}
+                disabled={acquireButtonDisabled}
+              >
                 {formatMessage('workerVoucher.VoucherAcquirementPaymentModal.confirm')}
               </Button>
             </span>
