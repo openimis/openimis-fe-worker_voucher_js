@@ -36,6 +36,7 @@ function VoucherAcquirementSpecificWorker() {
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
   const [acquirementSummary, setAcquirementSummary] = useState({});
   const [acquirementSummaryLoading, setAcquirementSummaryLoading] = useState(false);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
@@ -63,6 +64,7 @@ function VoucherAcquirementSpecificWorker() {
   };
 
   const onPaymentConfirmation = async () => {
+    setIsPaymentLoading(true);
     try {
       const { payload } = await dispatch(
         acquireSpecificVoucher(
@@ -93,6 +95,8 @@ function VoucherAcquirementSpecificWorker() {
       await payWithMPay(billId);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Acquirement error. ${error}`);
+    } finally {
+      setIsPaymentLoading(false);
     }
 
     setIsPaymentModalOpen((prevState) => !prevState);
@@ -156,7 +160,7 @@ function VoucherAcquirementSpecificWorker() {
         openState={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen((prevState) => !prevState)}
         onConfirm={onPaymentConfirmation}
-        isLoading={acquirementSummaryLoading}
+        isLoading={acquirementSummaryLoading || isPaymentLoading}
         acquirementSummary={acquirementSummary}
         type="acquireAssignedValidation"
       />
