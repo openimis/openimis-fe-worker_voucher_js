@@ -48,14 +48,19 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
   const [exportFileFormat, setExportFileFormat] = useState(EXPORT_FILE_FORMATS.csv);
 
   const exportConfiguration = {
-    exportFields: ['code', 'policyholder', 'insuree', 'status'],
+    exportFields: [
+      'status',
+    ],
     additionalExportFields: {
       policyholder_Code: economicUnit?.code,
     },
     exportFieldsColumns: {
       code: formatMessage('code'),
-      policyholder: formatMessage('employer'),
-      insuree: formatMessage('worker'),
+      policyholder__code: formatMessage('employer.code'),
+      policyholder__trade_name: formatMessage('employer.tradename'),
+      insuree__chf_id: formatMessage('worker.chfId'),
+      insuree__other_names: formatMessage('worker.otherNames'),
+      insuree__last_name: formatMessage('worker.lastName'),
       status: formatMessage('status'),
     },
     exportFileFormats: EXPORT_FILE_FORMATS,
