@@ -1,16 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Divider, Grid, Typography, Button, Tooltip,
+  Button, Divider, Grid, Tooltip, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useModulesManager, useTranslations, journalize, parseData, coreAlert,
+  coreAlert,
+  historyPush,
+  journalize,
+  parseData,
+  useHistory,
+  useModulesManager,
+  useTranslations,
 } from '@openimis/fe-core';
-import { specificVoucherValidation, acquireSpecificVoucher, fetchMutation } from '../actions';
-import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
+import { acquireSpecificVoucher, fetchMutation, specificVoucherValidation } from '../actions';
+import { MODULE_NAME, REF_ROUTE_BILL, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import { payWithMPay } from '../utils/utils';
 import AcquirementSpecificWorkerForm from './AcquirementSpecificWorkerForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
@@ -30,6 +36,7 @@ export const useStyles = makeStyles((theme) => ({
 function VoucherAcquirementSpecificWorker() {
   const prevSubmittingMutationRef = useRef();
   const modulesManager = useModulesManager();
+  const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -93,6 +100,7 @@ function VoucherAcquirementSpecificWorker() {
       } = JSON.parse(currentMutation.jsonExt);
 
       await payWithMPay(billId);
+      historyPush(modulesManager, history, REF_ROUTE_BILL, [billId]);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Acquirement error. ${error}`);
     } finally {
@@ -119,7 +127,10 @@ function VoucherAcquirementSpecificWorker() {
       const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
 
       setVoucherAcquirement((prevState) => ({
-        ...prevState, employer: userEconomicUnit, workers: [], dateRanges: [],
+        ...prevState,
+        employer: userEconomicUnit,
+        workers: [],
+        dateRanges: [],
       }));
     }
   }, [setVoucherAcquirement, economicUnit]);

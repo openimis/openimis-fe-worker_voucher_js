@@ -1,16 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Divider, Grid, Typography, Button, Tooltip,
+  Button, Divider, Grid, Tooltip, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useModulesManager, useTranslations, journalize, parseData, coreAlert,
+  coreAlert,
+  historyPush,
+  journalize,
+  parseData,
+  useHistory,
+  useModulesManager,
+  useTranslations,
 } from '@openimis/fe-core';
-import { acquireGenericVoucher, genericVoucherValidation, fetchMutation } from '../actions';
-import { MODULE_NAME, USER_ECONOMIC_UNIT_STORAGE_KEY, VOUCHER_QUANTITY_THRESHOLD } from '../constants';
+import { acquireGenericVoucher, fetchMutation, genericVoucherValidation } from '../actions';
+import {
+  MODULE_NAME, REF_ROUTE_BILL, USER_ECONOMIC_UNIT_STORAGE_KEY, VOUCHER_QUANTITY_THRESHOLD,
+} from '../constants';
 import { payWithMPay } from '../utils/utils';
 import AcquirementGenericVoucherForm from './AcquirementGenericVoucherForm';
 import VoucherAcquirementPaymentModal from './VoucherAcquirementPaymentModal';
@@ -30,6 +38,7 @@ export const useStyles = makeStyles((theme) => ({
 function VoucherAcquirementGenericVoucher() {
   const prevSubmittingMutationRef = useRef();
   const modulesManager = useModulesManager();
+  const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -48,10 +57,9 @@ function VoucherAcquirementGenericVoucher() {
     setIsPaymentModalOpen((prevState) => !prevState);
     setAcquirementSummaryLoading(true);
     try {
-      const { payload } = await dispatch(genericVoucherValidation(
-        voucherAcquirement?.employer?.code,
-        voucherAcquirement?.quantity,
-      ));
+      const { payload } = await dispatch(
+        genericVoucherValidation(voucherAcquirement?.employer?.code, voucherAcquirement?.quantity),
+      );
       setAcquirementSummary(payload);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Validation error. ${error}`);
@@ -63,11 +71,13 @@ function VoucherAcquirementGenericVoucher() {
   const onPaymentConfirmation = async () => {
     setIsPaymentLoading(true);
     try {
-      const { payload } = await dispatch(acquireGenericVoucher(
-        voucherAcquirement?.employer?.code,
-        voucherAcquirement?.quantity,
-        'Acquire Generic Voucher',
-      ));
+      const { payload } = await dispatch(
+        acquireGenericVoucher(
+          voucherAcquirement?.employer?.code,
+          voucherAcquirement?.quantity,
+          'Acquire Generic Voucher',
+        ),
+      );
 
       const { clientMutationId } = payload.data.acquireUnassignedVouchers;
       const acquirementMutation = await dispatch(fetchMutation(clientMutationId));
@@ -86,6 +96,7 @@ function VoucherAcquirementGenericVoucher() {
         worker_voucher: { bill_id: billId },
       } = JSON.parse(currentMutation.jsonExt);
       await payWithMPay(billId);
+      historyPush(modulesManager, history, REF_ROUTE_BILL, [billId]);
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Acquirement error. ${error}`);
     } finally {
@@ -120,9 +131,12 @@ function VoucherAcquirementGenericVoucher() {
       <Grid xs={12}>
         <Grid container className={classes.paperHeaderTitle}>
           <Typography variant="h5">{formatMessage('workerVoucher.acquirement.method.GENERIC_VOUCHER')}</Typography>
-          <Tooltip title={acquirementBlocked(voucherAcquirement)
-            ? formatMessage('workerVoucher.vouchers.required')
-            : formatMessage('workerVoucher.acquire.vouchers')}
+          <Tooltip
+            title={
+              acquirementBlocked(voucherAcquirement)
+                ? formatMessage('workerVoucher.vouchers.required')
+                : formatMessage('workerVoucher.acquire.vouchers')
+            }
           >
             <span>
               <Button
