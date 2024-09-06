@@ -60,14 +60,19 @@ function WorkerMultiplePicker({
     loadData();
   }, [dispatch, economicUnitCode, yesterday]);
 
-  const filterOptionsBySearchString = (options) => options.filter((option) => {
-    const filterableSearchString = searchString.toLowerCase();
-    return (
-      option?.chfId.includes(filterableSearchString)
-        || option?.lastName.toLowerCase().includes(filterableSearchString)
-        || option?.otherNames.toLowerCase().includes(filterableSearchString)
-    );
-  });
+  const filterOptionsBySearchString = (options) => {
+    const splitByWhitespaceRegex = /\s+/;
+    const filterableSearchString = searchString.toLowerCase().trim();
+    const searchTerms = filterableSearchString.split(splitByWhitespaceRegex);
+
+    return options.filter((option) => {
+      const chfId = option?.chfId?.toLowerCase() || '';
+      const lastName = option?.lastName?.toLowerCase() || '';
+      const otherNames = option?.otherNames?.toLowerCase() || '';
+
+      return searchTerms.every((term) => chfId.includes(term) || lastName.includes(term) || otherNames.includes(term));
+    });
+  };
 
   const filterOptions = (options) => {
     if (searchString.length < WORKER_THRESHOLD || isLoading) {
