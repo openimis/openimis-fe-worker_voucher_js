@@ -95,7 +95,6 @@ function VoucherAssignmentForm() {
 
     if (storedUserEconomicUnit) {
       const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
-
       setVoucherAssignment((prevState) => ({
         ...prevState, employer: userEconomicUnit, workers: [], dateRanges: [],
       }));
