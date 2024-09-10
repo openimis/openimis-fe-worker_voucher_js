@@ -164,26 +164,34 @@ function WorkerMultiplePicker({
             );
           }}
         fullWidth
-        PopperComponent={(props) => (
-          <Popper 
-            {...props}
-            modifiers={{
-              offset: {
-                enabled: true,
-                offset: '0, 10', // Adjust the horizontal and vertical offsets
-              },
-              preventOverflow: {
-                enabled: true,
-                boundariesElement: 'window', // Ensure the dropdown stays within the viewport
-              },
-              flip: {
-                enabled: false, // Disable flipping the dropdown to the top or bottom
-              },
-            }}
-            placement="bottom-start"
-            
-          />
-        )}
+        PopperComponent={(props) => {
+          const inputRect = props.anchorEl?.getBoundingClientRect(); // Get the input's position and size
+          const windowHeight = window.innerHeight; // Get the viewport height
+          const spaceBelow = windowHeight - inputRect?.bottom; // Calculate the space below the input
+          const dropdownMaxHeight = Math.min(spaceBelow - 8, 300); // Set max height with a small margin (8px)
+        
+          return (
+            <Popper
+              {...props}
+              modifiers={{
+                offset: {
+                  enabled: true,
+                  offset: '0, 8', // Adjust the vertical offset (small gap between input and dropdown)
+                },
+                preventOverflow: {
+                  enabled: true,
+                  boundariesElement: 'viewport',
+                  padding: 8, // Ensure padding from viewport edges
+                },
+                flip: {
+                  enabled: false, // Prevent flipping the dropdown to the top
+                },
+              }}
+              placement="bottom-start"
+              style={{ zIndex: 1300, maxHeight: dropdownMaxHeight, overflowY: 'auto' }} // Set dynamic max height and scroll
+            />
+          );
+        }}
         renderInput={(params) => (
           <TextField
             {...params}
