@@ -126,7 +126,7 @@ function WorkerMultiplePicker({
         gap: '8px',
         alignItems: 'end',
       }}
-    >     
+    > 
       <Autocomplete
         multiple
         required={required}
