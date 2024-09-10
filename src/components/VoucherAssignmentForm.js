@@ -92,10 +92,8 @@ function VoucherAssignmentForm() {
 
   useEffect(() => {
     const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
-
     if (storedUserEconomicUnit) {
       const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
-
       setVoucherAssignment((prevState) => ({
         ...prevState, employer: userEconomicUnit, workers: [], dateRanges: [],
       }));

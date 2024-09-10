@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Button, CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress, TextField } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-import { Autocomplete, useModulesManager, useTranslations } from '@openimis/fe-core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import Popper from '@material-ui/core/Popper';
+
+import { useModulesManager, useTranslations } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
   MAX_CELLS,
@@ -35,6 +41,9 @@ function WorkerMultiplePicker({
   const [importPlan, setImportPlan] = useState(undefined);
   const yesterday = getYesterdaysDate();
 
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+  const checkedIcon = <CheckBoxIcon fontSize="small" color="primary" />;
+
   const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
   const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
   const economicUnitCode = userEconomicUnit?.code || '';
@@ -48,9 +57,9 @@ function WorkerMultiplePicker({
           economicUnitCode,
           { startDate: yesterday, endDate: yesterday },
         );
-        setAllWorkers(allAvailableWorkers);
-        setPreviousWorkers(previousWorkers);
-        setPreviousDayWorkers(previousDayWorkers);
+        setAllWorkers(allAvailableWorkers || []);
+        setPreviousWorkers(previousWorkers || []);
+        setPreviousDayWorkers(previousDayWorkers || []);
       } catch (err) {
         setError(err);
       } finally {
@@ -100,11 +109,13 @@ function WorkerMultiplePicker({
 
   const handleImport = () => {
     setConfigurationDialogOpen(false);
-
-    const currentValueSet = new Set(value.map((worker) => worker.id));
-    const getUniqueWorkers = (workers) => workers.filter((worker) => !currentValueSet.has(worker.id));
-
-    onChange([...value, ...getUniqueWorkers(importPlanWorkers(importPlan))]);
+    
+    const currentWorkersSet = new Set(value.map((worker) => worker.id));
+    const importedWorkers = importPlanWorkers(importPlan);
+    const uniqueImportedWorkers = importedWorkers.filter((worker) => !currentWorkersSet.has(worker.id));
+    const updatedWorkers = [...value, ...uniqueImportedWorkers];
+    
+    onChange(null, updatedWorkers);
   };
 
   return (
@@ -115,30 +126,81 @@ function WorkerMultiplePicker({
         gap: '8px',
         alignItems: 'end',
       }}
-    >
+    > 
       <Autocomplete
-        multiple={multiple}
+        multiple
         required={required}
-        error={error}
-        options={allWorkers}
         limitTags={MAX_CELLS}
+        id="checkboxes-tags-demo"
+        disabled={isDisabled} 
+        error={error}
+        isLoading={isLoading}
+        options={allWorkers}
         onChange={onChange}
         value={value}
-        isLoading={isLoading}
-        label={formatMessage('workerVoucher.workers')}
-        readOnly={isDisabled}
-        placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
+        getOptionSelected={(option, value) => option.uuid === value.uuid}
+        filterOptions={filterOptions}
         noOptionsText={
           searchString.length < WORKER_THRESHOLD
             ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
             : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')
         }
-        filterOptions={filterOptions}
-        getOptionLabel={({ chfId, lastName, otherNames }) => `${chfId} ${lastName} ${otherNames}`}
         filterSelectedOptions={filterSelectedOptions}
-        onInputChange={() => {}}
+        onInputChange={(_, newInputValue) => setSearchString(newInputValue)}  // Update the search string
         setCurrentString={setSearchString}
-      />
+        disableCloseOnSelect
+        getOptionLabel={({ chfId, lastName, otherNames }) => `${chfId} ${lastName} ${otherNames}`}
+        renderOption={(option, { selected }) => {
+          return (
+              <>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.chfId} {option.lastName} {option.otherNames}
+              </>
+            );
+          }}
+        fullWidth
+        PopperComponent={(props) => {
+          const inputRect = props.anchorEl?.getBoundingClientRect(); // Get the input's position and size
+          const windowHeight = window.innerHeight; // Get the viewport height
+          const spaceBelow = windowHeight - inputRect?.bottom; // Calculate the space below the input
+          const dropdownMaxHeight = Math.min(spaceBelow - 8, 300); // Set max height with a small margin (8px)
+        
+          return (
+            <Popper
+              {...props}
+              modifiers={{
+                offset: {
+                  enabled: true,
+                  offset: '0, 8', // Adjust the vertical offset (small gap between input and dropdown)
+                },
+                preventOverflow: {
+                  enabled: true,
+                  boundariesElement: 'viewport',
+                  padding: 8, // Ensure padding from viewport edges
+                },
+                flip: {
+                  enabled: false, // Prevent flipping the dropdown to the top
+                },
+              }}
+              placement="bottom-start"
+              style={{ zIndex: 1300, maxHeight: dropdownMaxHeight, overflowY: 'auto' }} // Set dynamic max height and scroll
+            />
+          );
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label={formatMessage('workerVoucher.workers')}
+            placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
+          />
+        )}
+      /> 
       <Button
         variant="contained"
         color="primary"
