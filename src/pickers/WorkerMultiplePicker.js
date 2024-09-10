@@ -144,7 +144,7 @@ function WorkerMultiplePicker({
           searchString.length < WORKER_THRESHOLD
             ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
             : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')
-          }
+        }
         filterSelectedOptions={filterSelectedOptions}
         onInputChange={(_, newInputValue) => setSearchString(newInputValue)}  // Update the search string
         setCurrentString={setSearchString}
