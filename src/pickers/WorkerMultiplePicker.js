@@ -157,7 +157,7 @@ function WorkerMultiplePicker({
                   icon={icon}
                   checkedIcon={checkedIcon}
                   style={{ marginRight: 8 }}
-                  checked={selected}  // Manually set checkbox to true if in allWorkers or selected
+                  checked={selected}
                 />
                 {option.chfId} {option.lastName} {option.otherNames}
               </>
@@ -165,7 +165,24 @@ function WorkerMultiplePicker({
           }}
         fullWidth
         PopperComponent={(props) => (
-          <Popper {...props} placement="bottom-start" />
+          <Popper 
+            {...props}
+            modifiers={{
+              offset: {
+                enabled: true,
+                offset: '0, 10', // Adjust the horizontal and vertical offsets
+              },
+              preventOverflow: {
+                enabled: true,
+                boundariesElement: 'window', // Ensure the dropdown stays within the viewport
+              },
+              flip: {
+                enabled: false, // Disable flipping the dropdown to the top or bottom
+              },
+            }}
+            placement="bottom-start"
+            
+          />
         )}
         renderInput={(params) => (
           <TextField
