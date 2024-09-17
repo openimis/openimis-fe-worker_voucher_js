@@ -314,7 +314,7 @@ export async function fetchAllPages(dispatch, query, variables) {
     previousDayWorkers: [],
   };
   let hasNextPage = true;
-  let after = 'YXJyYXljb25uZWN0aW9uOjA=';
+  let after = 'YXJyYXljb25uZWN0aW9uOi0x';
 
   while (hasNextPage) {
     try {
