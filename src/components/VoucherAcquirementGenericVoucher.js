@@ -41,7 +41,7 @@ function VoucherAcquirementGenericVoucher() {
   const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const [voucherAcquirement, setVoucherAcquirement] = useState({});
   const [acquirementSummary, setAcquirementSummary] = useState({});
   const [acquirementSummaryLoading, setAcquirementSummaryLoading] = useState(false);
@@ -97,6 +97,14 @@ function VoucherAcquirementGenericVoucher() {
       } = JSON.parse(currentMutation.jsonExt);
       await payWithMPay(billId);
       historyPush(modulesManager, history, REF_ROUTE_BILL, [billId]);
+      dispatch(
+        coreAlert(
+          formatMessage('menu.voucherAcquirementSuccess'),
+          formatMessageWithValues('workerVoucher.VoucherAcquirementForm.genericVoucherConfirmation', {
+            quantity: voucherAcquirement?.quantity,
+          }),
+        ),
+      );
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_GENERIC_VOUCHER]: Acquirement error. ${error}`);
     } finally {

@@ -101,6 +101,12 @@ function VoucherAcquirementSpecificWorker() {
 
       await payWithMPay(billId);
       historyPush(modulesManager, history, REF_ROUTE_BILL, [billId]);
+      dispatch(
+        coreAlert(
+          formatMessage('menu.voucherAcquirementSuccess'),
+          formatMessage('workerVoucher.VoucherAcquirementForm.specificVoucherConfirmation'),
+        ),
+      );
     } catch (error) {
       throw new Error(`[VOUCHER_ACQUIREMENT_SPECIFIC_VOUCHER]: Acquirement error. ${error}`);
     } finally {

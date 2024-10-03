@@ -7,7 +7,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  useModulesManager, useTranslations, journalize, historyPush, useHistory,
+  coreAlert, useModulesManager, useTranslations, journalize, historyPush, useHistory,
 } from '@openimis/fe-core';
 import { assignVouchers, voucherAssignmentValidation } from '../actions';
 import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
@@ -71,6 +71,12 @@ function VoucherAssignmentForm() {
         'Assign Vouchers',
       ));
       historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
+      dispatch(
+        coreAlert(
+          formatMessage('menu.voucherAssignmentSuccess'),
+          formatMessage('workerVoucher.VoucherAssignmentForm.assignmentConfirmation'),
+        ),
+      );
     } catch (error) {
       throw new Error(`[ASSIGN_VOUCHERS]: Assignment error. ${error}`);
     } finally {

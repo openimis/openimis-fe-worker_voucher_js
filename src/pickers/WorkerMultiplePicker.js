@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -25,7 +27,7 @@ import { getYesterdaysDate } from '../utils/utils';
 import { fetchAllAvailableWorkers } from '../actions';
 
 function WorkerMultiplePicker({
-  readOnly, value, onChange, required, multiple = true, filterSelectedOptions,
+  readOnly, value, onChange, required, filterSelectedOptions,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -109,12 +111,12 @@ function WorkerMultiplePicker({
 
   const handleImport = () => {
     setConfigurationDialogOpen(false);
-    
+
     const currentWorkersSet = new Set(value.map((worker) => worker.id));
     const importedWorkers = importPlanWorkers(importPlan);
     const uniqueImportedWorkers = importedWorkers.filter((worker) => !currentWorkersSet.has(worker.id));
     const updatedWorkers = [...value, ...uniqueImportedWorkers];
-    
+
     onChange(null, updatedWorkers);
   };
 
@@ -126,13 +128,13 @@ function WorkerMultiplePicker({
         gap: '8px',
         alignItems: 'end',
       }}
-    > 
+    >
       <Autocomplete
         multiple
         required={required}
         limitTags={MAX_CELLS}
         id="checkboxes-tags-demo"
-        disabled={isDisabled} 
+        disabled={isDisabled}
         error={error}
         isLoading={isLoading}
         options={allWorkers}
@@ -146,49 +148,46 @@ function WorkerMultiplePicker({
             : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')
         }
         filterSelectedOptions={filterSelectedOptions}
-        onInputChange={(_, newInputValue) => setSearchString(newInputValue)}  // Update the search string
+        onInputChange={(_, newInputValue) => setSearchString(newInputValue)}
         setCurrentString={setSearchString}
         disableCloseOnSelect
         getOptionLabel={({ chfId, lastName, otherNames }) => `${chfId} ${lastName} ${otherNames}`}
-        renderOption={(option, { selected }) => {
-          return (
-              <>
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.chfId} {option.lastName} {option.otherNames}
-              </>
-            );
-          }}
+        renderOption={(option, { selected }) => (
+          <>
+            <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+            {`${option.chfId} ${option.lastName} ${option.otherNames}`}
+          </>
+        )}
         fullWidth
         PopperComponent={(props) => {
-          const inputRect = props.anchorEl?.getBoundingClientRect(); // Get the input's position and size
-          const windowHeight = window.innerHeight; // Get the viewport height
-          const spaceBelow = windowHeight - inputRect?.bottom; // Calculate the space below the input
-          const dropdownMaxHeight = Math.min(spaceBelow - 8, 300); // Set max height with a small margin (8px)
-        
+          const inputRect = props.anchorEl?.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          const spaceBelow = windowHeight - Number(inputRect?.bottom);
+          const dropdownMaxHeight = Math.min(spaceBelow - 8, 300);
+
           return (
             <Popper
               {...props}
               modifiers={{
                 offset: {
                   enabled: true,
-                  offset: '0, 8', // Adjust the vertical offset (small gap between input and dropdown)
+                  offset: '0, 2',
                 },
                 preventOverflow: {
                   enabled: true,
                   boundariesElement: 'viewport',
-                  padding: 8, // Ensure padding from viewport edges
+                  padding: 8,
                 },
                 flip: {
-                  enabled: false, // Prevent flipping the dropdown to the top
+                  enabled: false,
                 },
               }}
               placement="bottom-start"
-              style={{ zIndex: 1300, maxHeight: dropdownMaxHeight, overflowY: 'auto' }} // Set dynamic max height and scroll
+              style={{
+                zIndex: 1300,
+                maxHeight: dropdownMaxHeight,
+                overflowY: 'auto',
+              }}
             />
           );
         }}
@@ -200,7 +199,7 @@ function WorkerMultiplePicker({
             placeholder={formatMessage('workerVoucher.WorkerMultiplePicker.placeholder')}
           />
         )}
-      /> 
+      />
       <Button
         variant="contained"
         color="primary"
