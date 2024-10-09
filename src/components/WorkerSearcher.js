@@ -27,6 +27,7 @@ import {
   ADMIN_RIGHT,
   DEFAULT_PAGE_SIZE,
   EMPTY_OBJECT,
+  EMPTY_STRING,
   INSPECTOR_RIGHT,
   MODULE_NAME,
   RIGHT_WORKER_DELETE,
@@ -34,6 +35,9 @@ import {
   ROWS_PER_PAGE_OPTIONS,
 } from '../constants';
 import WorkerFilter from './WorkerFilter';
+import { ACTION_TYPE } from '../reducer';
+
+const WORKER_SEARCHER_ACTION_CONTRIBUTION_KEY = 'workerVoucher.WorkerSearcherAction.select';
 
 function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, clearWorkersExport }) {
   const history = useHistory();
@@ -56,6 +60,9 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
   const isAdminOrInspector = rights.includes(INSPECTOR_RIGHT) || rights.includes(ADMIN_RIGHT);
+  const isAuthorized = rights.includes(RIGHT_WORKER_DELETE)
+    && (rights.includes(ADMIN_RIGHT)
+    || !rights.includes(INSPECTOR_RIGHT));
 
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
 
@@ -93,6 +100,12 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
       }
     },
     [economicUnit],
+  );
+
+  const fetchAllAvailableWorkers = () => fetchWorkersAction(
+    modulesManager,
+    [`economicUnitCode:"${economicUnit.code}"`],
+    ACTION_TYPE.REQUEST,
   );
 
   const headers = () => [
@@ -230,6 +243,11 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   return (
     <>
       <Searcher
+        withSelection={isAuthorized ? 'multiple' : false}
+        selectWithCheckbox={!!isAuthorized}
+        actionsContributionKey={isAuthorized ? WORKER_SEARCHER_ACTION_CONTRIBUTION_KEY : EMPTY_STRING}
+        selectionMessage="workerVoucher.WorkerSearcher.selection"
+        getAllItems={fetchAllAvailableWorkers}
         module="workerVoucher"
         FilterPane={workerFilters}
         fetch={fetchWorkers}

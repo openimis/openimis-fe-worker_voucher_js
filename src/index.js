@@ -37,6 +37,7 @@ import MobileAppPasswordManagement from './pages/MobileAppPasswordManagement';
 import BillVoucherHeadPanel from './components/BillVoucherHeadPanel';
 import WorkersPage from './pages/WorkersPage';
 import WorkerDetailsPage from './pages/WorkerDetailsPage';
+import WorkerSearcherSelectActions from './components/WorkerSearcherSelectActions';
 
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
 const ROUTE_WORKER_VOUCHER = 'voucher/vouchers/voucher';
@@ -148,6 +149,7 @@ const DEFAULT_CONFIG = {
     },
   ],
   'workerVoucher.VoucherHeadPanel': [BillVoucherHeadPanel],
+  'workerVoucher.WorkerSearcherAction.select': WorkerSearcherSelectActions,
 };
 
 export const WorkerVoucherModule = (cfg) => ({ ...DEFAULT_CONFIG, ...cfg });

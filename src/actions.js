@@ -284,10 +284,10 @@ export function clearWorkerVoucherExport() {
   };
 }
 
-export function fetchWorkers(modulesManager, params) {
+export function fetchWorkers(modulesManager, params, actionType = ACTION_TYPE.GET_WORKERS) {
   const queryParams = [...params];
   const payload = formatPageQueryWithCount('worker', queryParams, WORKER_PROJECTION(modulesManager));
-  return graphql(payload, ACTION_TYPE.GET_WORKERS);
+  return graphql(payload, actionType);
 }
 
 export function fetchWorker(modulesManager, params) {
@@ -490,6 +490,28 @@ export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clien
     [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_WORKER), ERROR(ACTION_TYPE.MUTATION)],
     {
       actionType: ACTION_TYPE.DELETE_WORKER,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function deleteWorkersFromEconomicUnit(economicUnit, workersToDelete, clientMutationLabel) {
+  const workersUuids = workersToDelete.map((worker) => worker.uuid);
+  const mutationInput = `
+    ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : ''}
+    ${workersUuids?.length ? `uuids: [${workersUuids.map((uuid) => `"${uuid}"`).join(', ')}]` : ''}
+  `;
+
+  const mutation = formatMutation('deleteWorker', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_WORKERS), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.DELETE_WORKERS,
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,
       requestedDateTime,
