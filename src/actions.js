@@ -499,9 +499,10 @@ export function deleteWorkerFromEconomicUnit(economicUnit, workerToDelete, clien
 
 export function deleteWorkersFromEconomicUnit(economicUnit, workersToDelete, clientMutationLabel) {
   const workersUuids = workersToDelete.map((worker) => worker.uuid);
+  const workerUuidsString = workersUuids.map((uuid) => `"${uuid}"`).join(', ');
   const mutationInput = `
     ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : ''}
-    ${workersUuids?.length ? `uuids: [${workersUuids.map((uuid) => `"${uuid}"`).join(', ')}]` : ''}
+    ${workersUuids.length ? `uuids: [${workerUuidsString}]` : ''}
   `;
 
   const mutation = formatMutation('deleteWorker', mutationInput, clientMutationLabel);

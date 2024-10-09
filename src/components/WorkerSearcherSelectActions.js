@@ -22,7 +22,7 @@ function WorkerSearcherSelectActions({
 }) {
   const prevSubmittingMutationRef = useRef();
   const prevEconomicUnitRef = useRef();
-  const [isBulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
   const { economicUnit } = useSelector((state) => state.policyHolder);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
   const dispatch = useDispatch();
@@ -38,11 +38,11 @@ function WorkerSearcherSelectActions({
       // eslint-disable-next-line no-console
       console.log('[WORKER_SEARCHER_SELECT_ACTIONS]: Bulk delete failed.', error);
     } finally {
-      setBulkDeleteDialogOpen(false);
+      setIsBulkDeleteDialogOpen(false);
     }
   };
 
-  const onBulkDeleteClose = () => setBulkDeleteDialogOpen(false);
+  const onBulkDeleteClose = () => setIsBulkDeleteDialogOpen(false);
 
   useEffect(() => {
     if (prevEconomicUnitRef.current !== undefined && prevEconomicUnitRef.current !== economicUnit) {
@@ -71,7 +71,7 @@ function WorkerSearcherSelectActions({
   return (
     <>
       <Tooltip title={formatMessage('workerVoucher.tooltip.bulkDelete')}>
-        <MenuItem onClick={setBulkDeleteDialogOpen} disabled={!isWorkerSelected}>
+        <MenuItem onClick={setIsBulkDeleteDialogOpen} disabled={!isWorkerSelected}>
           <span className={classes.uppercase}>{formatMessage('workerVoucher.WorkerSearcherSelectActions.delete')}</span>
         </MenuItem>
       </Tooltip>
