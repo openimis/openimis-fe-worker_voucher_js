@@ -33,6 +33,10 @@ export const ACTION_TYPE = {
   VOUCHER_COUNT: 'WORKER_VOUCHER_VOUCHER_COUNT',
   DELETE_WORKER: 'WORKER_VOUCHER_DELETE_WORKER',
   DELETE_WORKERS: 'WORKER_VOUCHER_DELETE_WORKERS',
+  GET_GROUPS: 'WORKER_VOUCHER_GET_GROUPS',
+  GET_GROUP: 'WORKER_VOUCHER_GET_GROUP',
+  DELETE_GROUP: 'WORKER_VOUCHER_DELETE_GROUP',
+  CREATE_GROUP: 'WORKER_VOUCHER_CREATE_GROUP',
 };
 
 const STORE_STATE = {
@@ -73,6 +77,16 @@ const STORE_STATE = {
   fetchedWorker: false,
   worker: {},
   errorWorker: null,
+  groups: [],
+  groupsTotalCount: 0,
+  fetchingGroups: false,
+  fetchedGroups: false,
+  errorGroups: null,
+  groupsPageInfo: {},
+  fetchingGroup: false,
+  fetchedGroup: false,
+  group: {},
+  errorGroup: null,
 };
 
 function reducer(state = STORE_STATE, action) {
@@ -302,6 +316,72 @@ function reducer(state = STORE_STATE, action) {
         worker: {},
         errorWorker: null,
       };
+    case REQUEST(ACTION_TYPE.GET_GROUPS):
+      return {
+        ...state,
+        fetchingGroups: true,
+        fetchedGroups: false,
+        errorGroups: null,
+        groups: [],
+        groupsPageInfo: {},
+        groupsTotalCount: 0,
+      };
+    case SUCCESS(ACTION_TYPE.GET_GROUPS):
+      return {
+        ...state,
+        fetchingGroups: false,
+        fetchedGroups: true,
+        errorGroups: formatGraphQLError(action.payload),
+        groups: parseData(action.payload.data.group),
+        groupsPageInfo: pageInfo(action.payload.data.group),
+        groupsTotalCount: action.payload.data.group?.totalCount ?? 0,
+      };
+    case ERROR(ACTION_TYPE.GET_GROUPS):
+      return {
+        ...state,
+        fetchingGroups: false,
+        errorGroups: formatServerError(action.payload),
+      };
+    case CLEAR(ACTION_TYPE.GET_GROUPS):
+      return {
+        ...state,
+        fetchingGroups: false,
+        fetchedGroups: false,
+        errorGroups: null,
+        groups: [],
+        groupsPageInfo: {},
+        groupsTotalCount: 0,
+      };
+    case REQUEST(ACTION_TYPE.GET_GROUP):
+      return {
+        ...state,
+        fetchingGroup: true,
+        fetchedGroup: false,
+        group: {},
+        errorGroup: null,
+      };
+    case SUCCESS(ACTION_TYPE.GET_GROUP):
+      return {
+        ...state,
+        fetchingGroup: false,
+        fetchedGroup: true,
+        group: parseData(action.payload.data.group)?.[0],
+        errorGroup: formatGraphQLError(action.payload),
+      };
+    case ERROR(ACTION_TYPE.GET_GROUP):
+      return {
+        ...state,
+        fetchingGroup: false,
+        errorGroup: formatServerError(action.payload),
+      };
+    case CLEAR(ACTION_TYPE.GET_GROUP):
+      return {
+        ...state,
+        fetchingGroup: false,
+        fetchedGroup: false,
+        group: {},
+        errorGroup: null,
+      };
     case REQUEST(ACTION_TYPE.MUTATION):
       return dispatchMutationReq(state, action);
     case ERROR(ACTION_TYPE.MUTATION):
@@ -318,6 +398,10 @@ function reducer(state = STORE_STATE, action) {
       return dispatchMutationResp(state, 'deleteWorker', action);
     case SUCCESS(ACTION_TYPE.DELETE_WORKERS):
       return dispatchMutationResp(state, 'deleteWorker', action);
+    case SUCCESS(ACTION_TYPE.CREATE_GROUP):
+      return dispatchMutationResp(state, 'createGroup', action);
+    case SUCCESS(ACTION_TYPE.DELETE_GROUP):
+      return dispatchMutationResp(state, 'deleteGroup', action);
     case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
       return dispatchMutationResp(state, 'createBusinessConfig', action);
     case SUCCESS(ACTION_TYPE.DELETE_VOUCHER_PRICE):
