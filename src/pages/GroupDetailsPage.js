@@ -53,13 +53,7 @@ function GroupDetailsPage({ match }) {
 
   useEffect(() => () => dispatch(clearGroup()), []);
 
-  const canSave = () => {
-    if (!edited?.name || !edited?.workers?.length) {
-      return false;
-    }
-
-    return true;
-  };
+  const canSave = () => !!(edited?.name && edited?.workers?.length);
 
   const onSave = () => {
     try {
