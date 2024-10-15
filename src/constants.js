@@ -3,6 +3,7 @@ export const EMPLOYER_RIGHT_SEARCH = 203000;
 export const VOUCHER_PRICE_MANAGEMENT_RIGHT = 205001;
 export const INSPECTOR_RIGHT = 204005;
 export const ADMIN_RIGHT = 204004;
+export const RIGHT_WORKER_UPLOAD = 101101;
 export const RIGHT_WORKER_SEARCH = 101101;
 export const RIGHT_WORKER_ADD = 101102;
 export const RIGHT_WORKER_EDIT = 101103;
@@ -93,3 +94,8 @@ export const WORKER_IMPORT_PLANS = [
     labelKey: 'workerVoucher.workerImport.previousDay',
   },
 ];
+
+export const UPLOAD_STAGE = {
+  FILE_UPLOAD: 'FILE_UPLOAD',
+  WORKER_UPLOAD: 'WORKER_UPLOAD',
+};
