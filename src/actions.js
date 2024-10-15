@@ -44,6 +44,16 @@ const WORKER_PROJECTION = (modulesManager) => [
   'photo { photo }',
 ];
 
+// TODO: Adjust the group projection after BE changes
+// eslint-disable-next-line no-unused-vars
+export const GROUP_PROJECTION = (modulesManager) => [
+  'id',
+  'uuid',
+  'otherNames',
+  'lastName',
+  // `workers {${WORKER_PROJECTION(modulesManager)}}`,
+];
+
 function formatGraphQLDateRanges(dateRanges) {
   const rangeStrings = dateRanges.map((range) => `{ startDate: "${range.startDate}", endDate: "${range.endDate}" }`);
   return `[${rangeStrings.join(', ')}]`;
@@ -533,3 +543,30 @@ export function validateMConnectWorker(nationalId, economicUnitCode) {
     { nationalId, economicUnitCode },
   );
 }
+
+export function fetchGroupsAction(modulesManager, params) {
+  const queryParams = [...params];
+  // TODO: Change to `group` after BE changes
+  const payload = formatPageQueryWithCount('worker', queryParams, GROUP_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.GET_GROUPS);
+}
+
+export function fetchGroup(modulesManager, params) {
+  const queryParams = [...params];
+  // TODO: Change to `group` after BE changes
+  const payload = formatPageQueryWithCount('worker', queryParams, GROUP_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.GET_GROUP);
+}
+
+export const clearGroup = () => (dispatch) => {
+  dispatch({
+    type: CLEAR(ACTION_TYPE.GET_GROUP),
+  });
+};
+
+// TODO: Adjust the group mutation after BE changes
+export function createGroup() {}
+
+export function updateGroup() {}
+
+export function deleteGroup() {}
