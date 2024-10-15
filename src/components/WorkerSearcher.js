@@ -231,7 +231,13 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
     if (queryParams.length) {
       fetchWorkers(queryParams);
     }
-  }, [economicUnit, queryParams, validationSuccess, validationWarning]);
+  }, [economicUnit, queryParams]);
+
+  useEffect(() => {
+    if (validationWarning || validationSuccess) {
+      fetchWorkers(queryParams);
+    }
+  }, [validationSuccess, validationWarning]);
 
   useEffect(() => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
