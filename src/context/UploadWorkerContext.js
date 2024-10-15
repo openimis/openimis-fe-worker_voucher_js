@@ -27,23 +27,27 @@ export function UploadWorkerProvider({ children }) {
     skippedRows: 0,
   });
 
+  const uploadUrl = useMemo(() => {
+    const url = new URL(`${window.location.origin}${baseApiUrl}/worker_voucher/worker_upload/`);
+    url.searchParams.append('economic_unit_code', economicUnit.code);
+    return url;
+  }, [economicUnit.code]);
+
+  const uploadErrorUrl = useMemo(() => {
+    const url = new URL(`${window.location.origin}${baseApiUrl}/worker_voucher/download_worker_upload_file/`);
+    url.searchParams.append('economic_unit_code', economicUnit.code);
+    url.searchParams.append('filename', file?.name);
+    return url;
+  }, [economicUnit.code, file]);
+
   const onFileUpload = (uploadedFile) => {
-    try {
-      setFile(uploadedFile);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('[UPLOAD_WORKER_CONTEXT]: Error while uploading file', error);
-    } finally {
-      setIsUploading(false);
-      setIsUploaded(true);
-    }
+    setFile(uploadedFile);
+    setIsUploading(false);
+    setIsUploaded(true);
   };
 
   const uploadWorkers = async () => {
     setIsUploading(true);
-
-    const uploadUrl = new URL(`${window.location.origin}${baseApiUrl}/worker_voucher/worker_upload/`);
-    uploadUrl.searchParams.append('economic_unit_code', economicUnit.code);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -88,12 +92,8 @@ export function UploadWorkerProvider({ children }) {
   };
 
   const downloadWorkersWithError = async () => {
-    const baseUrl = new URL(`${window.location.origin}${baseApiUrl}/worker_voucher/download_worker_upload_file/`);
-    baseUrl.searchParams.append('economic_unit_code', economicUnit.code);
-    baseUrl.searchParams.append('filename', file.name);
-
     try {
-      const response = await fetch(baseUrl);
+      const response = await fetch(uploadErrorUrl);
       const blob = await response.blob();
       return openBlob(blob, `errors_${file.name}`, file.type);
     } catch (error) {
