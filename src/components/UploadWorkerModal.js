@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import {
   Box,
@@ -22,7 +23,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import { makeStyles } from '@material-ui/styles';
 
 import { useModulesManager, useTranslations } from '@openimis/fe-core';
-import { MODULE_NAME, UPLOAD_STAGE } from '../constants';
+import { MODULE_NAME, RIGHT_WORKER_UPLOAD, UPLOAD_STAGE } from '../constants';
 import { useUploadWorkerContext } from '../context/UploadWorkerContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -92,6 +93,7 @@ function UploadWorkerModal({ open, onClose }) {
   const classes = useStyles();
   const modulesManager = useModulesManager();
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
+  const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
   const fileInputRef = useRef(null);
   const [fileUploadError, setFileUploadError] = useState(null);
   const maxSizeInMB = 10;
@@ -108,12 +110,17 @@ function UploadWorkerModal({ open, onClose }) {
     onWorkersUpload,
     uploadSummary,
     resetFile,
+    workersWithError,
+    downloadWorkersWithError,
   } = useUploadWorkerContext();
 
   const isFileUploadStage = uploadStage === UPLOAD_STAGE.FILE_UPLOAD;
   const isWorkerUploadStage = uploadStage === UPLOAD_STAGE.WORKER_UPLOAD;
+  const isWorkerWithErrorAvailable = Object.keys(workersWithError).length > 0;
 
   const handleFileChange = (e) => {
+    setFileUploadError(null);
+
     const uploadedFile = e.target.files[0];
 
     if (!uploadedFile) {
@@ -137,6 +144,10 @@ function UploadWorkerModal({ open, onClose }) {
     resetFile();
     fileInputRef.current.value = null;
   };
+
+  if (!rights.includes(RIGHT_WORKER_UPLOAD)) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onClose={onClose} disableBackdropClick>
@@ -252,16 +263,31 @@ function UploadWorkerModal({ open, onClose }) {
           </>
         )}
         {isWorkerUploadStage && (
-          <Button
-            onClick={() => {
-              resetFile();
-              onClose();
-            }}
-            disabled={isUploading}
-            className={classes.secondaryButton}
-          >
-            {formatMessage('UploadWorkerModal.close')}
-          </Button>
+          <>
+            <Button
+              onClick={() => {
+                resetFile();
+                onClose();
+              }}
+              disabled={isUploading}
+              className={classes.secondaryButton}
+            >
+              {formatMessage('UploadWorkerModal.close')}
+            </Button>
+            {isWorkerWithErrorAvailable && (
+              <Button
+                onClick={() => {
+                  downloadWorkersWithError();
+                  resetFile();
+                  onClose();
+                }}
+                disabled={isUploading}
+                className={classes.errorButton}
+              >
+                {formatMessage('UploadWorkerModal.downloadWorkersWithError')}
+              </Button>
+            )}
+          </>
         )}
       </DialogActions>
     </Dialog>

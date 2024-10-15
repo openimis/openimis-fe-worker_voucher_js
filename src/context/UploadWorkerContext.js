@@ -3,8 +3,10 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 
-import { baseApiUrl, useTranslations } from '@openimis/fe-core';
-import { EMPTY_STRING, MODULE_NAME, UPLOAD_STAGE } from '../constants';
+import { baseApiUrl, useTranslations, openBlob } from '@openimis/fe-core';
+import {
+  EMPTY_OBJECT, EMPTY_STRING, MODULE_NAME, UPLOAD_STAGE,
+} from '../constants';
 
 const UploadWorkerContext = createContext();
 
@@ -18,6 +20,7 @@ export function UploadWorkerProvider({ children }) {
   const [validationError, setValidationError] = useState(EMPTY_STRING);
   const [validationSuccess, setValidationSuccess] = useState(EMPTY_STRING);
   const [validationWarning, setValidationWarning] = useState(EMPTY_STRING);
+  const [workersWithError, setWorkersWithError] = useState(EMPTY_OBJECT);
   const [uploadSummary, setUploadSummary] = useState({
     affectedRows: 0,
     totalNumberOfRecordsInFile: 0,
@@ -58,13 +61,44 @@ export function UploadWorkerProvider({ children }) {
 
       const data = await response.json();
 
-      console.log(response);
-      console.log(data);
+      setUploadSummary({
+        affectedRows: data.summary?.affected_rows || 0,
+        totalNumberOfRecordsInFile: data.summary?.total_number_of_records_in_file || 0,
+        skippedRows: data.summary?.skipped_items || 0,
+      });
+
+      if (!data.success) {
+        setValidationError(formatMessage('UploadWorkerModal.workerUploadError'));
+        return;
+      }
+
+      if (!!data?.summary?.skipped_items && !!Object.keys(data?.error).length) {
+        setWorkersWithError(data.error);
+        setValidationWarning(formatMessage('UploadWorkerModal.workerUploadWarning'));
+        return;
+      }
+
+      setValidationSuccess(formatMessage('UploadWorkerModal.workerUploadSuccess'));
     } catch (error) {
       setValidationError(formatMessage('UploadWorkerModal.workerUploadError'));
     } finally {
       setIsUploading(false);
       setIsUploaded(true);
+    }
+  };
+
+  const downloadWorkersWithError = async () => {
+    const baseUrl = new URL(`${window.location.origin}${baseApiUrl}/worker_voucher/download_worker_upload_file/`);
+    baseUrl.searchParams.append('economic_unit_code', economicUnit.code);
+    baseUrl.searchParams.append('filename', file.name);
+
+    try {
+      const response = await fetch(baseUrl);
+      const blob = await response.blob();
+      return openBlob(blob, `errors_${file.name}`, file.type);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      throw new Error(`[UPLOAD_WORKER_CONTEXT]: Upload failed. ${error}`);
     }
   };
 
@@ -81,6 +115,7 @@ export function UploadWorkerProvider({ children }) {
     setValidationSuccess(EMPTY_STRING);
     setValidationWarning(EMPTY_STRING);
     setUploadStage(UPLOAD_STAGE.FILE_UPLOAD);
+    setWorkersWithError(EMPTY_OBJECT);
     setUploadSummary({
       affectedRows: 0,
       totalNumberOfRecordsInFile: 0,
@@ -102,6 +137,7 @@ export function UploadWorkerProvider({ children }) {
       validationWarning,
       uploadSummary,
       uploadStage,
+      workersWithError,
       onWorkersUpload,
       setFile,
       setIsUploading,
@@ -111,8 +147,19 @@ export function UploadWorkerProvider({ children }) {
       onFileUpload,
       setUploadSummary,
       resetFile,
+      downloadWorkersWithError,
     }),
-    [file, isUploading, uploadStage, uploadSummary, isUploaded, validationError, validationSuccess, validationWarning],
+    [
+      file,
+      isUploading,
+      workersWithError,
+      uploadStage,
+      uploadSummary,
+      isUploaded,
+      validationError,
+      validationSuccess,
+      validationWarning,
+    ],
   );
 
   return <UploadWorkerContext.Provider value={memoizedContextValue}>{children}</UploadWorkerContext.Provider>;
