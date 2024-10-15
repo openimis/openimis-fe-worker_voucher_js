@@ -228,7 +228,7 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   };
 
   useEffect(() => {
-    if (queryParams.length && (economicUnit || validationSuccess || validationWarning)) {
+    if (queryParams.length) {
       fetchWorkers(queryParams);
     }
   }, [economicUnit, queryParams, validationSuccess, validationWarning]);
