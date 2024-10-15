@@ -36,6 +36,7 @@ import {
 } from '../constants';
 import WorkerFilter from './WorkerFilter';
 import { ACTION_TYPE } from '../reducer';
+import { useUploadWorkerContext } from '../context/UploadWorkerContext';
 
 const WORKER_SEARCHER_ACTION_CONTRIBUTION_KEY = 'workerVoucher.WorkerSearcherAction.select';
 
@@ -71,6 +72,8 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
   const [deleteWorkerDialogOpen, setDeleteWorkerDialogOpen] = useState(false);
   const [workerToDelete, setWorkerToDelete] = useState(null);
   const [exportFileFormat, setExportFileFormat] = useState(EXPORT_FILE_FORMATS.csv);
+
+  const { validationSuccess, validationWarning } = useUploadWorkerContext();
 
   const exportConfiguration = {
     exportFields: ['chf_id', 'last_name', 'other_names'],
@@ -229,6 +232,12 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
       fetchWorkers(queryParams);
     }
   }, [economicUnit, queryParams]);
+
+  useEffect(() => {
+    if (validationWarning || validationSuccess) {
+      fetchWorkers(queryParams);
+    }
+  }, [validationSuccess, validationWarning]);
 
   useEffect(() => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
