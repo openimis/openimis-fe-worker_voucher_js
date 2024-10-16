@@ -570,3 +570,10 @@ export function createGroup() {}
 export function updateGroup() {}
 
 export function deleteGroup() {}
+
+export function fetchPublicVoucherDetails(modulesManager, voucherUuid) {
+  // TODO | OM-347: Implement the query here after BE changes
+  const queryParams = [`code: "${voucherUuid}"`];
+  const payload = formatPageQueryWithCount('workerVoucher', queryParams, WORKER_VOUCHER_PROJECTION(modulesManager));
+  return graphql(payload, ACTION_TYPE.REQUEST);
+}

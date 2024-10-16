@@ -43,7 +43,9 @@ import WorkerDetailsPage from './pages/WorkerDetailsPage';
 import WorkerSearcherSelectActions from './components/WorkerSearcherSelectActions';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailsPage from './pages/GroupDetailsPage';
+import PublicVoucherDetailsPage from './pages/PublicVoucherDetailsPage';
 
+const ROUTE_PUBLIC_WORKER_VOUCHER_PAGE = 'voucher/check';
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
 const ROUTE_WORKER_VOUCHER = 'voucher/vouchers/voucher';
 const ROUTE_WORKER_VOUCHER_ACQUIREMENT = 'voucher/acquirement';
@@ -111,6 +113,12 @@ const DEFAULT_CONFIG = {
       icon: <MonetizationOnIcon />,
       route: `/${ROUTE_WORKER_VOUCHER_PRICE_MANAGEMENT}`,
       filter: (rights) => [VOUCHER_PRICE_MANAGEMENT_RIGHT].some((right) => rights.includes(right)),
+    },
+  ],
+  'core.UnauthenticatedRouter': [
+    {
+      path: `${ROUTE_PUBLIC_WORKER_VOUCHER_PAGE}/:voucher_uuid?`,
+      component: PublicVoucherDetailsPage,
     },
   ],
   'core.Router': [

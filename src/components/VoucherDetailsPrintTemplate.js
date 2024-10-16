@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     display: 'flex',
-    backgroundColor: theme.palette.background.default,
     flexDirection: 'row',
     height: '320px',
     padding: '24px',
