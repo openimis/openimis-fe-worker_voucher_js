@@ -183,5 +183,10 @@
   "workerVoucher.GroupWorkerManagePanel.availableWorkers": "All Workers",
   "workerVoucher.GroupWorkerManagePanel.chosenWorkers": "Workers in Group",
   "workerVoucher.GroupWorkerManagePanel.tooltip.removeAll": "Remove All Workers",
-  "workerVoucher.GroupWorkerManagePanel.tooltip.addAllFiltered": "Add All Filtered Workers"
+  "workerVoucher.GroupWorkerManagePanel.tooltip.addAllFiltered": "Add All Filtered Workers",
+  "workerVoucher.PublicVoucherDetailsPage.title": "Public Voucher Check",
+  "workerVoucher.PublicVoucherDetailsPage.backButton": "Back",
+  "workerVoucher.PublicVoucherDetailsPage.noVoucherUuid": " Voucher UUID not provided.",
+  "workerVoucher.PublicVoucherDetailsPage.voucherNotFound": "Voucher not found.",
+  "workerVoucher.PublicVoucherDetailsPage.voucherFound": "Voucher found. It is valid on the day {assignedDate} at the {employer} employer."
 }
