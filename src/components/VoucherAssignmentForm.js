@@ -5,6 +5,7 @@ import {
   Divider, Grid, Paper, Typography, Button, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 
 import {
   coreAlert, useModulesManager, useTranslations, journalize, historyPush, useHistory,
@@ -24,6 +25,12 @@ export const useStyles = makeStyles((theme) => ({
   },
   tableTitle: theme.table.title,
   item: theme.paper.item,
+  listItem: {
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.shape.borderRadius,
+    marginBottom: theme.spacing(0.5),
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
 
 function VoucherAssignmentForm() {
@@ -122,12 +129,13 @@ function VoucherAssignmentForm() {
               >
                 <span>
                   <Button
-                    variant="outlined"
-                    style={{ border: 0 }}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AssignmentIndIcon />}
                     onClick={onVoucherAssign}
                     disabled={assignmentBlocked(voucherAssignment)}
                   >
-                    <Typography variant="subtitle1">{formatMessage('workerVoucher.assign.voucher')}</Typography>
+                    <Typography variant="body2">{formatMessage('workerVoucher.assign.voucher')}</Typography>
                   </Button>
                 </span>
               </Tooltip>

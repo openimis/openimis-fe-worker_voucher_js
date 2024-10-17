@@ -1,16 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { MenuItem, Tooltip } from '@material-ui/core';
+import {
+  MenuItem, Tooltip, Typography, Button,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import { SelectDialog, journalize, useTranslations } from '@openimis/fe-core';
 import { deleteWorkersFromEconomicUnit } from '../actions';
 import { MODULE_NAME } from '../constants';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   uppercase: {
     textTransform: 'uppercase',
+  },
+  trigger: {
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -19,6 +25,7 @@ function WorkerSearcherSelectActions({
   refetch: refetchWorkers,
   clearSelected,
   withSelection,
+  downloadWithIconButton = false,
 }) {
   const prevSubmittingMutationRef = useRef();
   const prevEconomicUnitRef = useRef();
@@ -71,9 +78,24 @@ function WorkerSearcherSelectActions({
   return (
     <>
       <Tooltip title={formatMessage('workerVoucher.tooltip.bulkDelete')}>
-        <MenuItem onClick={setIsBulkDeleteDialogOpen} disabled={!isWorkerSelected}>
-          <span className={classes.uppercase}>{formatMessage('workerVoucher.WorkerSearcherSelectActions.delete')}</span>
-        </MenuItem>
+        {downloadWithIconButton ? (
+          <Button
+            onClick={setIsBulkDeleteDialogOpen}
+            disabled={!isWorkerSelected}
+            variant="contained"
+            color="primary"
+            startIcon={<DeleteIcon />}
+            className={classes.trigger}
+          >
+            <Typography variant="body2">{formatMessage('workerVoucher.WorkerSearcherSelectActions.delete')}</Typography>
+          </Button>
+        ) : (
+          <MenuItem onClick={setIsBulkDeleteDialogOpen} disabled={!isWorkerSelected}>
+            <span className={classes.uppercase}>
+              {formatMessage('workerVoucher.WorkerSearcherSelectActions.delete')}
+            </span>
+          </MenuItem>
+        )}
       </Tooltip>
       <SelectDialog
         module={MODULE_NAME}

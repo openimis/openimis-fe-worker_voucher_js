@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import clsx from 'clsx';
 import { useSelector } from 'react-redux';
 
-import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  Helmet,
-  historyPush,
-  useHistory,
-  useModulesManager, useTranslations, withTooltip,
+  Helmet, historyPush, useHistory, useModulesManager, useTranslations,
 } from '@openimis/fe-core';
 import WorkerSearcher from '../components/WorkerSearcher';
 import {
@@ -37,7 +32,6 @@ function WorkersPage() {
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
-  const leftPlacement = 'left';
 
   const onAddRedirect = () => {
     historyPush(modulesManager, history, 'workerVoucher.route.worker');
@@ -51,31 +45,28 @@ function WorkersPage() {
     setUploadOpen(false);
   };
 
+  const SEARCHER_ACTIONS = [
+    {
+      label: formatMessage('workerVoucher.WorkersPage.uploadAction'),
+      icon: <CloudUploadIcon />,
+      authorized: rights.includes(RIGHT_WORKER_UPLOAD),
+      onClick: onUploadOpen,
+    },
+    {
+      label: formatMessage('workerVoucher.WorkersPage.addAction'),
+      icon: <AddIcon />,
+      authorized: rights.includes(RIGHT_WORKER_ADD),
+      onClick: onAddRedirect,
+    },
+  ];
+
   return (
     rights.includes(RIGHT_WORKER_SEARCH) && (
       <UploadWorkerProvider>
         <UploadWorkerModal open={uploadOpen} onClose={onUploadClose} />
         <div className={classes.page}>
           <Helmet title={formatMessage('workerVoucher.menu.workersList')} />
-          <WorkerSearcher />
-          <div className={clsx(classes.fab, classes.wrapper)}>
-            {rights.includes(RIGHT_WORKER_UPLOAD)
-              && withTooltip(
-                <Fab color="primary" onClick={onUploadOpen}>
-                  <CloudUploadIcon />
-                </Fab>,
-                formatMessage('workerVoucher.WorkersPage.uploadTooltip'),
-                leftPlacement,
-              )}
-            {rights.includes(RIGHT_WORKER_ADD)
-              && withTooltip(
-                <Fab color="primary" onClick={onAddRedirect}>
-                  <AddIcon />
-                </Fab>,
-                formatMessage('workerVoucher.WorkersPage.addTooltip'),
-                leftPlacement,
-              )}
-          </div>
+          <WorkerSearcher searcherActions={SEARCHER_ACTIONS} enableActionButtons />
         </div>
       </UploadWorkerProvider>
     )

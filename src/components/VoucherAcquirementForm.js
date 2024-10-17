@@ -54,12 +54,11 @@ function VoucherAcquirementForm() {
                 <PublishedComponent
                   pubRef="workerVoucher.VoucherAcquirementMethodPicker"
                   label="workerVoucher.acquirement.method"
-                  nullLabel="workerVoucher.acquirement.method.NONE"
                   acquirementMethod={acquirementMethod}
                   setAcquirementMethod={setAcquirementMethod}
                   readOnly={!genericVoucherEnabled}
                   required
-                  withNull
+                  withNull={false}
                   withLabel
                 />
               </Grid>
