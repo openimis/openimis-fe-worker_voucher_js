@@ -22,13 +22,12 @@ function MPayBillButton({ bill }) {
   return (
     <Grid item>
       <Button
-        size="small"
         variant="contained"
         color="primary"
         startIcon={<AccountBalanceIcon />}
         onClick={handleOnClick}
       >
-        <Typography variant="subtitle1">{formatMessage('workerVoucher.MPayBillButton')}</Typography>
+        <Typography variant="body2">{formatMessage('workerVoucher.MPayBillButton')}</Typography>
       </Button>
     </Grid>
   );

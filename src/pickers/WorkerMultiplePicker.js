@@ -204,7 +204,6 @@ function WorkerMultiplePicker({
         variant="contained"
         color="primary"
         startIcon={isLoading ? <CircularProgress size={20} color="secondary" /> : <PersonAddIcon />}
-        size="large"
         disabled={isDisabled}
         onClick={handleImportDialogOpen}
       >
