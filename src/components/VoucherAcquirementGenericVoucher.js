@@ -5,6 +5,7 @@ import {
   Button, Divider, Grid, Tooltip, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 import {
   coreAlert,
@@ -148,12 +149,13 @@ function VoucherAcquirementGenericVoucher() {
           >
             <span>
               <Button
-                variant="outlined"
-                style={{ border: 0 }}
+                variant="contained"
+                color="primary"
                 onClick={onVoucherAcquire}
+                startIcon={<ShoppingCartIcon />}
                 disabled={acquirementBlocked(voucherAcquirement)}
               >
-                <Typography variant="subtitle1">{formatMessage('workerVoucher.acquire.voucher')}</Typography>
+                <Typography variant="body2">{formatMessage('workerVoucher.acquire.voucher')}</Typography>
               </Button>
             </span>
           </Tooltip>
