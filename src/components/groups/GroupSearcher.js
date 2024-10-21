@@ -70,7 +70,7 @@ function GroupSearcher({ searcherActions, enableActionButtons }) {
 
         dispatch(fetchGroupsAction(modulesManager, actionParams));
       } catch (error) {
-        throw new Error(`[GROUP_SEARCHER]: FeeconomicUnit: tching groups failed. ${error}`);
+        throw new Error(`[GROUP_SEARCHER]: Fetching groups failed.. ${error}`);
       }
     },
     [economicUnit],
