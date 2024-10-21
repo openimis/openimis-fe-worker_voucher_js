@@ -5,11 +5,13 @@ import {
   graphqlWithVariables,
   formatGQLString,
   parseData,
+  decodeId,
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import {
   CLEAR, ERROR, REQUEST, SUCCESS,
 } from './utils/action-type';
+import { EMPTY_STRING } from './constants';
 
 const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   'id',
@@ -44,14 +46,21 @@ const WORKER_PROJECTION = (modulesManager) => [
   'photo { photo }',
 ];
 
-// TODO: Adjust the group projection after BE changes
-// eslint-disable-next-line no-unused-vars
 export const GROUP_PROJECTION = (modulesManager) => [
   'id',
-  'uuid',
-  'otherNames',
-  'lastName',
-  // `workers {${WORKER_PROJECTION(modulesManager)}}`,
+  'name',
+  'isDeleted',
+  'dateCreated',
+  `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
+  `groupWorkers {
+    edges {
+      node {
+        isDeleted,
+        insuree ${modulesManager.getProjection('insuree.InsureePicker.projection')},
+      }
+    }
+    totalCount
+  }`,
 ];
 
 function formatGraphQLDateRanges(dateRanges) {
@@ -546,15 +555,13 @@ export function validateMConnectWorker(nationalId, economicUnitCode) {
 
 export function fetchGroupsAction(modulesManager, params) {
   const queryParams = [...params];
-  // TODO: Change to `group` after BE changes
-  const payload = formatPageQueryWithCount('worker', queryParams, GROUP_PROJECTION(modulesManager));
+  const payload = formatPageQueryWithCount('groupOfWorker', queryParams, GROUP_PROJECTION(modulesManager));
   return graphql(payload, ACTION_TYPE.GET_GROUPS);
 }
 
 export function fetchGroup(modulesManager, params) {
   const queryParams = [...params];
-  // TODO: Change to `group` after BE changes
-  const payload = formatPageQueryWithCount('worker', queryParams, GROUP_PROJECTION(modulesManager));
+  const payload = formatPageQueryWithCount('groupOfWorker', queryParams, GROUP_PROJECTION(modulesManager));
   return graphql(payload, ACTION_TYPE.GET_GROUP);
 }
 
@@ -564,9 +571,77 @@ export const clearGroup = () => (dispatch) => {
   });
 };
 
-// TODO: Adjust the group mutation after BE changes
-export function createGroup() {}
+export function createGroup(economicUnit, groupToCreate, clientMutationLabel) {
+  const workersChfIds = groupToCreate?.workers?.map((worker) => worker.chfId) ?? [];
+  const workerChfIdsString = workersChfIds.map((chfId) => `"${chfId}"`).join(', ');
 
-export function updateGroup() {}
+  const mutationInput = `
+    ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : EMPTY_STRING}
+    ${groupToCreate.name ? `name: "${formatGQLString(groupToCreate.name)}"` : EMPTY_STRING}
+    ${workerChfIdsString.length ? `insureesChfId: [${workerChfIdsString}]` : EMPTY_STRING}
+  `;
 
-export function deleteGroup() {}
+  const mutation = formatMutation('createOrUpdateGroupOfWorkers', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.CREATE_GROUP), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.CREATE_GROUP,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function updateGroup(economicUnit, groupToUpdate, clientMutationLabel) {
+  const workersChfIds = groupToUpdate?.workers?.map((worker) => worker.chfId) ?? [];
+  const workerChfIdsString = workersChfIds.map((chfId) => `"${chfId}"`).join(', ');
+
+  const mutationInput = `
+    ${groupToUpdate.id ? `id: "${decodeId(groupToUpdate.id)}"` : EMPTY_STRING}
+    ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : EMPTY_STRING}
+    ${groupToUpdate.name ? `name: "${formatGQLString(groupToUpdate.name)}"` : EMPTY_STRING}
+    ${workerChfIdsString.length ? `insureesChfId: [${workerChfIdsString}]` : EMPTY_STRING}
+  `;
+
+  const mutation = formatMutation('createOrUpdateGroupOfWorkers', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.UPDATE_GROUP), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.UPDATE_GROUP,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function deleteGroup(economicUnit, groupsToDelete, clientMutationLabel) {
+  const groupsUuids = groupsToDelete.map((group) => decodeId(group.id));
+  const groupUuidsString = groupsUuids.map((uuid) => `"${uuid}"`).join(', ');
+
+  const mutationInput = `
+    ${economicUnit.code ? `economicUnitCode: "${economicUnit.code}"` : EMPTY_STRING}
+    ${groupsToDelete.length ? `uuids: [${groupUuidsString}]` : EMPTY_STRING}
+  `;
+
+  const mutation = formatMutation('deleteGroupOfWorkers', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_GROUP), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.DELETE_GROUP,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}

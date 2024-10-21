@@ -50,8 +50,8 @@ function GroupFilter({ filters, onChangeFilters }) {
         <TextInput
           module="workerVoucher"
           label="workerVoucher.group.name"
-          value={filterTextFieldValue('groupName')}
-          onChange={onChangeStringFilter('groupName', CONTAINS_LOOKUP)}
+          value={filterTextFieldValue('name')}
+          onChange={onChangeStringFilter('name', CONTAINS_LOOKUP)}
         />
       </Grid>
     </Grid>

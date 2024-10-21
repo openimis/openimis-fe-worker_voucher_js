@@ -4,15 +4,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  Form, Helmet, journalize, parseData, useHistory, useModulesManager, useTranslations,
+  Form,
+  Helmet,
+  useToast,
+  parseData,
+  useHistory,
+  useModulesManager,
+  useTranslations,
+  coreAlert,
+  historyPush,
 } from '@openimis/fe-core';
 import {
   clearGroup, createGroup, fetchGroup, updateGroup,
 } from '../actions';
 import {
-  EMPTY_OBJECT, EMPTY_STRING, MODULE_NAME, RIGHT_GROUP_SEARCH,
+  EMPTY_OBJECT, EMPTY_STRING, MODULE_NAME, REF_ROUTE_GROUP_LIST, RIGHT_GROUP_SEARCH,
 } from '../constants';
 import GroupMasterPanel from '../components/groups/GroupMasterPanel';
+import { getLastMutationLog } from '../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   page: theme.page,
@@ -23,6 +32,7 @@ function GroupDetailsPage({ match }) {
   const history = useHistory();
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
+  const { showSuccess, showError } = useToast();
   const { economicUnit } = useSelector((state) => state.policyHolder);
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
   const { group } = useSelector((state) => state.workerVoucher);
@@ -31,6 +41,7 @@ function GroupDetailsPage({ match }) {
   const [edited, setEdited] = useState(group || EMPTY_OBJECT);
   const groupUuid = match?.params?.group_uuid;
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
+  const [reset, setReset] = useState(0);
 
   const titleParams = (group) => ({
     name: group?.name ?? EMPTY_STRING,
@@ -39,15 +50,30 @@ function GroupDetailsPage({ match }) {
   useEffect(async () => {
     try {
       if (groupUuid) {
-        const params = [`uuid: "${groupUuid}", economicUnitCode: "${economicUnit.code}"`];
+        const params = [`id: "${groupUuid}", economicUnitCode: "${economicUnit.code}"`];
         const groupData = await dispatch(fetchGroup(modulesManager, params));
 
-        const group = parseData(groupData.payload.data.group)?.[0];
+        if (groupData?.payload?.errors?.length) {
+          dispatch(coreAlert(formatMessage('workerVoucher.request.error'), groupData.payload.errors[0]?.message));
+          return;
+        }
 
-        setEdited(group);
+        const group = parseData(groupData.payload.data.groupOfWorker)?.[0];
+        const savedGroupWorkers = parseData(group.groupWorkers);
+
+        const extendedGroup = {
+          ...group,
+          workers: savedGroupWorkers?.map(({ insuree }) => insuree) ?? [],
+        };
+
+        setEdited(extendedGroup);
       }
     } catch (error) {
-      throw new Error(`[GROUP_DETAILS_PAGE]: Fetching group failed. ${error}`);
+      showError(
+        formatMessageWithValues('workerVoucher.request.failed', {
+          detail: error,
+        }),
+      );
     }
   }, [groupUuid, dispatch]);
 
@@ -58,20 +84,39 @@ function GroupDetailsPage({ match }) {
   const onSave = () => {
     try {
       if (groupUuid) {
-        dispatch(updateGroup(edited, 'UpdateGroup'));
+        dispatch(updateGroup(economicUnit, edited, 'Update Group'));
       } else {
-        dispatch(createGroup(edited, 'CreateGroup'));
+        dispatch(createGroup(economicUnit, edited, 'Create Group'));
       }
     } catch (error) {
-      throw new Error(`[GROUP_DETAILS_PAGE]: Saving group failed. ${error}`);
+      showError(
+        formatMessageWithValues('workerVoucher.action.failed', {
+          detail: error,
+        }),
+      );
     }
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
-      dispatch(journalize(mutation));
+      const mutationLog = await getLastMutationLog(dispatch, mutation?.clientMutationId || EMPTY_STRING);
+
+      if (mutationLog?.error) {
+        const { detail } = JSON.parse(mutationLog.error);
+
+        showError(
+          formatMessageWithValues('GroupDetailsPage.mutation.error', {
+            detail,
+          }),
+        );
+        setReset((prevReset) => prevReset + 1);
+        return;
+      }
+
+      showSuccess(formatMessage('GroupDetailsPage.mutation.success'));
+      historyPush(modulesManager, history, REF_ROUTE_GROUP_LIST);
     }
-  }, [submittingMutation]);
+  }, [submittingMutation, mutation]);
 
   useEffect(() => {
     prevSubmittingMutationRef.current = submittingMutation;
@@ -95,6 +140,7 @@ function GroupDetailsPage({ match }) {
         canSave={canSave}
         save={onSave}
         openDirty={!edited?.uuid}
+        reset={reset}
       />
     </div>
   );

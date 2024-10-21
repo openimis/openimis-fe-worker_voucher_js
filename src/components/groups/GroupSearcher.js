@@ -5,14 +5,22 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import {
-  Searcher, SelectDialog, journalize, useHistory, useModulesManager, useTranslations,
+  Searcher,
+  SelectDialog,
+  useToast,
+  useHistory,
+  useModulesManager,
+  useTranslations,
+  decodeId,
 } from '@openimis/fe-core';
 import { deleteGroup, fetchGroupsAction } from '../../actions';
 import {
+  ADMIN_RIGHT,
   DEFAULT_PAGE_SIZE,
+  EMPTY_STRING,
   MODULE_NAME,
   RIGHT_GROUP_DELETE,
   RIGHT_GROUP_EDIT,
@@ -20,8 +28,9 @@ import {
   ROWS_PER_PAGE_OPTIONS,
 } from '../../constants';
 import GroupFilter from './GroupFilter';
+import { getLastMutationLog } from '../../utils/utils';
 
-function GroupSearcher() {
+function GroupSearcher({ searcherActions, enableActionButtons }) {
   const history = useHistory();
   const dispatch = useDispatch();
   const modulesManager = useModulesManager();
@@ -33,32 +42,35 @@ function GroupSearcher() {
     fetchedGroups,
     errorGroups,
     groups,
-    // TODO: Uncomment when BE is ready
-    // groupsPageInfo,
-    // groupsTotalCount,
+    groupsPageInfo,
+    groupsTotalCount,
     mutation,
     submittingMutation,
   } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
 
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
+  const { showSuccess, showError } = useToast();
 
   const [queryParams, setQueryParams] = useState([]);
   const [deleteGroupDialogOpen, setDeleteGroupDialogOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState(null);
+  const isAdmin = rights.includes(ADMIN_RIGHT);
 
   const fetchGroups = useCallback(
     (params) => {
       try {
         const actionParams = [...params];
 
-        if (economicUnit?.code) {
+        if (!isAdmin && economicUnit?.code) {
           actionParams.push(`economicUnitCode:"${economicUnit.code}"`);
         }
 
+        actionParams.push('isDeleted: false');
+
         dispatch(fetchGroupsAction(modulesManager, actionParams));
       } catch (error) {
-        throw new Error(`[GROUP_SEARCHER]: Fetching groups failed. ${error}`);
+        throw new Error(`[GROUP_SEARCHER]: Fetching groups failed.. ${error}`);
       }
     },
     [economicUnit],
@@ -67,18 +79,16 @@ function GroupSearcher() {
   const headers = () => [
     'workerVoucher.GroupSearcher.groupName',
     'workerVoucher.GroupSearcher.dateCreated',
+    'workerVoucher.GroupSearcher.workersCount',
     'emptyLabel',
   ];
 
-  const sorts = () => [
-    ['groupName', true],
-    ['dateCreated', true],
-  ];
+  const sorts = () => [['name', true], ['dateCreated', true], null];
 
   const rowIdentifier = (group) => group.uuid;
 
   const openGroup = (group) => rights.includes(RIGHT_GROUP_SEARCH)
-    && history.push(`/${modulesManager.getRef('workerVoucher.route.group')}/${group?.uuid}`);
+    && history.push(`/${modulesManager.getRef('workerVoucher.route.group')}/${decodeId(group.id)}`);
 
   const onDoubleClick = (group) => openGroup(group);
 
@@ -94,8 +104,7 @@ function GroupSearcher() {
 
   const onDeleteGroupConfirm = () => {
     try {
-      dispatch(deleteGroup(economicUnit, groupToDelete, 'Delete Group'));
-      fetchGroups(queryParams);
+      dispatch(deleteGroup(economicUnit, [groupToDelete], 'Delete Group'));
     } catch (error) {
       throw new Error(`[GROUP_SEARCHER]: Deletion failed. ${error}`);
     } finally {
@@ -104,15 +113,15 @@ function GroupSearcher() {
   };
 
   const itemFormatters = () => [
-    (group) => group.chfId,
-    (group) => group.lastName,
-    (group) => group.otherNames,
+    (group) => group.name,
+    (group) => group.dateCreated.split('T')[0],
+    (group) => group.groupWorkers.totalCount,
     (group) => (
       <div style={{ textAlign: 'right' }}>
         {rights.includes(RIGHT_GROUP_EDIT) && (
           <Tooltip title={formatMessage('workerVoucher.tooltip.edit')}>
             <IconButton onClick={() => openGroup(group)}>
-              <EditIcon />
+              <VisibilityIcon />
             </IconButton>
           </Tooltip>
         )}
@@ -161,11 +170,25 @@ function GroupSearcher() {
     }
   }, [economicUnit, queryParams]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
-      dispatch(journalize(mutation));
+      const mutationLog = await getLastMutationLog(dispatch, mutation?.clientMutationId || EMPTY_STRING);
+
+      if (mutationLog?.error) {
+        const { detail } = JSON.parse(mutationLog.error);
+
+        showError(
+          formatMessageWithValues('GroupDetailsPage.delete.error', {
+            detail,
+          }),
+        );
+        return;
+      }
+
+      showSuccess(formatMessage('GroupDetailsPage.delete.success'));
+      fetchGroups(queryParams);
     }
-  }, [submittingMutation]);
+  }, [submittingMutation, mutation]);
 
   useEffect(() => {
     prevSubmittingMutationRef.current = submittingMutation;
@@ -178,16 +201,12 @@ function GroupSearcher() {
         FilterPane={groupFilters}
         fetch={fetchGroups}
         items={groups}
-        // TODO: Uncomment when BE is ready
-        // itemsPageInfo={groupsPageInfo}
-        itemsPageInfo={{ totalCount: 0 }}
+        itemsPageInfo={groupsPageInfo}
         fetchedItems={fetchedGroups}
         fetchingItems={fetchingGroups}
         errorItems={errorGroups}
         filtersToQueryParams={filtersToQueryParams}
-        // TODO: Uncomment when BE is ready
-        // tableTitle={formatMessageWithValues('workerVoucher.GroupSearcher.resultsTitle', { groupsTotalCount })}
-        tableTitle={formatMessageWithValues('workerVoucher.GroupSearcher.resultsTitle', { groupsTotalCount: 0 })}
+        tableTitle={formatMessageWithValues('workerVoucher.GroupSearcher.resultsTitle', { groupsTotalCount })}
         headers={headers}
         itemFormatters={itemFormatters}
         sorts={sorts}
@@ -195,6 +214,8 @@ function GroupSearcher() {
         defaultPageSize={DEFAULT_PAGE_SIZE}
         rowIdentifier={rowIdentifier}
         onDoubleClick={onDoubleClick}
+        enableActionButtons={enableActionButtons}
+        searcherActions={searcherActions}
       />
       <SelectDialog
         confirmState={deleteGroupDialogOpen}
