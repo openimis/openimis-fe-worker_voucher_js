@@ -1,6 +1,7 @@
 import React, {
   useCallback, useEffect, useState, useRef,
 } from 'react';
+import _debounce from 'lodash/debounce';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -34,7 +35,9 @@ import {
   historyPush,
 } from '@openimis/fe-core';
 import { fetchWorkers } from '../../actions';
-import { EMPTY_STRING, MODULE_NAME, REF_ROUTE_GROUP_LIST } from '../../constants';
+import {
+  DEFAULT_DEBOUNCE_TIME, EMPTY_STRING, MODULE_NAME, REF_ROUTE_GROUP_LIST,
+} from '../../constants';
 import { ACTION_TYPE } from '../../reducer';
 
 const useStyles = makeStyles((theme) => ({
@@ -135,6 +138,10 @@ function GroupWorkerManagePanel({ edited, onChange }) {
     onChange({ ...edited, workers: [] });
   };
 
+  const debouncedOnSearch = _debounce((e) => {
+    setFilterValue(e.target.value);
+  }, DEFAULT_DEBOUNCE_TIME / 2);
+
   useEffect(() => {
     if (prevEconomicUnitRef.current !== undefined && prevEconomicUnitRef.current !== economicUnit) {
       historyPush(modulesManager, history, REF_ROUTE_GROUP_LIST);
@@ -167,7 +174,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
                     </InputAdornment>
                   ),
                 }}
-                onChange={(e) => setFilterValue(e.target.value)}
+                onChange={debouncedOnSearch}
               />
             </Grid>
           </Paper>
