@@ -117,6 +117,7 @@ function WorkerDetailsPage({ match }) {
           reset={reset}
           openDirty={!edited?.uuid}
           workerVoucherCount={workerVoucherCount}
+          enableActionButtons
         />
       </div>
     )

@@ -141,6 +141,7 @@ function GroupDetailsPage({ match }) {
         save={onSave}
         openDirty={!edited?.uuid}
         reset={reset}
+        enableActionButtons
       />
     </div>
   );
