@@ -1,7 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 
-import { baseApiUrl } from '@openimis/fe-core';
+import { baseApiUrl, parseData } from '@openimis/fe-core';
 import { MPAY_BILL_URL } from '../constants';
+import { fetchMutation } from '../actions';
 
 const fetchMPayArgs = async (url) => {
   const response = await fetch(url);
@@ -62,4 +63,10 @@ export const extractEmployerName = (employer) => {
   if (!employer) return '';
 
   return `${employer.code} ${employer.tradeName}`;
+};
+
+export const getLastMutationLog = async (dispatch, mutationId) => {
+  const mutation = await dispatch(fetchMutation(mutationId));
+
+  return parseData(mutation.payload.data.mutationLogs)?.[0];
 };

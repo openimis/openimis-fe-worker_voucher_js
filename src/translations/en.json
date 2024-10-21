@@ -64,8 +64,8 @@
   "workerVoucher.vouchersQuantity": "Quantity of Vouchers",
   "workerVoucher.pricePerVoucher": "Voucher Price",
   "workerVoucher.toBePaid": "Total Cost",
-  "workerVoucher.action.failed": "Action Failed",
-  "workerVoucher.action.success": "Action Succeed",
+  "workerVoucher.action.failed": "Action Failed. Refresh the page and try again.",
+  "workerVoucher.action.success": "Action Succeed.",
   "workerVoucher.priceManagement.dialog.title": "Delete Voucher Price Confirmation ",
   "workerVoucher.priceManagement.dialog.message": "You are about to delete the voucher price. This action cannot be undone. Please confirm if you wish to proceed with this action.",
   "workerVoucher.priceManagement.dialog.confirm": "Confirm",
@@ -171,6 +171,7 @@
   "workerVoucher.GroupsPage.addTooltip": "Add Group",
   "workerVoucher.GroupSearcher.groupName": "Group Name",
   "workerVoucher.GroupSearcher.dateCreated": "Date Created",
+  "workerVoucher.GroupSearcher.workersCount": "Workers Count",
   "workerVoucher.GroupSearcher.resultsTitle": "{groupsTotalCount} Groups Found",
   "workerVoucher.GroupSearcher.dialog.title": "Delete Group",
   "workerVoucher.GroupSearcher.dialog.message": "You are about to delete the group. This action cannot be undone. Please confirm if you wish to proceed with this action.",
@@ -183,5 +184,9 @@
   "workerVoucher.GroupWorkerManagePanel.availableWorkers": "All Workers",
   "workerVoucher.GroupWorkerManagePanel.chosenWorkers": "Workers in Group",
   "workerVoucher.GroupWorkerManagePanel.tooltip.removeAll": "Remove All Workers",
-  "workerVoucher.GroupWorkerManagePanel.tooltip.addAllFiltered": "Add All Filtered Workers"
+  "workerVoucher.GroupWorkerManagePanel.tooltip.addAllFiltered": "Add All Filtered Workers",
+  "workerVoucher.GroupDetailsPage.mutation.success": "Your changes have been saved successfully.",
+  "workerVoucher.GroupDetailsPage.mutation.error": "Something went wrong while saving your changes. {detail}",
+  "workerVoucher.GroupDetailsPage.delete.success": "The group has been deleted successfully.",
+  "workerVoucher.GroupDetailsPage.delete.error": "Something went wrong while deleting the group. {detail}"
 }

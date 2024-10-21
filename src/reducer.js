@@ -37,6 +37,7 @@ export const ACTION_TYPE = {
   GET_GROUP: 'WORKER_VOUCHER_GET_GROUP',
   DELETE_GROUP: 'WORKER_VOUCHER_DELETE_GROUP',
   CREATE_GROUP: 'WORKER_VOUCHER_CREATE_GROUP',
+  UPDATE_GROUP: 'WORKER_VOUCHER_UPDATE_GROUP',
 };
 
 const STORE_STATE = {
@@ -332,9 +333,9 @@ function reducer(state = STORE_STATE, action) {
         fetchingGroups: false,
         fetchedGroups: true,
         errorGroups: formatGraphQLError(action.payload),
-        groups: parseData(action.payload.data.group),
-        groupsPageInfo: pageInfo(action.payload.data.group),
-        groupsTotalCount: action.payload.data.group?.totalCount ?? 0,
+        groups: parseData(action.payload.data.groupOfWorker),
+        groupsPageInfo: pageInfo(action.payload.data.groupOfWorker),
+        groupsTotalCount: action.payload.data.groupOfWorker?.totalCount ?? 0,
       };
     case ERROR(ACTION_TYPE.GET_GROUPS):
       return {
@@ -365,7 +366,7 @@ function reducer(state = STORE_STATE, action) {
         ...state,
         fetchingGroup: false,
         fetchedGroup: true,
-        group: parseData(action.payload.data.group)?.[0],
+        group: parseData(action.payload.data.groupOfWorker)?.[0],
         errorGroup: formatGraphQLError(action.payload),
       };
     case ERROR(ACTION_TYPE.GET_GROUP):
@@ -399,9 +400,11 @@ function reducer(state = STORE_STATE, action) {
     case SUCCESS(ACTION_TYPE.DELETE_WORKERS):
       return dispatchMutationResp(state, 'deleteWorker', action);
     case SUCCESS(ACTION_TYPE.CREATE_GROUP):
-      return dispatchMutationResp(state, 'createGroup', action);
+      return dispatchMutationResp(state, 'createOrUpdateGroupOfWorkers', action);
+    case SUCCESS(ACTION_TYPE.UPDATE_GROUP):
+      return dispatchMutationResp(state, 'createOrUpdateGroupOfWorkers', action);
     case SUCCESS(ACTION_TYPE.DELETE_GROUP):
-      return dispatchMutationResp(state, 'deleteGroup', action);
+      return dispatchMutationResp(state, 'deleteGroupOfWorkers', action);
     case SUCCESS(ACTION_TYPE.MANAGE_VOUCHER_PRICE):
       return dispatchMutationResp(state, 'createBusinessConfig', action);
     case SUCCESS(ACTION_TYPE.DELETE_VOUCHER_PRICE):
