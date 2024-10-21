@@ -1,9 +1,10 @@
 import React from 'react';
 
 import {
-  Divider, Grid, Paper, Typography,
+  Divider, Grid, Paper, Typography, Button,
 } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
 
 import { FormPanel, FormattedMessage, withModulesManager } from '@openimis/fe-core';
 import WorkerMConnectAddForm from './WorkerMConnectAddForm';
@@ -24,17 +25,30 @@ class WorkerMConnectMasterPanel extends FormPanel {
   };
 
   render() {
-    const { classes, edited } = this.props;
+    const {
+      classes, edited, save, canSave, readOnly, formatMessage,
+    } = this.props;
 
     return (
       <Grid container>
         <Grid item xs={12}>
           <Paper className={classes.paper}>
-            <Grid className={classes.tableTitle}>
-              <Grid item xs={12} container alignItems="center" className={classes.item}>
+            <Grid container className={classes.tableTitle}>
+              <Grid item xs={6} container alignItems="center" className={classes.item}>
                 <Typography variant="h5">
                   <FormattedMessage module="workerVoucher" id="workerVoucher.WorkerMConnectAddForm.title" />
                 </Typography>
+              </Grid>
+              <Grid item xs={6} container alignItems="center" justifyContent="flex-end">
+                <Button
+                  onClick={() => save(edited)}
+                  disabled={!canSave() || readOnly}
+                  startIcon={<SaveAltIcon />}
+                  variant="contained"
+                  color="primary"
+                >
+                  <Typography variant="body2">{formatMessage('workerVoucher.add')}</Typography>
+                </Button>
               </Grid>
             </Grid>
             <Divider />
