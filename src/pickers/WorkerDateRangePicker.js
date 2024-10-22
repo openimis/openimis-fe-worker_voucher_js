@@ -16,7 +16,9 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 
-import { PublishedComponent, useTranslations, useModulesManager } from '@openimis/fe-core';
+import {
+  PublishedComponent, useTranslations, useModulesManager, InfoButton,
+} from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
 function WorkerDateRangePicker({
@@ -50,9 +52,22 @@ function WorkerDateRangePicker({
   return (
     <Grid container>
       <Grid xs={5}>
-        <Typography variant="subtitle1" style={{ padding: '10px 0 0 10px' }}>
-          {formatMessage('workerVoucher.WorkerDateRangePicker.selectDate')}
-        </Typography>
+        <div
+          style={{
+            padding: '10px 0 0 10px',
+            display: 'flex',
+            direction: 'row',
+            justifyContent: 'start',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="subtitle1">{formatMessage('workerVoucher.WorkerDateRangePicker.selectDate')}</Typography>
+          <InfoButton
+            content={formatMessage('WorkerDateRangePicker.selectDate.moreInfo')}
+            iconSize="small"
+            iconButtonSize="small"
+          />
+        </div>
         <Grid container direction="row">
           <Grid xs={6} className={classes.item}>
             <PublishedComponent
