@@ -8,10 +8,10 @@ export const RIGHT_WORKER_SEARCH = 101101;
 export const RIGHT_WORKER_ADD = 101102;
 export const RIGHT_WORKER_EDIT = 101103;
 export const RIGHT_WORKER_DELETE = 101104;
-export const RIGHT_GROUP_SEARCH = 205001;
-export const RIGHT_GROUP_ADD = 205002;
-export const RIGHT_GROUP_EDIT = 205003;
-export const RIGHT_GROUP_DELETE = 205004;
+export const RIGHT_GROUP_SEARCH = 206001;
+export const RIGHT_GROUP_ADD = 206002;
+export const RIGHT_GROUP_EDIT = 206003;
+export const RIGHT_GROUP_DELETE = 206004;
 export const MODULE_NAME = 'workerVoucher';
 export const MAX_CELLS = 8;
 
