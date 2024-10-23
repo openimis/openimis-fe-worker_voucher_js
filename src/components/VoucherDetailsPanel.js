@@ -12,6 +12,7 @@ import {
   FormattedMessage, useModulesManager, useHistory, historyPush,
 } from '@openimis/fe-core';
 import { PRINTABLE, REF_ROUTE_BILL, VOUCHER_RIGHT_SEARCH } from '../constants';
+import { isTheVoucherExpired } from '../utils/utils';
 import VoucherDetailsEmployer from './VoucherDetailsEmployer';
 import VoucherDetailsVoucher from './VoucherDetailsVoucher';
 import VoucherDetailsWorker from './VoucherDetailsWorker';
@@ -67,6 +68,7 @@ function VoucherDetailsPanel({
                   variant="contained"
                   color="primary"
                   startIcon={<PrintIcon />}
+                  disabled={!workerVoucher.billId || isTheVoucherExpired(workerVoucher)}
                   onClick={(e) => {
                     e.preventDefault();
                     handlePrint(null, () => voucherPrintTemplateRef.current);
