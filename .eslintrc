@@ -15,6 +15,7 @@
     "no-shadow": "off", // disabled due to use of bindActionCreators
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }], // disabled due to naming consistency with other modules
     "import/no-unresolved": "off", // disable due to module architecture. For modules most references are marked as unresolved
-    "max-len": ["error", { "code": 120 }]
+    "max-len": ["error", { "code": 120 }],
+    "import/no-extraneous-dependencies": "off"
   }
 }

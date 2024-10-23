@@ -2,6 +2,7 @@ import React, {
   forwardRef, useState, useEffect, useMemo,
 } from 'react';
 import { useDispatch } from 'react-redux';
+import clsx from 'clsx';
 
 import { Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -11,6 +12,7 @@ import {
   EMPTY_STRING, MODULE_NAME, REF_GET_BILL_LINE_ITEM, WORKER_VOUCHER_STATUS,
 } from '../constants';
 import { extractEmployerName, extractWorkerName } from '../utils/utils';
+import VoucherQRCode from './VoucherQRCode';
 
 const useStyles = makeStyles((theme) => ({
   '@global': {
@@ -24,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     height: '320px',
-    padding: '24px',
+    padding: '12px',
     justifyContent: 'space-between',
     borderLeft: `10px solid ${theme.palette.primary.main}`,
     borderRight: `10px solid ${theme.palette.primary.main}`,
@@ -38,14 +40,14 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '48px',
     fontWeight: 900,
     letterSpacing: '-2px',
-    textAlign: 'right',
+    textAlign: 'left',
   },
   annotation: {
     fontSize: '12px',
     fontStyle: 'italic',
   },
   voucherTitle: {
-    fontSize: '32px',
+    fontSize: '28px',
     fontWeight: 900,
     textTransform: 'uppercase',
   },
@@ -57,10 +59,15 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '16px',
     fontWeight: 500,
   },
-  manualFill: {
+  fields: {
     display: 'flex',
     flexDirection: 'column',
+  },
+  manualFill: {
     gap: '16px',
+  },
+  assignedFields: {
+    gap: '4px',
   },
 }));
 
@@ -113,7 +120,13 @@ const VoucherDetailsPrintTemplate = forwardRef(({ workerVoucher, logo }, ref) =>
           </p>
         </div>
 
-        <div className={classes.manualFill}>
+        <div
+          className={clsx({
+            [classes.fields]: true,
+            [classes.manualFill]: !isAssignedStatus,
+            [classes.assignedFields]: isAssignedStatus,
+          })}
+        >
           <div>
             <p className={classes.workerInfo}>{extractWorkerName(workerVoucher.insuree, isAssignedStatus)}</p>
             <Divider />
@@ -126,6 +139,7 @@ const VoucherDetailsPrintTemplate = forwardRef(({ workerVoucher, logo }, ref) =>
             <Divider />
             <p className={classes.annotation}>{formatMessage('workerVoucher.template.validOn')}</p>
           </div>
+          <p className={classes.voucherValue}>{`${voucherValue || 0} ${formatMessage('currency')}`}</p>
         </div>
       </div>
 
@@ -137,7 +151,9 @@ const VoucherDetailsPrintTemplate = forwardRef(({ workerVoucher, logo }, ref) =>
             alt="Logo of Ministerul Muncii și Protecţiei Sociale al Republicii Moldova"
           />
         </div>
-        <p className={classes.voucherValue}>{`${voucherValue || 0} ${formatMessage('currency')}`}</p>
+        <div>
+          <VoucherQRCode voucher={workerVoucher} bgColor="#FFFFFF" size={256} />
+        </div>
       </div>
     </div>
   );
