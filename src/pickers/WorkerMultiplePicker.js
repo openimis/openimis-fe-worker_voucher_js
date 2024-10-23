@@ -55,6 +55,7 @@ function WorkerMultiplePicker({
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      setGroup(null);
       try {
         const { allAvailableWorkers, previousWorkers, previousDayWorkers } = await fetchAllAvailableWorkers(
           dispatch,
