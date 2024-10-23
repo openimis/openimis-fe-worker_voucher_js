@@ -8,13 +8,14 @@ export const RIGHT_WORKER_SEARCH = 101101;
 export const RIGHT_WORKER_ADD = 101102;
 export const RIGHT_WORKER_EDIT = 101103;
 export const RIGHT_WORKER_DELETE = 101104;
-export const RIGHT_GROUP_SEARCH = 101101;
-export const RIGHT_GROUP_ADD = 101102;
-export const RIGHT_GROUP_EDIT = 101103;
-export const RIGHT_GROUP_DELETE = 101104;
+export const RIGHT_GROUP_SEARCH = 206001;
+export const RIGHT_GROUP_ADD = 206002;
+export const RIGHT_GROUP_EDIT = 206003;
+export const RIGHT_GROUP_DELETE = 206004;
 export const MODULE_NAME = 'workerVoucher';
 export const MAX_CELLS = 8;
 
+export const REF_ROUTE_GROUP_LIST = 'workerVoucher.route.groups';
 export const REF_ROUTE_WORKER_VOUCHER = 'workerVoucher.route.workerVoucher';
 export const REF_ROUTE_WORKER_VOUCHERS = 'workerVoucher.route.workerVouchers';
 export const REF_ROUTE_BILL = 'bill.route.bill';
@@ -83,6 +84,7 @@ export const DEFAULT = {
 export const WORKER_IMPORT_ALL_WORKERS = 'allWorkers';
 export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';
 export const WORKER_IMPORT_PREVIOUS_DAY = 'previousDay';
+export const WORKER_IMPORT_GROUP_OF_WORKERS = 'groupOfWorkers';
 
 export const WORKER_IMPORT_PLANS = [
   {
@@ -96,6 +98,10 @@ export const WORKER_IMPORT_PLANS = [
   {
     value: WORKER_IMPORT_PREVIOUS_DAY,
     labelKey: 'workerVoucher.workerImport.previousDay',
+  },
+  {
+    value: WORKER_IMPORT_GROUP_OF_WORKERS,
+    labelKey: 'workerVoucher.workerImport.groupOfWorkers',
   },
 ];
 

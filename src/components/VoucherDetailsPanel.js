@@ -72,7 +72,7 @@ function VoucherDetailsPanel({
                     handlePrint(null, () => voucherPrintTemplateRef.current);
                   }}
                 >
-                  <Typography variant="subtitle1">{formatMessage('workerVoucher.printVoucher')}</Typography>
+                  <Typography variant="body2">{formatMessage('workerVoucher.printVoucher')}</Typography>
                 </Button>
               )}
               <Button
@@ -83,7 +83,7 @@ function VoucherDetailsPanel({
                 startIcon={<ReceiptIcon />}
                 onClick={redirectToTheLinkedBill}
               >
-                <Typography variant="subtitle1">{formatMessage('workerVoucher.navigateToTheBill.tooltip')}</Typography>
+                <Typography variant="body2">{formatMessage('workerVoucher.navigateToTheBill.tooltip')}</Typography>
               </Button>
             </Grid>
           )}

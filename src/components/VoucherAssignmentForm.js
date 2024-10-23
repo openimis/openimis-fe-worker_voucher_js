@@ -5,9 +5,16 @@ import {
   Divider, Grid, Paper, Typography, Button, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 
 import {
-  coreAlert, useModulesManager, useTranslations, journalize, historyPush, useHistory,
+  coreAlert,
+  useModulesManager,
+  useTranslations,
+  journalize,
+  historyPush,
+  useHistory,
+  InfoButton,
 } from '@openimis/fe-core';
 import { assignVouchers, voucherAssignmentValidation } from '../actions';
 import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
@@ -24,6 +31,18 @@ export const useStyles = makeStyles((theme) => ({
   },
   tableTitle: theme.table.title,
   item: theme.paper.item,
+  listItem: {
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: theme.shape.borderRadius,
+    marginBottom: theme.spacing(0.5),
+    backgroundColor: theme.palette.background.paper,
+  },
+  infoSection: {
+    display: 'flex',
+    justifyContent: 'start',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+  },
 }));
 
 function VoucherAssignmentForm() {
@@ -48,11 +67,13 @@ function VoucherAssignmentForm() {
     setIsConfirmationModalOpen((prevState) => !prevState);
     setAssignmentSummaryLoading(true);
     try {
-      const { payload } = await dispatch(voucherAssignmentValidation(
-        voucherAssignment?.employer?.code,
-        voucherAssignment?.workers,
-        voucherAssignment?.dateRanges,
-      ));
+      const { payload } = await dispatch(
+        voucherAssignmentValidation(
+          voucherAssignment?.employer?.code,
+          voucherAssignment?.workers,
+          voucherAssignment?.dateRanges,
+        ),
+      );
       setAssignmentSummary(payload);
     } catch (error) {
       throw new Error(`[VOUCHER_ASSIGNMENT]: Validation error. ${error}`);
@@ -64,12 +85,14 @@ function VoucherAssignmentForm() {
   const onAssignmentConfirmation = async () => {
     setIsAssignmentLoading(true);
     try {
-      await dispatch(assignVouchers(
-        voucherAssignment?.employer?.code,
-        voucherAssignment?.workers,
-        voucherAssignment?.dateRanges,
-        'Assign Vouchers',
-      ));
+      await dispatch(
+        assignVouchers(
+          voucherAssignment?.employer?.code,
+          voucherAssignment?.workers,
+          voucherAssignment?.dateRanges,
+          'Assign Vouchers',
+        ),
+      );
       historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
       dispatch(
         coreAlert(
@@ -101,7 +124,10 @@ function VoucherAssignmentForm() {
     if (storedUserEconomicUnit) {
       const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
       setVoucherAssignment((prevState) => ({
-        ...prevState, employer: userEconomicUnit, workers: [], dateRanges: [],
+        ...prevState,
+        employer: userEconomicUnit,
+        workers: [],
+        dateRanges: [],
       }));
     }
   }, [setVoucherAssignment, economicUnit]);
@@ -112,7 +138,14 @@ function VoucherAssignmentForm() {
         <Paper className={classes.paper}>
           <Grid xs={12}>
             <Grid container className={classes.paperHeaderTitle}>
-              <Typography variant="h5">{formatMessage('workerVoucher.menu.voucherAssignment')}</Typography>
+              <div className={classes.infoSection}>
+                <InfoButton
+                  content={formatMessage('VoucherAssignmentForm.form.moreInfo')}
+                  iconSize="large"
+                  maxWidth="large"
+                />
+                <Typography variant="h5">{formatMessage('workerVoucher.menu.voucherAssignment')}</Typography>
+              </div>
               <Tooltip
                 title={
                   assignmentBlocked(voucherAssignment)
@@ -122,12 +155,13 @@ function VoucherAssignmentForm() {
               >
                 <span>
                   <Button
-                    variant="outlined"
-                    style={{ border: 0 }}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AssignmentIndIcon />}
                     onClick={onVoucherAssign}
                     disabled={assignmentBlocked(voucherAssignment)}
                   >
-                    <Typography variant="subtitle1">{formatMessage('workerVoucher.assign.voucher')}</Typography>
+                    <Typography variant="body2">{formatMessage('workerVoucher.assign.voucher')}</Typography>
                   </Button>
                 </span>
               </Tooltip>

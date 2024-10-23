@@ -1,4 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useState, useRef,
+} from 'react';
+import _debounce from 'lodash/debounce';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -28,9 +31,13 @@ import {
   parseData,
   useModulesManager,
   useTranslations,
+  useHistory,
+  historyPush,
 } from '@openimis/fe-core';
 import { fetchWorkers } from '../../actions';
-import { EMPTY_STRING, MODULE_NAME } from '../../constants';
+import {
+  DEFAULT_DEBOUNCE_TIME, EMPTY_STRING, MODULE_NAME, REF_ROUTE_GROUP_LIST,
+} from '../../constants';
 import { ACTION_TYPE } from '../../reducer';
 
 const useStyles = makeStyles((theme) => ({
@@ -63,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function GroupWorkerManagePanel({ edited, onChange }) {
+  const prevEconomicUnitRef = useRef();
+  const history = useHistory();
   const modulesManager = useModulesManager();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -70,17 +79,22 @@ function GroupWorkerManagePanel({ edited, onChange }) {
   const [filterValue, setFilterValue] = useState(EMPTY_STRING);
   const { economicUnit } = useSelector((state) => state.policyHolder);
   const [isLoading, setIsLoading] = useState(false);
-  const [workers, setWorkers] = useState([]);
+  const [allWorkers, setAllWorkers] = useState([]);
 
-  const filterOutWorkers = (workers, filterValue) => {
-    if (filterValue === EMPTY_STRING) return workers;
-    return workers.filter((worker) => {
-      const workerName = `${worker.chfId} ${worker.otherNames} ${worker.lastName}`;
-      return workerName.toLowerCase().includes(filterValue.toLowerCase());
-    });
-  };
+  const filterAndGetUniqueWorkers = useCallback(
+    (workersList, filterValue) => {
+      const chosenWorkerUuids = new Set(edited.workers?.map((worker) => worker.uuid));
 
-  const filteredWorkers = filterOutWorkers(workers, filterValue);
+      return workersList.filter((worker) => {
+        const workerName = `${worker.chfId} ${worker.otherNames} ${worker.lastName}`;
+        const matchesFilter = workerName.toLowerCase().includes(filterValue.toLowerCase());
+        return matchesFilter && !chosenWorkerUuids.has(worker.uuid);
+      });
+    },
+    [edited],
+  );
+
+  const filteredUniqueWorkers = filterAndGetUniqueWorkers(allWorkers, filterValue);
 
   const fetchAllAvailableWorkers = useCallback(async () => {
     setIsLoading(true);
@@ -89,45 +103,52 @@ function GroupWorkerManagePanel({ edited, onChange }) {
         fetchWorkers(modulesManager, [`economicUnitCode:"${economicUnit.code}"`], ACTION_TYPE.REQUEST),
       );
       const parsedWorkers = parseData(workerData.payload.data.worker);
-      setWorkers(parsedWorkers);
+      setAllWorkers(parsedWorkers);
     } catch (error) {
       throw new Error(`[GROUP_WORKER_MANAGE_PANEL] Error fetching workers: ${error}`);
     } finally {
       setIsLoading(false);
     }
-  }, [economicUnit.code]);
+  }, [economicUnit.code, dispatch, modulesManager]);
 
   useEffect(() => {
-    // TODO: If EU changes, apart from fetching workers, we should navigate back
     fetchAllAvailableWorkers();
-  }, [economicUnit.code, fetchAllAvailableWorkers]);
+  }, [fetchAllAvailableWorkers]);
 
   const handleWorkerSelection = (selectedWorker) => {
-    if (edited.workers?.includes(selectedWorker)) return;
-
-    setWorkers(workers.filter((w) => w !== selectedWorker));
+    if (edited.workers?.some((worker) => worker.uuid === selectedWorker.uuid)) return;
 
     const newWorkers = edited.workers ? [...edited.workers, selectedWorker] : [selectedWorker];
     onChange({ ...edited, workers: newWorkers });
   };
 
   const handleWorkerRemoval = (workerToRemove) => {
-    setWorkers([...workers, workerToRemove]);
-
-    const newWorkers = edited.workers.filter((worker) => worker !== workerToRemove);
+    const newWorkers = edited.workers.filter((worker) => worker.uuid !== workerToRemove.uuid);
     onChange({ ...edited, workers: newWorkers });
   };
 
   const addAllFilteredWorkers = () => {
-    const newWorkers = edited.workers ? [...edited.workers, ...filteredWorkers] : [...filteredWorkers];
-    setWorkers([]);
+    const uniqueNewWorkers = filteredUniqueWorkers;
+
+    const newWorkers = edited.workers ? [...edited.workers, ...uniqueNewWorkers] : uniqueNewWorkers;
     onChange({ ...edited, workers: newWorkers });
   };
 
   const removeAllWorkers = () => {
-    setWorkers([...workers, ...edited.workers]);
     onChange({ ...edited, workers: [] });
   };
+
+  const debouncedOnSearch = _debounce((e) => {
+    setFilterValue(e.target.value);
+  }, DEFAULT_DEBOUNCE_TIME / 2);
+
+  useEffect(() => {
+    if (prevEconomicUnitRef.current !== undefined && prevEconomicUnitRef.current !== economicUnit) {
+      historyPush(modulesManager, history, REF_ROUTE_GROUP_LIST);
+    }
+
+    prevEconomicUnitRef.current = economicUnit;
+  }, [economicUnit]);
 
   return (
     <Paper className={classes.paper} xs={12}>
@@ -153,12 +174,12 @@ function GroupWorkerManagePanel({ edited, onChange }) {
                     </InputAdornment>
                   ),
                 }}
-                onChange={(e) => setFilterValue(e.target.value)}
+                onChange={debouncedOnSearch}
               />
             </Grid>
           </Paper>
         </Grid>
-        <Grid container justify="space-between" alignItems="center">
+        <Grid container justifyContent="space-between" alignItems="center">
           <Grid item xs={6} className={classes.item}>
             <Grid className={classes.listTitle}>
               <Typography variant="h6">
@@ -175,7 +196,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
             <Paper>
               <List className={classes.list} subheader={<li />}>
                 <ProgressOrError progress={isLoading} />
-                {filteredWorkers.map((worker) => (
+                {filteredUniqueWorkers.map((worker) => (
                   <ListItem button divider key={worker.uuid}>
                     <ListItemAvatar>
                       <Avatar alt={`${worker.firstName} ${worker.lastName} Avatar`} src={worker.photo} />
@@ -211,7 +232,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
               <List className={classes.list} subheader={<li />}>
                 <ProgressOrError />
                 {edited?.workers?.map((worker) => (
-                  <ListItem button divider>
+                  <ListItem button divider key={worker.uuid}>
                     <ListItemAvatar>
                       <Avatar alt={`${worker.firstName} ${worker.lastName} Avatar`} src={worker.photo} />
                     </ListItemAvatar>

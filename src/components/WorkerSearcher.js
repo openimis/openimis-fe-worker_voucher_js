@@ -40,7 +40,9 @@ import { useUploadWorkerContext } from '../context/UploadWorkerContext';
 
 const WORKER_SEARCHER_ACTION_CONTRIBUTION_KEY = 'workerVoucher.WorkerSearcherAction.select';
 
-function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, clearWorkersExport }) {
+function WorkerSearcher({
+  downloadWorkers, fetchWorkers: fetchWorkersAction, clearWorkersExport, searcherActions = [], enableActionButtons,
+}) {
   const history = useHistory();
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
@@ -285,6 +287,9 @@ function WorkerSearcher({ downloadWorkers, fetchWorkers: fetchWorkersAction, cle
         exportFileFormats={EXPORT_FILE_FORMATS}
         exportFileFormat={exportFileFormat}
         setExportFileFormat={setExportFileFormat}
+        enableActionButtons={enableActionButtons}
+        searcherActions={searcherActions}
+        downloadWithIconButton
       />
       {failedExport && (
         <Dialog open={failedExport} fullWidth maxWidth="sm">
