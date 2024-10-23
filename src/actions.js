@@ -26,6 +26,14 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
+const WORKER_VOUCHER_CHECK_PROJECTION = [
+  'isExisted',
+  'isValid',
+  'assignedDate',
+  'employerCode',
+  'employerName',
+];
+
 const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
 
 // eslint-disable-next-line no-unused-vars
@@ -646,9 +654,8 @@ export function deleteGroup(economicUnit, groupsToDelete, clientMutationLabel) {
   );
 }
 
-export function fetchPublicVoucherDetails(modulesManager, voucherUuid) {
-  // TODO | OM-347: Implement the query here after BE changes
+export function fetchPublicVoucherDetails(voucherUuid) {
   const queryParams = [`code: "${voucherUuid}"`];
-  const payload = formatPageQueryWithCount('workerVoucher', queryParams, WORKER_VOUCHER_PROJECTION(modulesManager));
+  const payload = formatPageQueryWithCount('voucherCheck', queryParams, WORKER_VOUCHER_CHECK_PROJECTION);
   return graphql(payload, ACTION_TYPE.REQUEST);
 }

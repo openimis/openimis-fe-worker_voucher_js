@@ -8,13 +8,14 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CheckIcon from '@material-ui/icons/Check';
 import ErrorIcon from '@material-ui/icons/Error';
+import WarningIcon from '@material-ui/icons/Warning';
 import { makeStyles } from '@material-ui/styles';
 
 import {
   decodeId, parseData, useHistory, useModulesManager, useTranslations,
 } from '@openimis/fe-core';
 import { fetchPublicVoucherDetails } from '../actions';
-import { MODULE_NAME } from '../constants';
+import { EMPTY_STRING, MODULE_NAME } from '../constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,6 +82,11 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #f44336',
     color: '#c62828',
   },
+  warningBox: {
+    backgroundColor: '#fff3e0',
+    border: '1px solid #ff9800',
+    color: '#f57c00',
+  },
   foundBox: {
     backgroundColor: '#e0f7fa',
     border: '1px solid #009688',
@@ -96,15 +102,18 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME);
   const voucherUuid = match.params.voucher_uuid;
   const [voucherSearcher, setVoucherSearcher] = useState({
-    isFound: false,
-    voucherDetails: {},
+    isExisted: false,
+    isValid: false,
+    assignedDate: EMPTY_STRING,
+    employerCode: EMPTY_STRING,
+    employerName: EMPTY_STRING,
   });
 
   useEffect(() => {
     const fetchVoucher = async () => {
       if (voucherUuid) {
         try {
-          const response = await dispatch(fetchPublicVoucherDetails(modulesManager, voucherUuid));
+          const response = await dispatch(fetchPublicVoucherDetails(voucherUuid));
           const vouchers = parseData(response.payload.data.workerVoucher);
           const voucherData = vouchers?.map((voucher) => ({
             ...voucher,
@@ -138,23 +147,43 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
   }
 
   const {
-    voucherDetails: { policyholder, assignedDate },
-    isFound,
+    isExisted, isValid, assignedDate, employerCode, employerName,
   } = voucherSearcher;
+
+  const renderMessage = () => {
+    if (!isExisted) {
+      return formatMessage('PublicVoucherDetailsPage.voucherNotFound');
+    }
+
+    return formatMessageWithValues(
+      isValid ? 'PublicVoucherDetailsPage.voucherFound' : 'PublicVoucherDetailsPage.invalidVoucherFound',
+      {
+        assignedDate,
+        employerCode,
+        employerName,
+      },
+    );
+  };
+
+  const renderIcon = () => {
+    if (!isExisted) {
+      return <ErrorIcon />;
+    }
+
+    return isValid ? <CheckIcon /> : <WarningIcon />;
+  };
 
   return (
     <RootLayout logo={logo}>
       <InfoBox
-        icon={isFound ? <CheckIcon /> : <ErrorIcon />}
-        message={
-          isFound
-            ? formatMessageWithValues('PublicVoucherDetailsPage.voucherFound', {
-              assignedDate: <strong>{assignedDate}</strong>,
-              employer: <strong>{`${policyholder?.code} ${policyholder?.tradeName}`}</strong>,
-            })
-            : formatMessage('PublicVoucherDetailsPage.voucherNotFound')
-        }
-        className={clsx(classes.box, isFound ? classes.foundBox : classes.notFoundBox)}
+        icon={renderIcon()}
+        message={renderMessage()}
+        className={clsx({
+          [classes.box]: true,
+          [classes.notFoundBox]: !isExisted,
+          [classes.foundBox]: isExisted && isValid,
+          [classes.warningBox]: isExisted && !isValid,
+        })}
       />
     </RootLayout>
   );
