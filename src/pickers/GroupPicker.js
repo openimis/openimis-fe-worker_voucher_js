@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { useModulesManager, useTranslations, Autocomplete } from '@openimis/fe-core';
@@ -6,7 +6,7 @@ import { fetchGroupsAction } from '../actions';
 import { ADMIN_RIGHT, MODULE_NAME } from '../constants';
 
 function GroupPicker({
-  withLabel = true, withPlaceholder = true, label, onChange,
+  withLabel = true, withPlaceholder = true, label, onChange, currentGroup,
 }) {
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
@@ -17,8 +17,6 @@ function GroupPicker({
   } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
   const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
-
-  const [group, setGroup] = useState(null);
 
   const isAdmin = useMemo(() => rights.includes(ADMIN_RIGHT), [rights]);
 
@@ -36,7 +34,6 @@ function GroupPicker({
 
   const handleChange = (selectedGroup) => {
     onChange(selectedGroup);
-    setGroup(selectedGroup);
   };
 
   return (
@@ -48,7 +45,7 @@ function GroupPicker({
       options={groups}
       isLoading={fetchingGroups}
       isFetched={fetchedGroups}
-      value={group}
+      value={currentGroup}
       getOptionLabel={groupLabel}
       onChange={handleChange}
       onInputChange={() => {}}

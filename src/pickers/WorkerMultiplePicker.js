@@ -116,9 +116,9 @@ function WorkerMultiplePicker({
   const handleImport = () => {
     setConfigurationDialogOpen(false);
 
-    const currentWorkersSet = new Set(value.map((worker) => worker.id));
+    const currentWorkersSet = new Set(value.map((worker) => worker.uuid));
     const importedWorkers = importPlanWorkers(importPlan);
-    const uniqueImportedWorkers = importedWorkers.filter((worker) => !currentWorkersSet.has(worker.id));
+    const uniqueImportedWorkers = importedWorkers.filter((worker) => !currentWorkersSet.has(worker.uuid));
     const updatedWorkers = [...value, ...uniqueImportedWorkers];
 
     onChange(null, updatedWorkers);

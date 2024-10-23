@@ -57,16 +57,16 @@ function WorkerImportDialog({
           onChange={(event) => setImportPlan(event.target.value)}
         >
           {WORKER_IMPORT_PLANS.map(({ value, labelKey }) => (
-            <>
-              <FormControlLabel
-                key={value}
-                value={value}
-                control={<Radio color="primary" />}
-                label={formatMessage(labelKey)}
-              />
-              {importPlan === WORKER_IMPORT_GROUP_OF_WORKERS && <GroupPicker onChange={handleGroupChange} />}
-            </>
+            <FormControlLabel
+              key={value}
+              value={value}
+              control={<Radio color="primary" />}
+              label={formatMessage(labelKey)}
+            />
           ))}
+          {importPlan === WORKER_IMPORT_GROUP_OF_WORKERS && (
+          <GroupPicker onChange={handleGroupChange} currentGroup={currentGroup} />
+          )}
         </RadioGroup>
       </DialogContent>
       <Divider />
