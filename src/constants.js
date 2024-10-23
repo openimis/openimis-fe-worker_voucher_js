@@ -84,6 +84,7 @@ export const DEFAULT = {
 export const WORKER_IMPORT_ALL_WORKERS = 'allWorkers';
 export const WORKER_IMPORT_PREVIOUS_WORKERS = 'previousWorkers';
 export const WORKER_IMPORT_PREVIOUS_DAY = 'previousDay';
+export const WORKER_IMPORT_GROUP_OF_WORKERS = 'groupOfWorkers';
 
 export const WORKER_IMPORT_PLANS = [
   {
@@ -97,6 +98,10 @@ export const WORKER_IMPORT_PLANS = [
   {
     value: WORKER_IMPORT_PREVIOUS_DAY,
     labelKey: 'workerVoucher.workerImport.previousDay',
+  },
+  {
+    value: WORKER_IMPORT_GROUP_OF_WORKERS,
+    labelKey: 'workerVoucher.workerImport.groupOfWorkers',
   },
 ];
 

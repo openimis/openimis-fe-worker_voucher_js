@@ -12,13 +12,14 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Popper from '@material-ui/core/Popper';
 
-import { useModulesManager, useTranslations } from '@openimis/fe-core';
+import { useModulesManager, useTranslations, parseData } from '@openimis/fe-core';
 import WorkerImportDialog from '../components/WorkerImportDialog';
 import {
   MAX_CELLS,
   MODULE_NAME,
   USER_ECONOMIC_UNIT_STORAGE_KEY,
   WORKER_IMPORT_ALL_WORKERS,
+  WORKER_IMPORT_GROUP_OF_WORKERS,
   WORKER_IMPORT_PREVIOUS_DAY,
   WORKER_IMPORT_PREVIOUS_WORKERS,
   WORKER_THRESHOLD,
@@ -41,6 +42,7 @@ function WorkerMultiplePicker({
   const isDisabled = readOnly || isLoading;
   const [configurationDialogOpen, setConfigurationDialogOpen] = useState(false);
   const [importPlan, setImportPlan] = useState(undefined);
+  const [group, setGroup] = useState(null);
   const yesterday = getYesterdaysDate();
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -104,6 +106,8 @@ function WorkerMultiplePicker({
         return previousWorkers;
       case WORKER_IMPORT_PREVIOUS_DAY:
         return previousDayWorkers;
+      case WORKER_IMPORT_GROUP_OF_WORKERS:
+        return parseData(group.groupWorkers)?.map((groupWorker) => groupWorker.insuree);
       default:
         return [];
     }
@@ -118,6 +122,10 @@ function WorkerMultiplePicker({
     const updatedWorkers = [...value, ...uniqueImportedWorkers];
 
     onChange(null, updatedWorkers);
+  };
+
+  const handleGroupChange = (group) => {
+    setGroup(group);
   };
 
   return (
@@ -215,6 +223,8 @@ function WorkerMultiplePicker({
         importPlan={importPlan}
         setImportPlan={setImportPlan}
         onConfirm={handleImport}
+        handleGroupChange={handleGroupChange}
+        currentGroup={group}
       />
     </div>
   );

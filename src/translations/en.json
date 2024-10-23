@@ -126,6 +126,7 @@
   "workerVoucher.workerImport.allWorkers": "Add all workers",
   "workerVoucher.workerImport.previousWorkers": "Add workers I've worked with",
   "workerVoucher.workerImport.previousDay": "Add workers from the previous day only",
+  "workerVoucher.workerImport.groupOfWorkers": "Add workers from the particular group",
   "workerVoucher.workerImport.cancel": "Cancel",
   "workerVoucher.workerImport.confirm": "Import",
   "workerVoucher.printVoucher": "Print",
@@ -193,5 +194,6 @@
   "workerVoucher.GroupDetailsPage.delete.error": "Something went wrong while deleting the group. {detail}",
   "workerVoucher.WorkerDateRangePicker.selectDate.moreInfo": "Define the validity period for the selected workers' vouchers. You can add multiple validity periods, but they must not overlap. First, set the period, and then confirm it using the button below.",
   "workerVoucher.VoucherAssignmentForm.form.moreInfo": "Define the workers to whom you want to assign the non-personal vouchers. You can assign vouchers to multiple workers at once. First, select the workers, and then define periods in which the vouchers will be valid. Confirm the assignment using the top right corner button.",
-  "workerVoucher.WorkerImportDialog.moreInfo": "By using this feature, you can import your workers immediately. You can choose to import all workers, workers you've worked with, workers from the previous day only or workers from the particular group. Once you've selected the option, click the Import button to proceed."
+  "workerVoucher.WorkerImportDialog.moreInfo": "By using this feature, you can import your workers immediately. You can choose to import all workers, workers you've worked with, workers from the previous day only or workers from the particular group. Once you've selected the option, click the Import button to proceed.",
+  "workerVoucher.GroupPicker.label": "Group"
 }
