@@ -76,6 +76,10 @@
   "workerVoucher.WorkerSearcher.dialog.message": "You are about to delete the worker. This action cannot be undone. Please confirm if you wish to proceed with this action.",
   "workerVoucher.WorkerSearcher.dialog.confirm": "Delete",
   "workerVoucher.WorkerSearcher.dialog.abandon": "Cancel",
+  "workerVoucher.deleteWorker.success": "The worker(s) has been deleted successfully.",
+  "workerVoucher.deleteWorker.error": "Something went wrong while deleting the worker(s). {detail}",
+  "workerVoucher.saveWorker.success": "The worker has been saved successfully.",
+  "workerVoucher.saveWorker.error": "Something went wrong while saving the worker.",
   "workerVoucher.priceManagement": "Confirm Voucher Price",
   "workerVoucher.mobileAppPassword": "Submit Change",
   "workerVoucher.password.mustMatch": "The new password and confirmation password must match",
@@ -195,5 +199,11 @@
   "workerVoucher.WorkerDateRangePicker.selectDate.moreInfo": "Define the validity period for the selected workers' vouchers. You can add multiple validity periods, but they must not overlap. First, set the period, and then confirm it using the button below.",
   "workerVoucher.VoucherAssignmentForm.form.moreInfo": "Define the workers to whom you want to assign the non-personal vouchers. You can assign vouchers to multiple workers at once. First, select the workers, and then define periods in which the vouchers will be valid. Confirm the assignment using the top right corner button.",
   "workerVoucher.WorkerImportDialog.moreInfo": "By using this feature, you can import your workers immediately. You can choose to import all workers, workers you've worked with, workers from the previous day only or workers from the particular group. Once you've selected the option, click the Import button to proceed.",
-  "workerVoucher.GroupPicker.label": "Group"
+  "workerVoucher.GroupPicker.label": "Group",
+  "workerVoucher.PublicVoucherDetailsPage.title": "Public Voucher Check",
+  "workerVoucher.PublicVoucherDetailsPage.backButton": "Back",
+  "workerVoucher.PublicVoucherDetailsPage.noVoucherUuid": " Voucher UUID not provided.",
+  "workerVoucher.PublicVoucherDetailsPage.voucherNotFound": "Voucher not found.",
+  "workerVoucher.PublicVoucherDetailsPage.invalidVoucherFound": "Voucher is no longer valid. It was valid on the day {assignedDate} at the {employer} employer.",
+  "workerVoucher.PublicVoucherDetailsPage.voucherFound": "Voucher found. It is valid on the day {assignedDate} at the {employer} employer."
 }

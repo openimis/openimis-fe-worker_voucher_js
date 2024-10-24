@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { baseApiUrl, parseData } from '@openimis/fe-core';
-import { MPAY_BILL_URL } from '../constants';
+import { MPAY_BILL_URL, WORKER_VOUCHER_STATUS } from '../constants';
 import { fetchMutation } from '../actions';
 
 const fetchMPayArgs = async (url) => {
@@ -70,3 +70,8 @@ export const getLastMutationLog = async (dispatch, mutationId) => {
 
   return parseData(mutation.payload.data.mutationLogs)?.[0];
 };
+
+export const isTheVoucherExpired = (voucher) => voucher.status === WORKER_VOUCHER_STATUS.EXPIRED
+|| new Date(voucher.expiryDate) < new Date();
+
+export const trimDate = (date) => date.split('T')[0];

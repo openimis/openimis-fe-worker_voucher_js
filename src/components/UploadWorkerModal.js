@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
   uploadBox: {
     width: '100%',
     minHeight: '140px',
-    backgroundColor: theme.palette.background.default,
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: theme.shape.borderRadius,
     display: 'flex',

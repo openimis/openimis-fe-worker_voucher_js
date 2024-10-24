@@ -26,6 +26,14 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
+const WORKER_VOUCHER_CHECK_PROJECTION = [
+  'isExisted',
+  'isValid',
+  'assignedDate',
+  'employerCode',
+  'employerName',
+];
+
 const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
 
 // eslint-disable-next-line no-unused-vars
@@ -643,5 +651,18 @@ export function deleteGroup(economicUnit, groupsToDelete, clientMutationLabel) {
       clientMutationLabel,
       requestedDateTime,
     },
+  );
+}
+
+export function fetchPublicVoucherDetails(voucherUuid) {
+  return graphqlWithVariables(
+    `
+    query checkVoucherValidity($voucherUuid: String!) {
+      voucherCheck(code: $voucherUuid) {
+      ${WORKER_VOUCHER_CHECK_PROJECTION.join('\n')}
+      }
+    }
+    `,
+    { voucherUuid },
   );
 }

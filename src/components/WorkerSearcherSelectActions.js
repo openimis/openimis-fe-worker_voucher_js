@@ -7,7 +7,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { SelectDialog, journalize, useTranslations } from '@openimis/fe-core';
+import { SelectDialog, useTranslations } from '@openimis/fe-core';
 import { deleteWorkersFromEconomicUnit } from '../actions';
 import { MODULE_NAME } from '../constants';
 
@@ -27,11 +27,9 @@ function WorkerSearcherSelectActions({
   withSelection,
   downloadWithIconButton = false,
 }) {
-  const prevSubmittingMutationRef = useRef();
   const prevEconomicUnitRef = useRef();
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
   const { economicUnit } = useSelector((state) => state.policyHolder);
-  const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
   const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage } = useTranslations(MODULE_NAME);
@@ -60,16 +58,6 @@ function WorkerSearcherSelectActions({
 
     prevEconomicUnitRef.current = economicUnit;
   }, [economicUnit, selectedWorkers, clearSelected]);
-
-  useEffect(() => {
-    if (prevSubmittingMutationRef.current && !submittingMutation) {
-      dispatch(journalize(mutation));
-    }
-  }, [submittingMutation]);
-
-  useEffect(() => {
-    prevSubmittingMutationRef.current = submittingMutation;
-  });
 
   if (!withSelection) {
     return null;

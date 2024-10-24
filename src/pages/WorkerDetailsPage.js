@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 
 import {
-  Form, Helmet, useHistory, useModulesManager, useTranslations, parseData, journalize,
+  Form, Helmet, useHistory, useModulesManager, useTranslations, parseData, useToast,
 } from '@openimis/fe-core';
 import {
   appendWorkerToEconomicUnit, clearWorker, fetchWorker, fetchWorkerVoucherCount,
@@ -14,6 +14,7 @@ import {
 } from '../constants';
 import WorkerMasterPanel from '../components/WorkerMasterPanel';
 import WorkerMConnectMasterPanel from '../components/WorkerMConnectMasterPanel';
+import { getLastMutationLog } from '../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   page: theme.page,
@@ -35,6 +36,7 @@ function WorkerDetailsPage({ match }) {
   const [reset, setReset] = useState(0);
   const [workerVoucherCount, setWorkerVoucherCount] = useState(0);
   const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
+  const { showSuccess, showError } = useToast();
 
   const titleParams = (worker) => ({
     chfId: worker?.chfId ?? EMPTY_STRING,
@@ -79,20 +81,27 @@ function WorkerDetailsPage({ match }) {
         code: 'M',
       };
 
-      dispatch(appendWorkerToEconomicUnit(economicUnit.code, data, 'Append Worker to Economic Unit')).then(
-        () => history.goBack(),
-      );
+      dispatch(appendWorkerToEconomicUnit(economicUnit.code, data, 'Append Worker to Economic Unit'))
+        .then(() => history.goBack());
     } catch (error) {
       setReset((prevReset) => prevReset + 1);
       throw new Error(`[WORKER_DETAILS_PAGE]: Saving worker failed. ${error}`);
     }
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
-      dispatch(journalize(mutation));
+      const mutationLog = await getLastMutationLog(dispatch, mutation?.clientMutationId || EMPTY_STRING);
+
+      if (mutationLog?.error) {
+        showError(formatMessageWithValues('saveWorker.error'));
+        setReset((prevReset) => prevReset + 1);
+        return;
+      }
+
+      showSuccess(formatMessage('saveWorker.success'));
     }
-  }, [submittingMutation]);
+  }, [submittingMutation, mutation]);
 
   useEffect(() => {
     prevSubmittingMutationRef.current = submittingMutation;
