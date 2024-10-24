@@ -22,6 +22,7 @@ import {
   VOUCHER_RIGHT_SEARCH,
 } from '../constants';
 import VoucherFilter from './VoucherFilter';
+import { trimDate } from '../utils/utils';
 
 function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWorkerVoucherExport }) {
   const history = useHistory();
@@ -116,8 +117,8 @@ function VoucherSearcher({ downloadWorkerVoucher, fetchWorkerVouchers, clearWork
       ? `${workerVoucher.insuree?.chfId} ${workerVoucher.insuree?.lastName}`
       : formatMessage('workerVoucher.unassigned')),
     (workerVoucher) => formatMessage(`workerVoucher.status.${workerVoucher.status}`),
-    (workerVoucher) => workerVoucher.assignedDate,
-    (workerVoucher) => workerVoucher.expiryDate,
+    (workerVoucher) => trimDate(workerVoucher.assignedDate),
+    (workerVoucher) => trimDate(workerVoucher.expiryDate),
     (workerVoucher) => (
       <div style={{ textAlign: 'right' }}>
         <Tooltip title={formatMessage('workerVoucher.tooltip.details')}>

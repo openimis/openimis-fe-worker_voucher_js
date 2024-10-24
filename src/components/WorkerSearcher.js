@@ -17,8 +17,8 @@ import {
   useTranslations,
   downloadExport,
   SelectDialog,
-  journalize,
   EXPORT_FILE_FORMATS,
+  useToast,
 } from '@openimis/fe-core';
 import {
   fetchWorkers, downloadWorkers, clearWorkersExport, deleteWorkerFromEconomicUnit,
@@ -37,6 +37,7 @@ import {
 import WorkerFilter from './WorkerFilter';
 import { ACTION_TYPE } from '../reducer';
 import { useUploadWorkerContext } from '../context/UploadWorkerContext';
+import { getLastMutationLog } from '../utils/utils';
 
 const WORKER_SEARCHER_ACTION_CONTRIBUTION_KEY = 'workerVoucher.WorkerSearcherAction.select';
 
@@ -68,6 +69,7 @@ function WorkerSearcher({
     || !rights.includes(INSPECTOR_RIGHT));
 
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
+  const { showError, showSuccess } = useToast();
 
   const [failedExport, setFailedExport] = useState(false);
   const [queryParams, setQueryParams] = useState([]);
@@ -241,11 +243,25 @@ function WorkerSearcher({
     }
   }, [validationSuccess, validationWarning]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
-      dispatch(journalize(mutation));
+      const mutationLog = await getLastMutationLog(dispatch, mutation?.clientMutationId || EMPTY_STRING);
+
+      if (mutationLog?.error) {
+        const parsedMutationError = JSON.parse(mutationLog.error);
+
+        showError(
+          formatMessageWithValues('deleteWorker.error', {
+            detail: parsedMutationError[0]?.detail || EMPTY_STRING,
+          }),
+        );
+        return;
+      }
+
+      showSuccess(formatMessage('deleteWorker.success'));
+      fetchWorkers(queryParams);
     }
-  }, [submittingMutation]);
+  }, [submittingMutation, mutation]);
 
   useEffect(() => {
     prevSubmittingMutationRef.current = submittingMutation;

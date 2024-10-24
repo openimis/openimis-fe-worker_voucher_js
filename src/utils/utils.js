@@ -73,3 +73,5 @@ export const getLastMutationLog = async (dispatch, mutationId) => {
 
 export const isTheVoucherExpired = (voucher) => voucher.status === WORKER_VOUCHER_STATUS.EXPIRED
 || new Date(voucher.expiryDate) < new Date();
+
+export const trimDate = (date) => date.split('T')[0];

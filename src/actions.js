@@ -655,7 +655,14 @@ export function deleteGroup(economicUnit, groupsToDelete, clientMutationLabel) {
 }
 
 export function fetchPublicVoucherDetails(voucherUuid) {
-  const queryParams = [`code: "${voucherUuid}"`];
-  const payload = formatPageQueryWithCount('voucherCheck', queryParams, WORKER_VOUCHER_CHECK_PROJECTION);
-  return graphql(payload, ACTION_TYPE.REQUEST);
+  return graphqlWithVariables(
+    `
+    query checkVoucherValidity($voucherUuid: String!) {
+      voucherCheck(code: $voucherUuid) {
+      ${WORKER_VOUCHER_CHECK_PROJECTION.join('\n')}
+      }
+    }
+    `,
+    { voucherUuid },
+  );
 }

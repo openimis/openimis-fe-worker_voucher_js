@@ -19,11 +19,12 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function VoucherQRCode({ voucher, bgColor = '#e4f2ff' }) {
+  const classes = useStyles();
+
   if (!voucher) {
     return null;
   }
 
-  const classes = useStyles();
   const voucherUrl = new URL(`${window.location.origin}${process.env.PUBLIC_URL}/voucher/check/${voucher.code}`);
 
   return (

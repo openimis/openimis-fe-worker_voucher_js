@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
-
 import {
-  Box, Button, Divider, Grid, Paper, Typography,
+  Box, Button, Divider, Grid, Paper, Typography, CircularProgress,
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CheckIcon from '@material-ui/icons/Check';
 import ErrorIcon from '@material-ui/icons/Error';
 import WarningIcon from '@material-ui/icons/Warning';
 import { makeStyles } from '@material-ui/styles';
-
 import {
-  decodeId, parseData, useHistory, useModulesManager, useTranslations,
+  useToast, useHistory, useModulesManager, useTranslations,
 } from '@openimis/fe-core';
 import { fetchPublicVoucherDetails } from '../actions';
 import { EMPTY_STRING, MODULE_NAME } from '../constants';
+import { trimDate } from '../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,6 +92,12 @@ const useStyles = makeStyles((theme) => ({
     color: '#00796b',
   },
   button: theme.dialog.primaryButton,
+  spinnerContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+  },
 }));
 
 export default function PublicVoucherDetailsPage({ match, logo }) {
@@ -100,6 +105,7 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME);
+  const { showError } = useToast();
   const voucherUuid = match.params.voucher_uuid;
   const [voucherSearcher, setVoucherSearcher] = useState({
     isExisted: false,
@@ -108,31 +114,42 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
     employerCode: EMPTY_STRING,
     employerName: EMPTY_STRING,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
+  useEffect(async () => {
     const fetchVoucher = async () => {
-      if (voucherUuid) {
-        try {
-          const response = await dispatch(fetchPublicVoucherDetails(voucherUuid));
-          const vouchers = parseData(response.payload.data.workerVoucher);
-          const voucherData = vouchers?.map((voucher) => ({
-            ...voucher,
-            uuid: decodeId(voucher.id),
-          }))?.[0];
+      const response = await dispatch(fetchPublicVoucherDetails(voucherUuid || EMPTY_STRING));
 
-          setVoucherSearcher({
-            isFound: Boolean(voucherData),
-            voucherDetails: voucherData || {},
-          });
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error(`[PUBLIC_VOUCHER_DETAILS_PAGE]: Fetching voucher details failed. ${error}`);
-        }
-      }
+      const {
+        assignedDate, employerCode, employerName, isExisted, isValid,
+      } = response.payload.data.voucherCheck;
+
+      setVoucherSearcher({
+        assignedDate,
+        employerCode,
+        employerName,
+        isExisted,
+        isValid,
+      });
     };
 
-    fetchVoucher();
+    try {
+      setIsLoading(true);
+      await fetchVoucher();
+    } catch {
+      showError('[PUBLIC_VOUCHER_DETAILS_PAGE]: Fetching voucher details failed.');
+    } finally {
+      setIsLoading(false);
+    }
   }, [voucherUuid, dispatch, modulesManager]);
+
+  if (isLoading) {
+    return (
+      <div className={classes.spinnerContainer}>
+        <CircularProgress />
+      </div>
+    );
+  }
 
   if (!voucherUuid) {
     return (
@@ -158,9 +175,8 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
     return formatMessageWithValues(
       isValid ? 'PublicVoucherDetailsPage.voucherFound' : 'PublicVoucherDetailsPage.invalidVoucherFound',
       {
-        assignedDate,
-        employerCode,
-        employerName,
+        assignedDate: <strong>{trimDate(assignedDate)}</strong>,
+        employer: <strong>{`${employerCode} - ${employerName}`}</strong>,
       },
     );
   };
