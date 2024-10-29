@@ -1,7 +1,7 @@
-import React, {
-  useCallback, useEffect, useState, useRef,
-} from 'react';
 import _debounce from 'lodash/debounce';
+import React, {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -28,17 +28,15 @@ import { makeStyles } from '@material-ui/styles';
 import {
   FormattedMessage,
   ProgressOrError,
-  parseData,
+  historyPush,
+  useHistory,
   useModulesManager,
   useTranslations,
-  useHistory,
-  historyPush,
 } from '@openimis/fe-core';
-import { fetchWorkers } from '../../actions';
+import { fetchAllAvailableWorkersInBatches } from '../../actions';
 import {
   DEFAULT_DEBOUNCE_TIME, EMPTY_STRING, MODULE_NAME, REF_ROUTE_GROUP_LIST,
 } from '../../constants';
-import { ACTION_TYPE } from '../../reducer';
 
 const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, width: '100%' },
@@ -99,11 +97,8 @@ function GroupWorkerManagePanel({ edited, onChange }) {
   const fetchAllAvailableWorkers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const workerData = await dispatch(
-        fetchWorkers(modulesManager, [`economicUnitCode:"${economicUnit.code}"`], ACTION_TYPE.REQUEST),
-      );
-      const parsedWorkers = parseData(workerData.payload.data.worker);
-      setAllWorkers(parsedWorkers);
+      const workerData = await fetchAllAvailableWorkersInBatches(dispatch, economicUnit.code);
+      setAllWorkers(workerData.allAvailableWorkers);
     } catch (error) {
       throw new Error(`[GROUP_WORKER_MANAGE_PANEL] Error fetching workers: ${error}`);
     } finally {
@@ -195,23 +190,35 @@ function GroupWorkerManagePanel({ edited, onChange }) {
             </Grid>
             <Paper>
               <List className={classes.list} subheader={<li />}>
-                <ProgressOrError progress={isLoading} />
-                {filteredUniqueWorkers.map((worker) => (
-                  <ListItem button divider key={worker.uuid}>
-                    <ListItemAvatar>
-                      <Avatar alt={`${worker.firstName} ${worker.lastName} Avatar`} src={worker.photo} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      className={classes.listItemText}
-                      primary={`${worker.chfId} ${worker.otherNames} ${worker.lastName}`}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton onClick={() => handleWorkerSelection(worker)}>
-                        <PersonAddIcon color="primary" />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
+                {isLoading ? (
+                  <div
+                    style={{
+                      height: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <ProgressOrError progress={isLoading} />
+                  </div>
+                ) : (
+                  filteredUniqueWorkers.map((worker) => (
+                    <ListItem button divider key={worker.uuid}>
+                      <ListItemAvatar>
+                        <Avatar alt={`${worker.firstName} ${worker.lastName} Avatar`} src={worker.photo} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        className={classes.listItemText}
+                        primary={`${worker.chfId} ${worker.otherNames} ${worker.lastName}`}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton onClick={() => handleWorkerSelection(worker)}>
+                          <PersonAddIcon color="primary" />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))
+                )}
               </List>
             </Paper>
           </Grid>

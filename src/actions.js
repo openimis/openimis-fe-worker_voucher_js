@@ -26,13 +26,7 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
-const WORKER_VOUCHER_CHECK_PROJECTION = [
-  'isExisted',
-  'isValid',
-  'assignedDate',
-  'employerCode',
-  'employerName',
-];
+const WORKER_VOUCHER_CHECK_PROJECTION = ['isExisted', 'isValid', 'assignedDate', 'employerCode', 'employerName'];
 
 const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
 
@@ -334,12 +328,8 @@ const processCategoryData = (category, data, allData) => {
   return { hasNextPage: false, endCursor: null };
 };
 
-export async function fetchAllPages(dispatch, query, variables) {
-  const allData = {
-    allAvailableWorkers: [],
-    previousWorkers: [],
-    previousDayWorkers: [],
-  };
+export async function fetchAllPages(dispatch, query, variables, categories) {
+  const allData = Object.fromEntries(categories.map((category) => [category, []]));
   let hasNextPage = true;
   let after = 'YXJyYXljb25uZWN0aW9uOi0x'; // arrayconnection:-1
 
@@ -351,23 +341,13 @@ export async function fetchAllPages(dispatch, query, variables) {
       );
       const data = response?.payload?.data || {};
 
-      const allAvailableWorkersInfo = processCategoryData('allAvailableWorkers', data, allData);
-      const previousWorkersInfo = processCategoryData('previousWorkers', data, allData);
-      const previousDayWorkersInfo = processCategoryData('previousDayWorkers', data, allData);
+      const pageInfos = categories.map((category) => processCategoryData(category, data, allData));
 
-      hasNextPage = allAvailableWorkersInfo.hasNextPage
-        || previousWorkersInfo.hasNextPage
-        || previousDayWorkersInfo.hasNextPage;
+      hasNextPage = pageInfos.some((pageInfo) => pageInfo.hasNextPage);
 
-      after = allAvailableWorkersInfo.endCursor
-        || previousWorkersInfo.endCursor
-        || previousDayWorkersInfo.endCursor;
+      after = pageInfos.find((info) => info.hasNextPage)?.endCursor;
 
-      if (
-        !allAvailableWorkersInfo.hasNextPage
-        && !previousWorkersInfo.hasNextPage
-        && !previousDayWorkersInfo.hasNextPage
-      ) {
+      if (!hasNextPage) {
         hasNextPage = false;
       }
     } catch (error) {
@@ -434,7 +414,40 @@ export async function fetchAllAvailableWorkers(dispatch, economicUnitCode, dateR
       }
     }  
   `;
-  const response = await fetchAllPages(dispatch, query, { economicUnitCode, dateRange });
+  const response = await fetchAllPages(
+    dispatch,
+    query,
+    { economicUnitCode, dateRange },
+    ['allAvailableWorkers', 'previousWorkers', 'previousDayWorkers'],
+  );
+
+  return response;
+}
+
+export async function fetchAllAvailableWorkersInBatches(dispatch, economicUnitCode) {
+  const query = `
+    query getAllAvailableWorkers($economicUnitCode: String!, $after: String!) {
+      allAvailableWorkers: worker(economicUnitCode: $economicUnitCode, after: $after) {
+        edges {
+          node {
+            id
+            uuid
+            chfId
+            lastName
+            otherNames
+            dob
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  `;
+
+  const response = await fetchAllPages(dispatch, query, { economicUnitCode }, ['allAvailableWorkers']);
+
   return response;
 }
 
