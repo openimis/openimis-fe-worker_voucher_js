@@ -1,25 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Divider, Grid, Paper, Typography, Button, Tooltip,
+  Button, Divider, Grid, Paper, Tooltip, Typography,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import { makeStyles } from '@material-ui/styles';
 
 import {
+  InfoButton,
   coreAlert,
+  historyPush,
+  journalize,
+  useHistory,
   useModulesManager,
   useTranslations,
-  journalize,
-  historyPush,
-  useHistory,
-  InfoButton,
 } from '@openimis/fe-core';
 import { assignVouchers, voucherAssignmentValidation } from '../actions';
 import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
 import AssignmentVoucherForm from './AssignmentVoucherForm';
 import VoucherAssignmentConfirmModal from './VoucherAssignmentConfirmModal';
+import VoucherAssignmentProgressTracker from './VoucherAssignmentProgressTracker';
 
 export const useStyles = makeStyles((theme) => ({
   paper: { ...theme.paper.paper, margin: '10px 0 0 0' },
@@ -167,6 +168,8 @@ function VoucherAssignmentForm() {
               </Tooltip>
             </Grid>
           </Grid>
+          <Divider />
+          <VoucherAssignmentProgressTracker voucherAssignment={voucherAssignment} />
           <Divider />
           <AssignmentVoucherForm
             edited={voucherAssignment}

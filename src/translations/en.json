@@ -205,5 +205,7 @@
   "workerVoucher.PublicVoucherDetailsPage.noVoucherUuid": " Voucher UUID not provided.",
   "workerVoucher.PublicVoucherDetailsPage.voucherNotFound": "Voucher not found.",
   "workerVoucher.PublicVoucherDetailsPage.invalidVoucherFound": "Voucher is no longer valid. It was valid on the day {assignedDate} at the {employer} employer.",
-  "workerVoucher.PublicVoucherDetailsPage.voucherFound": "Voucher found. It is valid on the day {assignedDate} at the {employer} employer."
+  "workerVoucher.PublicVoucherDetailsPage.voucherFound": "Voucher found. It is valid on the day {assignedDate} at the {employer} employer.",
+  "workerVoucher.VoucherAssignmentProgressTracker.upToDate": "Assignment progress is up to date.",
+  "workerVoucher.VoucherAssignmentProgressTracker.saving": "Saving progress..."
 }

@@ -136,6 +136,7 @@ function WorkerMultiplePicker({
         flexDirection: 'column',
         gap: '8px',
         alignItems: 'end',
+        marginTop: '8px',
       }}
     >
       <Autocomplete
