@@ -10,9 +10,9 @@ import { payWithMPay } from '../utils/utils';
 function MPayBillButton({ bill }) {
   const modulesManager = useModulesManager();
 
-  if (!bill || bill.status === BILL_PAID_STATUS) return null;
-
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+
+  if (!bill || bill.status === BILL_PAID_STATUS) return null;
 
   const handleOnClick = async (e) => {
     e.preventDefault();
