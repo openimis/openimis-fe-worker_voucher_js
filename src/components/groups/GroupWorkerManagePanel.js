@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function GroupWorkerManagePanel({ edited, onChange }) {
+function GroupWorkerManagePanel({ edited, onChange, disabled }) {
   const prevEconomicUnitRef = useRef();
   const history = useHistory();
   const modulesManager = useModulesManager();
@@ -162,6 +162,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
                 className={classes.filter}
                 variant="outlined"
                 label={formatMessage('GroupWorkerManagePanel.workerFilter')}
+                disabled={disabled}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -183,7 +184,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
               <Tooltip
                 title={<FormattedMessage module="workerVoucher" id="GroupWorkerManagePanel.tooltip.addAllFiltered" />}
               >
-                <IconButton color="primary" onClick={addAllFilteredWorkers}>
+                <IconButton color="primary" onClick={addAllFilteredWorkers} disabled={disabled}>
                   <DoubleArrowIcon />
                 </IconButton>
               </Tooltip>
@@ -203,7 +204,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
                   </div>
                 ) : (
                   filteredUniqueWorkers.map((worker) => (
-                    <ListItem button divider key={worker.uuid}>
+                    <ListItem button divider key={worker.uuid} disabled={disabled}>
                       <ListItemAvatar>
                         <Avatar alt={`${worker.firstName} ${worker.lastName} Avatar`} src={worker.photo} />
                       </ListItemAvatar>
@@ -212,8 +213,8 @@ function GroupWorkerManagePanel({ edited, onChange }) {
                         primary={`${worker.chfId} ${worker.otherNames} ${worker.lastName}`}
                       />
                       <ListItemSecondaryAction>
-                        <IconButton onClick={() => handleWorkerSelection(worker)}>
-                          <PersonAddIcon color="primary" />
+                        <IconButton onClick={() => handleWorkerSelection(worker)} disabled={disabled}>
+                          <PersonAddIcon />
                         </IconButton>
                       </ListItemSecondaryAction>
                     </ListItem>
@@ -227,7 +228,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
               <Tooltip
                 title={<FormattedMessage module="workerVoucher" id="GroupWorkerManagePanel.tooltip.removeAll" />}
               >
-                <IconButton color="primary" onClick={removeAllWorkers}>
+                <IconButton color="primary" onClick={removeAllWorkers} disabled={disabled}>
                   <DoubleArrowIcon className={classes.reversedArrow} />
                 </IconButton>
               </Tooltip>
@@ -239,7 +240,7 @@ function GroupWorkerManagePanel({ edited, onChange }) {
               <List className={classes.list} subheader={<li />}>
                 <ProgressOrError />
                 {edited?.workers?.map((worker) => (
-                  <ListItem button divider key={worker.uuid}>
+                  <ListItem button divider key={worker.uuid} disabled={disabled}>
                     <ListItemAvatar>
                       <Avatar alt={`${worker.firstName} ${worker.lastName} Avatar`} src={worker.photo} />
                     </ListItemAvatar>
@@ -248,8 +249,8 @@ function GroupWorkerManagePanel({ edited, onChange }) {
                       primary={`${worker.chfId} ${worker.otherNames} ${worker.lastName}`}
                     />
                     <ListItemSecondaryAction>
-                      <IconButton onClick={() => handleWorkerRemoval(worker)}>
-                        <ClearIcon color="primary" />
+                      <IconButton onClick={() => handleWorkerRemoval(worker)} disabled={disabled}>
+                        <ClearIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
                   </ListItem>
