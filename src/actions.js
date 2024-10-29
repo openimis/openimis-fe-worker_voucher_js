@@ -48,20 +48,20 @@ const WORKER_PROJECTION = (modulesManager) => [
   'photo { photo }',
 ];
 
-export const GROUP_PROJECTION = (modulesManager) => [
+export const GROUP_PROJECTION = (modulesManager, withWorkers = true) => [
   'id',
   'name',
   'isDeleted',
   'dateCreated',
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
   `groupWorkers {
-    edges {
+    totalCount
+    ${withWorkers ? `edges {
       node {
         isDeleted,
         insuree ${modulesManager.getProjection('insuree.InsureePicker.projection')},
       }
-    }
-    totalCount
+    }` : ''}
   }`,
 ];
 
@@ -574,9 +574,9 @@ export function validateMConnectWorker(nationalId, economicUnitCode) {
   );
 }
 
-export function fetchGroupsAction(modulesManager, params) {
+export function fetchGroupsAction(modulesManager, params, withWorkers) {
   const queryParams = [...params];
-  const payload = formatPageQueryWithCount('groupOfWorker', queryParams, GROUP_PROJECTION(modulesManager));
+  const payload = formatPageQueryWithCount('groupOfWorker', queryParams, GROUP_PROJECTION(modulesManager, withWorkers));
   return graphql(payload, ACTION_TYPE.GET_GROUPS);
 }
 
