@@ -68,7 +68,7 @@ function GroupSearcher({ searcherActions, enableActionButtons }) {
 
         actionParams.push('isDeleted: false');
 
-        dispatch(fetchGroupsAction(modulesManager, actionParams));
+        dispatch(fetchGroupsAction(modulesManager, actionParams, false));
       } catch (error) {
         throw new Error(`[GROUP_SEARCHER]: Fetching groups failed.. ${error}`);
       }

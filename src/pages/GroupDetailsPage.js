@@ -134,6 +134,7 @@ function GroupDetailsPage({ match }) {
         edited={edited}
         back={() => history.goBack()}
         Panels={[GroupMasterPanel]}
+        isSaving={submittingMutation}
         formatMessage={formatMessage}
         rights={rights}
         onEditedChanged={setEdited}

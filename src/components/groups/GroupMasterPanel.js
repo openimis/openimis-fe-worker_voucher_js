@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  Divider, Grid, Paper, Typography, Button,
+  Divider, Grid, Paper, Typography, Button, CircularProgress,
 } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
@@ -21,7 +21,7 @@ const styles = (theme) => ({
 class GroupMasterPanel extends FormPanel {
   render() {
     const {
-      classes, edited, readOnly, onEditedChanged, save, formatMessage, canSave,
+      classes, edited, isSaving, onEditedChanged, save, formatMessage, canSave,
     } = this.props;
 
     return (
@@ -36,8 +36,8 @@ class GroupMasterPanel extends FormPanel {
             <Grid item xs={6} container alignItems="center" justifyContent="flex-end">
               <Button
                 onClick={() => save(edited)}
-                disabled={!canSave() || readOnly}
-                startIcon={<SaveAltIcon />}
+                disabled={!canSave() || isSaving}
+                startIcon={isSaving ? <CircularProgress size={20} color="secondary" /> : <SaveAltIcon />}
                 variant="contained"
                 color="primary"
               >
@@ -51,14 +51,14 @@ class GroupMasterPanel extends FormPanel {
               module="workerVoucher"
               label="group.name"
               required
-              readOnly={readOnly}
+              readOnly={isSaving}
               value={edited?.name ?? EMPTY_STRING}
               onChange={(v) => this.updateAttribute('name', v)}
             />
           </Grid>
           <Divider />
           <Grid container>
-            <GroupWorkerManagePanel edited={edited} onChange={onEditedChanged} />
+            <GroupWorkerManagePanel edited={edited} onChange={onEditedChanged} disabled={isSaving} />
           </Grid>
         </Paper>
       </Grid>
