@@ -706,11 +706,12 @@ export function createOrUpdateVoucherDraftForm(
   typeOfForm = DRAFT_FORM_TYPE.ASSIGNMENT,
 ) {
   const { employer, workers, dateRanges } = voucherAssignment;
+  const workerIds = workers ? workers.map((worker) => decodeId(worker.id)).join(', ') : EMPTY_STRING;
 
   const mutationInput = `
-    ${`typeOfForm: "${typeOfForm}"`}
-    ${`economicUnitCode: "${employer.code}"`}
-    ${workers ? `workers: [${workers.map((worker) => `${decodeId(worker.id)}`).join(', ')}]` : 'workers: []'}
+    typeOfForm: "${typeOfForm}"
+    economicUnitCode: "${employer.code}"
+    workers: [${workerIds}]
     ${dateRanges ? `dateRanges: ${formatGraphQLDateRanges(dateRanges)}` : 'dateRanges: []'}
   `;
 
