@@ -110,7 +110,7 @@ function VoucherAcquirementSpecificWorker() {
       historyPush(modulesManager, history, REF_ROUTE_BILL, [billId]);
       dispatch(
         coreAlert(
-          formatMessage('menu.voucherAcquirementSuccess'),
+          formatMessage('menu.voucherAcquirement'),
           formatMessage('workerVoucher.VoucherAcquirementForm.specificVoucherConfirmation'),
         ),
       );

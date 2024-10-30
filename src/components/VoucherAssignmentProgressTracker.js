@@ -1,12 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
+import { useDispatch } from 'react-redux';
 import _ from 'lodash';
+import _debounce from 'lodash/debounce';
 
-import { Grid, CircularProgress, Typography } from '@material-ui/core';
+import { CircularProgress, Grid, Typography } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { makeStyles } from '@material-ui/styles';
 
-import { useTranslations } from '@openimis/fe-core';
-import { MODULE_NAME } from '../constants';
+import { useToast, useTranslations } from '@openimis/fe-core';
+import { createOrUpdateVoucherDraftForm } from '../actions';
+import { DEFAULT_DEBOUNCE_TIME, MODULE_NAME } from '../constants';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -20,21 +25,37 @@ const useStyles = makeStyles((theme) => ({
 
 function VoucherAssignmentProgressTracker({ voucherAssignment }) {
   const prevVoucherAssignment = useRef();
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const { showError } = useToast();
   const { formatMessage } = useTranslations(MODULE_NAME);
   const [isSaving, setIsSaving] = useState(false);
 
+  const saveAssignmentDraft = useCallback(
+    _debounce(async (voucherAssignment) => {
+      try {
+        await dispatch(createOrUpdateVoucherDraftForm(voucherAssignment, 'Save Assignment Draft'));
+      } catch (error) {
+        showError('[ERROR]: Error while saving the progress.');
+        // eslint-disable-next-line no-console
+        console.error(error);
+      } finally {
+        setIsSaving(false);
+      }
+    }, DEFAULT_DEBOUNCE_TIME * 2),
+    [dispatch, showError],
+  );
+
   useEffect(() => {
-    if (!_.isEqual(voucherAssignment, prevVoucherAssignment.current)) {
+    if (
+      !_.isEqual(voucherAssignment, prevVoucherAssignment.current)
+      && !_.isEmpty(voucherAssignment)
+    ) {
       setIsSaving(true);
       prevVoucherAssignment.current = voucherAssignment;
-
-      // TODO: After BE integration, call the API to save the voucher assignment
-      setTimeout(() => {
-        setIsSaving(false);
-      }, 1500);
+      saveAssignmentDraft(voucherAssignment);
     }
-  }, [voucherAssignment]);
+  }, [voucherAssignment, saveAssignmentDraft]);
 
   return (
     <Grid className={classes.container}>

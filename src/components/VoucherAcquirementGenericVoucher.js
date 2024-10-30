@@ -100,7 +100,7 @@ function VoucherAcquirementGenericVoucher() {
       historyPush(modulesManager, history, REF_ROUTE_BILL, [billId]);
       dispatch(
         coreAlert(
-          formatMessage('menu.voucherAcquirementSuccess'),
+          formatMessage('menu.voucherAcquirement'),
           formatMessageWithValues('workerVoucher.VoucherAcquirementForm.genericVoucherConfirmation', {
             quantity: voucherAcquirement?.quantity,
           }),

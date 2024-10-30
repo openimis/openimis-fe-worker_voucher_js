@@ -11,7 +11,7 @@ import { ACTION_TYPE } from './reducer';
 import {
   CLEAR, ERROR, REQUEST, SUCCESS,
 } from './utils/action-type';
-import { EMPTY_STRING } from './constants';
+import { DRAFT_FORM_TYPE, EMPTY_STRING } from './constants';
 
 const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   'id',
@@ -56,12 +56,16 @@ export const GROUP_PROJECTION = (modulesManager, withWorkers = true) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
   `groupWorkers {
     totalCount
-    ${withWorkers ? `edges {
+    ${
+  withWorkers
+    ? `edges {
       node {
         isDeleted,
         insuree ${modulesManager.getProjection('insuree.InsureePicker.projection')},
       }
-    }` : ''}
+    }`
+    : ''
+}
   }`,
 ];
 
@@ -336,9 +340,7 @@ export async function fetchAllPages(dispatch, query, variables, categories) {
   while (hasNextPage) {
     try {
       // eslint-disable-next-line no-await-in-loop
-      const response = await dispatch(
-        graphqlWithVariables(query, { ...variables, after }),
-      );
+      const response = await dispatch(graphqlWithVariables(query, { ...variables, after }));
       const data = response?.payload?.data || {};
 
       const pageInfos = categories.map((category) => processCategoryData(category, data, allData));
@@ -414,12 +416,11 @@ export async function fetchAllAvailableWorkers(dispatch, economicUnitCode, dateR
       }
     }  
   `;
-  const response = await fetchAllPages(
-    dispatch,
-    query,
-    { economicUnitCode, dateRange },
-    ['allAvailableWorkers', 'previousWorkers', 'previousDayWorkers'],
-  );
+  const response = await fetchAllPages(dispatch, query, { economicUnitCode, dateRange }, [
+    'allAvailableWorkers',
+    'previousWorkers',
+    'previousDayWorkers',
+  ]);
 
   return response;
 }
@@ -677,5 +678,78 @@ export function fetchPublicVoucherDetails(voucherUuid) {
     }
     `,
     { voucherUuid },
+  );
+}
+
+export function fetchVoucherDraftForm(modulesManager, economicUnitCode) {
+  return graphqlWithVariables(
+    `
+      query getCurrentDraft($economicUnitCode: String) {
+        voucherFormDraft(policyholder_Code: $economicUnitCode) {
+          edges {
+            node {
+              policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}
+              workers ${modulesManager.getProjection('insuree.InsureePicker.projection')}
+              dateRanges { startDate endDate }
+            }
+          }
+        }
+      }
+    `,
+    { economicUnitCode },
+  );
+}
+
+export function createOrUpdateVoucherDraftForm(
+  voucherAssignment,
+  clientMutationLabel,
+  typeOfForm = DRAFT_FORM_TYPE.ASSIGNMENT,
+) {
+  const { employer, workers, dateRanges } = voucherAssignment;
+
+  const mutationInput = `
+    ${`typeOfForm: "${typeOfForm}"`}
+    ${`economicUnitCode: "${employer.code}"`}
+    ${workers ? `workers: [${workers.map((worker) => `${decodeId(worker.id)}`).join(', ')}]` : 'workers: []'}
+    ${dateRanges ? `dateRanges: ${formatGraphQLDateRanges(dateRanges)}` : 'dateRanges: []'}
+  `;
+
+  const mutation = formatMutation('createOrUpdateVoucherDraftForm', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [
+      REQUEST(ACTION_TYPE.MUTATION),
+      SUCCESS(ACTION_TYPE.CREATE_OR_UPDATE_ASSIGNMENT_DRAFT),
+      ERROR(ACTION_TYPE.MUTATION),
+    ],
+    {
+      actionType: ACTION_TYPE.CREATE_OR_UPDATE_ASSIGNMENT_DRAFT,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
+  );
+}
+
+export function deleteVoucherDraftForm(economicUnit, clientMutationLabel, typeOfForm = DRAFT_FORM_TYPE.ASSIGNMENT) {
+  const mutationInput = `
+    ${`economicUnitCode: "${economicUnit.code}"`}
+    ${`typeOfForm: "${typeOfForm}"`}
+  `;
+
+  const mutation = formatMutation('deleteVoucherDraftForm', mutationInput, clientMutationLabel);
+  const requestedDateTime = new Date();
+
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.DELETE_ASSIGNMENT_DRAFT), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      actionType: ACTION_TYPE.DELETE_ASSIGNMENT_DRAFT,
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+    },
   );
 }

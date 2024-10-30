@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
 
 import {
   Button, Divider, Grid, Paper, Tooltip, Typography,
@@ -11,13 +12,15 @@ import {
   InfoButton,
   coreAlert,
   historyPush,
-  journalize,
   useHistory,
   useModulesManager,
   useTranslations,
+  parseData,
 } from '@openimis/fe-core';
-import { assignVouchers, voucherAssignmentValidation } from '../actions';
-import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS, USER_ECONOMIC_UNIT_STORAGE_KEY } from '../constants';
+import {
+  assignVouchers, deleteVoucherDraftForm, fetchVoucherDraftForm, voucherAssignmentValidation,
+} from '../actions';
+import { MODULE_NAME, REF_ROUTE_WORKER_VOUCHERS } from '../constants';
 import AssignmentVoucherForm from './AssignmentVoucherForm';
 import VoucherAssignmentConfirmModal from './VoucherAssignmentConfirmModal';
 import VoucherAssignmentProgressTracker from './VoucherAssignmentProgressTracker';
@@ -47,7 +50,6 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 function VoucherAssignmentForm() {
-  const prevSubmittingMutationRef = useRef();
   const modulesManager = useModulesManager();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -58,8 +60,8 @@ function VoucherAssignmentForm() {
   const [assignmentSummaryLoading, setAssignmentSummaryLoading] = useState(false);
   const [isAssignmentLoading, setIsAssignmentLoading] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const { mutation, submittingMutation } = useSelector((state) => state.workerVoucher);
   const { economicUnit } = useSelector((state) => state.policyHolder);
+  const prevEconomicUnitRef = useRef();
 
   const assignmentBlocked = (voucherAssignment) => !voucherAssignment?.workers?.length
   || !voucherAssignment?.dateRanges?.length;
@@ -94,6 +96,7 @@ function VoucherAssignmentForm() {
           'Assign Vouchers',
         ),
       );
+      await dispatch(deleteVoucherDraftForm(economicUnit, 'Delete Voucher Draft'));
       historyPush(modulesManager, history, REF_ROUTE_WORKER_VOUCHERS);
       dispatch(
         coreAlert(
@@ -110,26 +113,38 @@ function VoucherAssignmentForm() {
     setIsConfirmationModalOpen((prevState) => !prevState);
   };
 
-  useEffect(() => {
-    if (prevSubmittingMutationRef.current && !submittingMutation) {
-      dispatch(journalize(mutation));
+  useEffect(async () => {
+    if (_.isEqual(economicUnit, prevEconomicUnitRef.current)) {
+      return;
     }
-  }, [submittingMutation]);
 
-  useEffect(() => {
-    prevSubmittingMutationRef.current = submittingMutation;
-  });
+    try {
+      const response = await dispatch(fetchVoucherDraftForm(modulesManager, economicUnit.code));
 
-  useEffect(() => {
-    const storedUserEconomicUnit = localStorage.getItem(USER_ECONOMIC_UNIT_STORAGE_KEY);
-    if (storedUserEconomicUnit) {
-      const userEconomicUnit = JSON.parse(storedUserEconomicUnit);
-      setVoucherAssignment((prevState) => ({
-        ...prevState,
-        employer: userEconomicUnit,
-        workers: [],
-        dateRanges: [],
+      if (response.error) {
+        // eslint-disable-next-line no-console
+        console.error(`[ERROR]: Error while fetching voucher draft form. ${response.error}`);
+      }
+
+      const voucherFormDraft = parseData(response.payload.data.voucherFormDraft)?.[0];
+
+      if (!voucherFormDraft) {
+        setVoucherAssignment(() => ({
+          employer: economicUnit,
+          workers: [],
+          dateRanges: [],
+        }));
+        return;
+      }
+
+      setVoucherAssignment(() => ({
+        employer: voucherFormDraft.policyholder,
+        workers: voucherFormDraft.workers,
+        dateRanges: voucherFormDraft.dateRanges,
       }));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(`[ERROR]: Error during assignment init. ${error}`);
     }
   }, [setVoucherAssignment, economicUnit]);
 
