@@ -98,7 +98,7 @@
   "workerVoucher.acquire.confirmation": "I confirm the voucher acquirement, acknowledging that I have read and agree to the terms and policies.",
   "workerVoucher.assign.confirmation": "I confirm the voucher assignment, acknowledging that I have read and agree to the terms and policies.",
   "workerVoucher.vouchers.required": "You need to fill out all required fields to continue",
-  "workerVoucher.WorkerMultiplePicker.placeholder": "Search for Worker",
+  "workerVoucher.WorkerMultiplePicker.placeholder": "Search by IDNP, Worker First Name or Last Name",
   "workerVoucher.WorkerMultiplePicker.underThreshold": "Enter at least 3 characters: IDNP, Worker First Name or Last Name",
   "workerVoucher.WorkerMultiplePicker.noOptions": "No results",
   "workerVoucher.WorkerDateRangePicker.selectDate": "Select Date",

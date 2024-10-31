@@ -22,13 +22,12 @@ import {
   WORKER_IMPORT_GROUP_OF_WORKERS,
   WORKER_IMPORT_PREVIOUS_DAY,
   WORKER_IMPORT_PREVIOUS_WORKERS,
-  WORKER_THRESHOLD,
 } from '../constants';
 import { getYesterdaysDate } from '../utils/utils';
 import { fetchAllAvailableWorkers } from '../actions';
 
 function WorkerMultiplePicker({
-  readOnly, value, onChange, required, filterSelectedOptions,
+  readOnly, value, onChange, required,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -38,7 +37,6 @@ function WorkerMultiplePicker({
   const [previousDayWorkers, setPreviousDayWorkers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchString, setSearchString] = useState('');
   const isDisabled = readOnly || isLoading;
   const [configurationDialogOpen, setConfigurationDialogOpen] = useState(false);
   const [importPlan, setImportPlan] = useState(undefined);
@@ -73,27 +71,6 @@ function WorkerMultiplePicker({
     };
     loadData();
   }, [dispatch, economicUnitCode, yesterday]);
-
-  const filterOptionsBySearchString = (options) => {
-    const splitByWhitespaceRegex = /\s+/;
-    const filterableSearchString = searchString.toLowerCase().trim();
-    const searchTerms = filterableSearchString.split(splitByWhitespaceRegex);
-
-    return options.filter((option) => {
-      const chfId = option?.chfId?.toLowerCase() || '';
-      const lastName = option?.lastName?.toLowerCase() || '';
-      const otherNames = option?.otherNames?.toLowerCase() || '';
-
-      return searchTerms.every((term) => chfId.includes(term) || lastName.includes(term) || otherNames.includes(term));
-    });
-  };
-
-  const filterOptions = (options) => {
-    if (searchString.length < WORKER_THRESHOLD || isLoading) {
-      return [];
-    }
-    return filterOptionsBySearchString(options);
-  };
 
   const handleImportDialogOpen = () => {
     setConfigurationDialogOpen((prevState) => !prevState);
@@ -151,15 +128,7 @@ function WorkerMultiplePicker({
         onChange={onChange}
         value={value}
         getOptionSelected={(option, value) => option.uuid === value.uuid}
-        filterOptions={filterOptions}
-        noOptionsText={
-          searchString.length < WORKER_THRESHOLD
-            ? formatMessage('workerVoucher.WorkerMultiplePicker.underThreshold')
-            : formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')
-        }
-        filterSelectedOptions={filterSelectedOptions}
-        onInputChange={(_, newInputValue) => setSearchString(newInputValue)}
-        setCurrentString={setSearchString}
+        noOptionsText={formatMessage('workerVoucher.WorkerMultiplePicker.noOptions')}
         disableCloseOnSelect
         getOptionLabel={({ chfId, lastName, otherNames }) => `${chfId} ${lastName} ${otherNames}`}
         renderOption={(option, { selected }) => (
@@ -196,7 +165,6 @@ function WorkerMultiplePicker({
               style={{
                 zIndex: 1300,
                 maxHeight: dropdownMaxHeight,
-                overflowY: 'auto',
               }}
             />
           );
