@@ -113,6 +113,8 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
     assignedDate: EMPTY_STRING,
     employerCode: EMPTY_STRING,
     employerName: EMPTY_STRING,
+    workerLastName: EMPTY_STRING,
+    workerNameFirstLetter: EMPTY_STRING,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -121,7 +123,7 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
       const response = await dispatch(fetchPublicVoucherDetails(voucherUuid || EMPTY_STRING));
 
       const {
-        assignedDate, employerCode, employerName, isExisted, isValid,
+        assignedDate, employerCode, employerName, isExisted, isValid, lastName, nameFirstLetter,
       } = response.payload.data.voucherCheck;
 
       setVoucherSearcher({
@@ -130,6 +132,8 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
         employerName,
         isExisted,
         isValid,
+        workerLastName: lastName,
+        workerNameFirstLetter: nameFirstLetter,
       });
     };
 
@@ -164,7 +168,7 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
   }
 
   const {
-    isExisted, isValid, assignedDate, employerCode, employerName,
+    isExisted, isValid, assignedDate, employerCode, employerName, workerLastName, workerNameFirstLetter,
   } = voucherSearcher;
 
   const renderMessage = () => {
@@ -177,6 +181,7 @@ export default function PublicVoucherDetailsPage({ match, logo }) {
       {
         assignedDate: <strong>{trimDate(assignedDate)}</strong>,
         employer: <strong>{`${employerCode} - ${employerName}`}</strong>,
+        worker: <strong>{`${workerNameFirstLetter}. ${workerLastName}`}</strong>,
       },
     );
   };

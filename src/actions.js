@@ -26,7 +26,15 @@ const WORKER_VOUCHER_PROJECTION = (modulesManager) => [
   `policyholder ${modulesManager.getProjection('policyHolder.PolicyHolderPicker.projection')}`,
 ];
 
-const WORKER_VOUCHER_CHECK_PROJECTION = ['isExisted', 'isValid', 'assignedDate', 'employerCode', 'employerName'];
+const WORKER_VOUCHER_CHECK_PROJECTION = [
+  'isExisted',
+  'isValid',
+  'assignedDate',
+  'employerCode',
+  'employerName',
+  'lastName',
+  'nameFirstLetter',
+];
 
 const VOUCHER_PRICE_PROJECTION = () => ['id', 'uuid', 'key', 'value', 'dateValidFrom', 'dateValidTo', 'isDeleted'];
 
