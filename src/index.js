@@ -46,6 +46,7 @@ import GroupDetailsPage from './pages/GroupDetailsPage';
 import PublicVoucherDetailsPage from './pages/PublicVoucherDetailsPage';
 import DashboardPage from './pages/DashboardPage';
 import MPassLoginButton from './components/MPassLoginButton';
+import PublicGDPRPage from './pages/PublicGDPRPage';
 
 const ROUTE_PUBLIC_WORKER_VOUCHER_PAGE = 'voucher/check';
 const ROUTE_WORKER_VOUCHERS_LIST = 'voucher/vouchers';
@@ -58,6 +59,7 @@ const ROUTE_WORKER_VOUCHER_WORKER_LIST = 'voucher/vouchers/workers';
 const ROUTE_WORKER_VOUCHER_WORKER = 'voucher/vouchers/workers/worker';
 const ROUTE_GROUP_LIST = 'voucher/groups';
 const ROUTE_GROUP = 'voucher/groups/group';
+const ROUTE_GDPR = 'voucher/gdpr';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
@@ -71,6 +73,7 @@ const DEFAULT_CONFIG = {
     { key: 'workerVoucher.route.group', ref: ROUTE_GROUP },
     { key: 'workerVoucher.route.assignVoucher', ref: ROUTE_WORKER_VOUCHER_ASSIGNMENT },
     { key: 'workerVoucher.route.acquireVoucher', ref: ROUTE_WORKER_VOUCHER_ACQUIREMENT },
+    { key: 'workerVoucher.route.gdpr', ref: ROUTE_GDPR },
     { key: 'workerVoucher.WorkerVoucherStatusPicker', ref: WorkerVoucherStatusPicker },
     { key: 'workerVoucher.VoucherAcquirementMethodPicker', ref: VoucherAcquirementMethodPicker },
     { key: 'workerVoucher.WorkerMultiplePicker', ref: WorkerMultiplePicker },
@@ -123,6 +126,10 @@ const DEFAULT_CONFIG = {
     {
       path: `${ROUTE_PUBLIC_WORKER_VOUCHER_PAGE}/:voucher_uuid?`,
       component: PublicVoucherDetailsPage,
+    },
+    {
+      path: ROUTE_GDPR,
+      component: PublicGDPRPage,
     },
   ],
   'core.Router': [
