@@ -2,7 +2,10 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Typography } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
+import { useHistory, useTranslations, useModulesManager } from '@openimis/fe-core';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { MODULE_NAME } from '../constants';
 
 const GDPR_REGULATION = {
   title: 'DECLARAȚIE',
@@ -82,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     gap: theme.spacing(2),
     textWrap: 'pretty',
+    position: 'relative',
   },
   title: {
     width: '100%',
@@ -112,14 +116,27 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'start',
     alignItems: 'start',
   },
+  backButton: {
+    position: 'absolute',
+    top: theme.spacing(2),
+    left: theme.spacing(2),
+  },
 }));
 
 function PublicGDPRPage() {
   const classes = useStyles();
+  const history = useHistory();
+  const modulesManager = useModulesManager();
+  const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
 
   return (
     <div className={classes.main}>
       <div className={classes.wrapper}>
+        <div className={classes.backButton}>
+          <Button startIcon={<ChevronLeftIcon />} onClick={() => history.goBack()} variant="test" color="primary">
+            {formatMessage('PublicVoucherDetailsPage.backButton')}
+          </Button>
+        </div>
         <div className={classes.title}>
           <Typography style={{ fontSize: '24px', fontWeight: '700' }}>{GDPR_REGULATION.title}</Typography>
           <Typography>{GDPR_REGULATION.subtitle}</Typography>
